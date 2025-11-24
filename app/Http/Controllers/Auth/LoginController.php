@@ -8,52 +8,44 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    /**
-     * Tampilkan halaman login.
-     */
     public function showLoginForm()
     {
         return view('v_login.app');
     }
 
-    /**
-     * Proses login.
-     */
     public function login(Request $request)
     {
-        // Validasi input
         $request->validate([
-            'email' => 'required',
+            'email' => 'required|email',
             'password' => 'required|min:6',
         ]);
 
-        // Ambil data login
-        $credentials = [
-            'email' => $request->email,
-            'password' => $request->password,
-        ];
+        $credentials = $request->only('email', 'password');
 
-        // Coba login
-        if (Auth::attempt($credentials, $request->filled('remember'))) {
-
-            // generate ulang session (wajib)
+        // LOGIN ADMIN
+        if (Auth::guard('admin')->attempt($credentials)) {
             $request->session()->regenerate();
-
-            return redirect()->intended('/dashboard');
+            return redirect()->intended('/admin/dashboard');
         }
 
-        // Kalau gagal
-        return back()->withErrors([
-            'email' => 'email atau password salah.',
-        ])->withInput();
+        // LOGIN USER
+        if (Auth::guard('web')->attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect()->intended('/beranda');
+        }
+
+        return back()->with('error', 'Email atau password salah');
     }
 
-    /**
-     * Logout user.
-     */
     public function logout(Request $request)
     {
-        Auth::logout();
+        if (Auth::guard('admin')->check()) {
+            Auth::guard('admin')->logout();
+        }
+
+        if (Auth::guard('web')->check()) {
+            Auth::guard('web')->logout();
+        }
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

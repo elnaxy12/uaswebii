@@ -23,53 +23,61 @@
                             Login</h2>
                     </div>
 
-                    <form action="/login" method="POST">
+                    <form action="{{ route('login.post') }}" method="POST">
                         @csrf
+                    
                         <div class="flex flex-col gap-5 items-center">
+                    
                             {{-- email --}}
                             <div>
-                                <label for="">
+                                <label>
                                     <input
-                                        class="md:w-xs w-[14rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b  focus:ring-white/50"
-                                        type="email" placeholder="Email" name="email">
+                                        class="md:w-xs w-[14rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
+                                        type="email" placeholder="Email" name="email" value="{{ old('email') }}" required>
                                 </label>
+                    
                                 @error('email')
                                     <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
+                    
                             {{-- password --}}
                             <div>
-                                <label for="">
+                                <label>
                                     <input
-                                        class="md:w-xs w-[14rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b  focus:ring-white/50"
-                                        type="password" placeholder="Password" name="password"
-                                        value="{{ old('username') }}" required>
+                                        class="md:w-xs w-[14rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
+                                        type="password" placeholder="Password" name="password" required>
                                 </label>
+                    
                                 @error('password')
                                     <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
-                            {{-- feriv password --}}
+                    
+                            {{-- remember me --}}
                             <div class="flex md:justify-start md:w-xs w-[14rem]">
-                                <label for="check" class="flex gap-1" for="">
-                                    <input id="check" class="scale-75 cursor-pointer" type="checkbox" name="remember"
-                                        required>
-                                    <span class="text-white text-xs select-none cursor-pointer font-thin m-auto h-full">
+                                <label for="check" class="flex gap-1 cursor-pointer">
+                                    <input id="check" class="scale-75 cursor-pointer" type="checkbox" name="remember">
+                                    <span class="text-white text-xs select-none font-thin m-auto h-full">
                                         Remember me
                                     </span>
                                 </label>
                             </div>
+                    
                             {{-- button login --}}
                             <div>
-                                <button
-                                    class="bg-white md:w-3xs w-[10rem] md:p-2 p-[4px] rounded-2xl md:mt-5 cursor-pointer">
+                                <button class="bg-white md:w-3xs w-[10rem] md:p-2 p-[4px] rounded-2xl md:mt-5 cursor-pointer">
                                     Login
                                 </button>
                             </div>
+                    
                             {{-- forgot password --}}
                             <div class="mb-2">
-                                <a class="text-white text-xs hover:text-blue-900" href="">Forgot Password?</a>
+                                <a class="text-white text-xs hover:text-blue-900" href="">
+                                    Forgot Password?
+                                </a>
                             </div>
+                    
                         </div>
                     </form>
                 </div>
