@@ -22,6 +22,16 @@ html {
  * Remove the margin in all browsers.
  */
 
+
+:root {
+  --angle: 220deg;
+}
+
+.element {
+  --angle: 220deg;
+  background: linear-gradient(var(--angle), #2a7b9b 0%, #57c785 90%);
+}
+
 body {
   margin: 0;
 }
