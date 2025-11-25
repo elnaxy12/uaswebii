@@ -1,7 +1,6 @@
 import "./bootstrap";
 
 const element = document.querySelector(".element");
-
 let angle = 220;
 let direction = 1;
 const minAngle = 220;
