@@ -29,7 +29,7 @@
         </div>
         <div class="col2">
             <div class="col1">
-                <a href="#">`Adidas</a>
+                <a id="backToTop">`Adidas</a>
             </div>
             <div id="navMenu" class="col2">
                 <div id="menuToggle" class="col4">
@@ -45,17 +45,6 @@
                     TRENDING</a>
             </div>
             <div class="col3">
-                <label for="#">
-                    <input type="text" placeholder="SEARCH" />
-                    <button>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="lucide lucide-search-icon lucide-search">
-                            <path d="m21 21-4.34-4.34" />
-                            <circle cx="11" cy="11" r="8" />
-                        </svg>
-                    </button>
-                </label>
                 <a href="{{{ route('user.dashboard') }}}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -99,17 +88,13 @@
                             </p>
                         </div>
                         <div class="col2">
-                            <a href="https://www.adidas.com/us/men-back_to_school" target="_blank"
-                                rel="noopener noreferrer" class="btn-link">
+                            <a href="#etalase-men" class="btn-link">
                                 SHOP MEN
                             </a>
-                            <a href="https://www.adidas.com/us/women_back_to_school" target="_blank"
-                                rel="noopener noreferrer" class="btn-link">
+                            <a href="#etalase-woman" class="btn-link">
                                 SHOP WOMEN
                             </a>
-
-                            <a href="https://www.adidas.com/us/kids_back_to_school" target="_blank"
-                                rel="noopener noreferrer" class="btn-link">
+                            <a href="#etalase-kids" target="_blank" rel="noopener noreferrer" class="btn-link">
                                 SHOP KIDS
                             </a>
                         </div>
@@ -136,7 +121,7 @@
 
             <!--slider-etalase-product-->
             <div class="main-wrapper">
-                <div class="title-top-men">
+                <div id="etalase-men" class="title-top-men">
                     <p>TOP MEN FOR YOU</p>
                 </div>
                 <!--slider-etalase-top-men-->
@@ -299,7 +284,7 @@
                 </div>
 
                 <!--slider-top-women-->
-                <div class="title-top-men">
+                <div id="etalase-woman" class="title-top-men">
                     <p>BEST WOMEN FOR YOU</p>
                 </div>
                 <div class="container-slide">
@@ -460,6 +445,169 @@
                 <div class="progress-bar">
                     <div id="progress2"></div>
                 </div>
+
+                <!-- slider-top-kids -->
+                <div id="etalase-kids" class="title-top-men">
+                    <p>KID'S SHOES AND CLOTHES</p>
+                </div>
+                <div class="container-slide">
+                    <button class="btn-slider btn-prev3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-chevron-left-icon lucide-chevron-left">
+                            <path d="m15 18-6-6 6-6" />
+                        </svg>
+                    </button>
+                    <div id="slider3" class="etalase-slide">
+                        <div class="slide" data-link="https://www.adidas.com/us/samba-og-shoes/JI2734.html">
+                            <div class="prototype">
+                                <button class="appreciate">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="lucide lucide-heart-icon lucide-heart">
+                                        <path
+                                            d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                    </svg>
+                                </button>
+                                <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/9fb258a11a25407ab06b52eed1cca37b_9366/Samba_OG_Shoes_Kids_White_IE3675_00_plp_standard.jpg"
+                                    alt="" />
+                            </div>
+                            <p class="price">$80</p>
+                            <p class="title-product">SAMBA OG SHOES KIDS</p>
+                            <p class="badge-product">ORIGINALS</p>
+                        </div>
+                        <div class="slide" data-link="https://www.adidas.com/us/sl-72-og-shoes/JI0189.html">
+                            <div class="prototype">
+                                <button class="appreciate">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="lucide lucide-heart-icon lucide-heart">
+                                        <path
+                                            d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                    </svg>
+                                </button>
+                                <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/2c1a1838d62e4b23b8dddc26793bd47f_9366/Samba_OG_Shoes_Kids_White_JQ2843_00_plp_standard.jpg"
+                                    alt="" />
+                            </div>
+                            <p class="price">$56</p>
+                            <p class="title-product">SAMBA OG SHOES KIDS</p>
+                            <p class="badge-product">ORIGINALS</p>
+                        </div>
+                        <div class="slide" data-link="https://www.adidas.com/us/sl-72-og-shoes/JS3981.html">
+                            <div class="prototype">
+                                <button class="appreciate">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="lucide lucide-heart-icon lucide-heart">
+                                        <path
+                                            d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                    </svg>
+                                </button>
+                                <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/80690c33e4d348c58dae6b01ad83e760_9366/Defender_5_Small_Duffel_Bag_Black_JJ7410_00_plp_standard.jpg"
+                                    alt="" />
+                            </div>
+                            <p class="price">$28</p>
+                            <p class="title-product">DEFENDER 5 SMALL DUFFEL BAG</p>
+                            <p class="badge-product">SPORTSWEAR</p>
+                        </div>
+                        <div class="slide"
+                            data-link="https://www.adidas.com/us/cow-print-samba-long-tongue-shoes/JS3931.html">
+                            <div class="prototype">
+                                <button class="appreciate">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="lucide lucide-heart-icon lucide-heart">
+                                        <path
+                                            d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                    </svg>
+                                </button>
+                                <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/27b6e3345f9a4d59a5357e0a4b8a6aa6_9366/Al_Nassr_FC_25-26_Home_Jersey_Kids_Yellow_JN7981_000_plp_model.jpg"
+                                    alt="" />
+                            </div>
+                            <p class="price">$75</p>
+                            <p class="title-product">AL NASR FC 25/26 HOME JERSEY KIDS</p>
+                            <p class="badge-product">PERFORMANCE</p>
+                        </div>
+                        <div class="slide" data-link="https://www.adidas.com/us/samba-og-shoes/IG9030.html">
+                            <div class="prototype">
+                                <button class="appreciate">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="lucide lucide-heart-icon lucide-heart">
+                                        <path
+                                            d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                    </svg>
+                                </button>
+                                <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/fc50a8f55f56430897757b1d9e2e3231_9366/Argentina_26_Home_Messi_Kids_Jersey_White_KA8115_000_plp_model.jpg"
+                                    alt="" />
+                            </div>
+                            <p class="price">$110</p>
+                            <p class="title-product">ARGENTINA 26 HOME MESSI KIDS JERSEY</p>
+                            <p class="badge-product">PERFORMANCE</p>
+                        </div>
+                        <div class="slide" data-link="https://www.adidas.com/us/samba-long-tongue-shoes/IG4279.html">
+                            <div class="prototype">
+                                <button class="appreciate">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="lucide lucide-heart-icon lucide-heart">
+                                        <path
+                                            d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                    </svg>
+                                </button>
+                                <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/e7e49fce7e54448da09a2983c4fa43d0_9366/Samba_OG_Comfort_Closure_Elastic_Lace_Shoes_Kids_White_JQ3190_00_plp_standard.jpg"
+                                    alt="" />
+                            </div>
+                            <p class="price">$39</p>
+                            <p class="title-product">SAMBA OG COMFORT CLOSURE ELASTIC LACE SHOES KIDS</p>
+                            <p class="badge-product">ORIGINALS</p>
+                        </div>
+                        <div class="slide" data-link="https://www.adidas.com/us/samba-og-shoes/IE5836.html">
+                            <div class="prototype">
+                                <button class="appreciate">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="lucide lucide-heart-icon lucide-heart">
+                                        <path
+                                            d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                    </svg>
+                                </button>
+                                <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/09518a69e074496ca06e33bf071d4386_9366/Inter_Miami_CF_25-26_Messi_Away_Jersey_Kids_Black_JI6820_000_plp_model.jpg"
+                                    alt="" />
+                            </div>
+                            <p class="price">$66</p>
+                            <p class="title-product">INTER MIAMI CF 25/26 MESSI AWAY JERSEY KIDS</p>
+                            <p class="badge-product">PERFORMANCE</p>
+                        </div>
+                        <div class="slide" data-link="https://www.adidas.com/us/samba-og-shoes/JR0035.html">
+                            <div class="prototype">
+                                <button class="appreciate">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" class="lucide lucide-heart-icon lucide-heart">
+                                        <path
+                                            d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                    </svg>
+                                </button>
+                                <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/4229e87f23044869a5218fbc64c4fd71_9366/FIFA_World_Cup_26tm_Trionda_Pro_Ball_White_JD8021_HM1.jpg"
+                                    alt="" />
+                            </div>
+                            <p class="price">$170</p>
+                            <p class="title-product">FIFA WORLD CUP 26™ TRIONDA PRO BALL</p>
+                            <p class="badge-product">PERFORMANCE</p>
+                        </div>
+                    </div>
+                    <button class="btn-slider btn-next3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-chevron-right-icon lucide-chevron-right">
+                            <path d="m9 18 6-6-6-6" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="progress-bar">
+                    <div id="progress3"></div>
+                </div>
             </div>
 
             <!--gif-shoes-->
@@ -539,7 +687,7 @@
             <!--footer-allContent-->
             <footer>
                 <div class="footer-content">
-                    <p>byGlng &copy; 2025 Gilang Arya | adidas America, Inc.</p>
+                    <p>`Adidas &copy; 2025 | adidas America, Inc.</p>
                 </div>
             </footer>
         </div>
@@ -680,6 +828,52 @@
 
         updateButtons2();
         updateProgress2();
+
+        // etalase-slide 3
+        const slider3 = document.getElementById("slider3");
+        const btnPrev3 = document.querySelector(".btn-prev3");
+        const btnNext3 = document.querySelector(".btn-next3");
+        const progress3 = document.getElementById("progress3");
+
+        let currentIndex3 = 0;
+        const slideWidth3 = 290;
+        const visibleSlides3 = 4;
+        const totalSlides3 = slider3.children.length;
+        const maxIndex3 = totalSlides3 - visibleSlides3;
+
+        function updateButtons3() {
+            btnPrev3.classList.toggle("hidden", currentIndex3 === 0);
+            btnNext3.classList.toggle("hidden", currentIndex3 >= maxIndex3);
+        }
+
+        function updateProgress3() {
+            let percent = (currentIndex3 / maxIndex3) * 100;
+            progress3.style.width = percent + "%";
+        }
+
+        btnNext3.addEventListener("click", () => {
+            if (currentIndex3 < maxIndex3) {
+                currentIndex3++;
+                slider3.style.transform = `translateX(${-slideWidth3 * currentIndex3
+                    }px)`;
+                updateButtons3();
+                updateProgress3();
+            }
+        });
+
+        btnPrev3.addEventListener("click", () => {
+            if (currentIndex3 > 0) {
+                currentIndex3--;
+                slider3.style.transform = `translateX(${-slideWidth3 * currentIndex3
+                    }px)`;
+                updateButtons3();
+                updateProgress3();
+            }
+        });
+
+        updateButtons3();
+        updateProgress3();
+
 
         //
 

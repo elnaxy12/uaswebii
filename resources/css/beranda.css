@@ -379,12 +379,14 @@ body {
 }
 
 .main-wrapper .container-slide button.btn-next,
-.main-wrapper .container-slide button.btn-next2 {
+.main-wrapper .container-slide button.btn-next2,
+.main-wrapper .container-slide button.btn-next3 {
     right: 10px;
 }
 
 .main-wrapper .container-slide button.btn-prev,
-.main-wrapper .container-slide button.btn-prev2 {
+.main-wrapper .container-slide button.btn-prev2,
+.main-wrapper .container-slide button.btn-prev3 {
     left: 10px;
 }
 
@@ -400,7 +402,8 @@ body {
     overflow: hidden;
 }
 .progress-bar #progress,
-.progress-bar #progress2 {
+.progress-bar #progress2,
+.progress-bar #progress3 {
     height: 100%;
     width: 0%;
     background: black;
