@@ -22,5 +22,5 @@ body {
 
 .element {
     --angle: 220deg;
-    background: linear-gradient(var(--angle), #2a7b9b 0%, #57c785 90%);
+    background: linear-gradient(var(--angle), #0e1c26 20%, #2a454b 100%);
 }

@@ -23,69 +23,91 @@
                             Register</h2>
                     </div>
 
-                    <form action="">
+                    <form action="{{ route('register') }}" method="POST">
+                        @csrf
                         <div class="flex flex-col gap-5 items-center">
-                            {{-- first name --}}
+                            {{-- first name & last name --}}
                             <div class="flex gap-2">
-                                <label for="">
+                                <label>
                                     <input
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b  focus:ring-white/50"
-                                        type="text" placeholder="First Name">
+                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
+                                        type="text" name="first_name" placeholder="First Name" value="{{ old('first_name') }}" required>
+                                    @error('first_name')
+                                        <span class="text-red-500 text-xs">{{ $message }}</span>
+                                    @enderror
                                 </label>
-                                <label for="">
+                                <label>
                                     <input
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b  focus:ring-white/50"
-                                        type="text" placeholder="Last Name">
+                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
+                                        type="text" name="last_name" placeholder="Last Name" value="{{ old('last_name') }}" required>
+                                    @error('last_name')
+                                        <span class="text-red-500 text-xs">{{ $message }}</span>
+                                    @enderror
                                 </label>
                             </div>
+                    
+                            {{-- email & username --}}
                             <div class="flex gap-2">
-                                {{-- email --}}
-                                <label for="">
+                                <label>
                                     <input
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b  focus:ring-white/50"
-                                        type="email" placeholder="Email">
+                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
+                                        type="email" name="email" placeholder="Email" value="{{ old('email') }}" required>
+                                    @error('email')
+                                        <span class="text-red-500 text-xs">{{ $message }}</span>
+                                    @enderror
                                 </label>
-                                {{-- address --}}
-                                <label for="">
+                                <label>
                                     <input
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b  focus:ring-white/50"
-                                        type="text" placeholder="Address">
+                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
+                                        type="text" name="username" placeholder="Username" value="{{ old('username') }}" required>
+                                    @error('username')
+                                        <span class="text-red-500 text-xs">{{ $message }}</span>
+                                    @enderror
                                 </label>
                             </div>
+                    
                             {{-- password --}}
                             <div class="flex gap-2">
-                                {{-- email --}}
-                                <label for="">
+                                <label>
                                     <input
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b  focus:ring-white/50"
-                                        type="password" placeholder="Create Password">
+                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
+                                        type="password" name="password" placeholder="Create Password" required>
+                                    @error('password')
+                                        <span class="text-red-500 text-xs">{{ $message }}</span>
+                                    @enderror
                                 </label>
-                                {{-- address --}}
-                                <label for="">
+                                <label>
                                     <input
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b  focus:ring-white/50"
-                                        type="password" placeholder="Repeat Password">
+                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
+                                        type="password" name="password_confirmation" placeholder="Repeat Password" required>
                                 </label>
                             </div>
-                            {{-- feriv password --}}
-                            <div class="flex md:justify-start md:w-xs w-[14rem]">
-                                <label for="check" class="flex gap-1" for="">
-                                    <input id="check" class="scale-75 cursor-pointer" type="checkbox">
-                                    <span class="text-white text-xs select-none cursor-pointer font-thin m-auto h-full">
-                                        Remember me
-                                    </span>
+                    
+                            {{-- address & phone (optional) --}}
+                            <div class="flex gap-2">
+                                <label>
+                                    <input
+                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
+                                        type="text" name="address" placeholder="Address" value="{{ old('address') }}">
+                                </label>
+                                <label>
+                                    <input
+                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
+                                        type="text" name="phone" placeholder="Phone" value="{{ old('phone') }}">
                                 </label>
                             </div>
-                            {{-- button login --}}
+                    
+                            {{-- button register --}}
                             <div>
-                                <button
-                                    class="bg-white md:w-3xs w-[10rem] md:p-2 p-[4px] rounded-2xl md:mt-5 cursor-pointer">
+                                <button type="submit"
+                                    class="bg-white md:w-3xs w-[10rem] md:p-2 p-[4px] rounded-2xl md:mt-5 cursor-pointer hover:bg-gray-200 transition duration-200">
                                     Register
                                 </button>
                             </div>
-                            {{-- have acount --}}
+                    
+                            {{-- have account --}}
                             <div class="mb-2">
-                                <a class="text-white text-xs hover:text-blue-900" href="/login">Have an Acount?</a>
+                                <a class="text-white text-xs hover:text-blue-900" href="/login">Have an Account?</a>
                             </div>
                         </div>
                     </form>

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Models\Admin;
 
 class LoginController extends Controller
 {
@@ -15,12 +17,18 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
+        // Validasi input
         $request->validate([
             'email' => 'required|email',
             'password' => 'required|min:6',
         ]);
 
         $credentials = $request->only('email', 'password');
+        $email = $request->email;
+
+        // Cek apakah email exists di database
+        $userExists = User::where('email', $email)->exists();
+        $adminExists = Admin::where('email', $email)->exists();
 
         // LOGIN ADMIN
         if (Auth::guard('admin')->attempt($credentials)) {
@@ -31,10 +39,20 @@ class LoginController extends Controller
         // LOGIN USER
         if (Auth::guard('web')->attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/beranda');
+            return redirect()->intended('/dashboard');
         }
 
-        return back()->with('error', 'Email atau password salah');
+        // Error handling yang lebih spesifik
+        if (!$userExists && !$adminExists) {
+            return back()->with('error', 'Email is not registered in the system.');
+        }
+
+        if (($userExists || $adminExists) && !Auth::guard('web')->attempt($credentials) && !Auth::guard('admin')->attempt($credentials)) {
+            return back()->with('error', 'The password you entered is incorrect.');
+        }
+
+        // Fallback error
+        return back()->with('error', 'An error occurred while logging in. Please try again.');
     }
 
     public function logout(Request $request)

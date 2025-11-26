@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
@@ -21,25 +22,50 @@ class RegisterController extends Controller
     /**
      * Proses register user baru.
      */
-    public function register(Request $request)
+    public function register(Request $request) // Pastikan method ini ada
     {
         // Validasi input
-        $request->validate([
-            'username'   => 'required|unique:users,username|min:3|max:30',
-            'password'   => 'required|min:6',
-            'password2'  => 'required|same:password', // konfirmasi password
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'required|string|max:50',
+            'last_name'  => 'required|string|max:50',
+            'email'      => 'required|email|unique:users,email',
+            'username'   => 'required|unique:users,username|min:3|max:30|alpha_dash',
+            'password'   => 'required|min:6|confirmed',
+            'address'    => 'nullable|string|max:255',
+            'phone'      => 'nullable|string|max:20',
         ]);
+
+        // Jika validasi gagal
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
 
         // Simpan user baru
         $user = User::create([
-            'username' => $request->username,
-            'password' => Hash::make($request->password),
+            'first_name' => $request->first_name,
+            'last_name'  => $request->last_name,
+            'email'      => $request->email,
+            'username'   => $request->username,
+            'password'   => Hash::make($request->password),
+            'address'    => $request->address,
+            'phone'      => $request->phone,
         ]);
 
         // Login otomatis setelah register
         Auth::login($user);
 
-        // Arahkan ke dashboard
-        return redirect('/dashboard');
+        // Redirect ke dashboard
+        return redirect('/beranda')->with('success', 'Registrasi berhasil!');
+    }
+
+    /**
+     * OPSIONAL: Jika butuh API, buat method terpisah
+     * Tapi pastikan route-nya di routes/api.php
+     */
+    public function registerApi(Request $request)
+    {
+        // ... kode untuk API
     }
 }

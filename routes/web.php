@@ -5,8 +5,18 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Admin\DashboardController;
 
+
+// routes/web.php
+
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+
 Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
-Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
+Route::post('/register', [RegisterController::class, 'register']);
+
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
@@ -19,8 +29,8 @@ Route::middleware('auth')->group(function () {
     })->name('beranda');
     
     Route::get('/dashboard', function () {
-        return view('v_dashboard.user');
-    })->name('dashboard');
+        return view('v_user.v_dashboard.app');
+    })->name('user.dashboard');
 });
 
 // Admin routes
