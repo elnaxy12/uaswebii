@@ -638,7 +638,7 @@
                         JOIN US
                     </a>
 
-                    <a href="https://www.adidas.com/us" target="_blank" rel="noopener noreferrer" class="btn-link">
+                    <a href="{{ route('login')}}" target="_blank" rel="noopener noreferrer" class="btn-link">
                         SIGN IN
                     </a>
                 </div>

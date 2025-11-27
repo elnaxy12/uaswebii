@@ -31,6 +31,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         return view('v_user.v_dashboard.app');
     })->name('user.dashboard');
+
+    Route::get('/wishlists', function () {
+        return view('v_user.v_wishlists.app');
+    })->name('user.wishlists');
+
+    Route::get('/cart', function() {
+        return view('v_user.v_cart.app');
+    })->name('user.cart');
 });
 
 // Admin routes
