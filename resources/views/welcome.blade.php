@@ -95,8 +95,7 @@
                                 SHOP WOMEN
                             </a>
 
-                            <a href="#etalase-kids" target="_blank"
-                                rel="noopener noreferrer" class="btn-link">
+                            <a href="#etalase-kids" class="btn-link">
                                 SHOP KIDS
                             </a>
                         </div>
@@ -625,21 +624,8 @@
                     </div>
                 </div>
                 <div class="col2">
-                    <a href="https://www.adidas.com/us/stores" target="_blank" rel="noopener noreferrer"
-                        class="btn-link">
-                        FIND A STORE
-                    </a>
-
-                    <a href="https://www.adidas.com/us/help" target="_blank" rel="noopener noreferrer" class="btn-link">
-                        HELP
-                    </a>
-
-                    <a href="https://www.adidas.com/us" target="_blank" rel="noopener noreferrer" class="btn-link">
-                        JOIN US
-                    </a>
-
                     <a href="{{ route('login')}}" target="_blank" rel="noopener noreferrer" class="btn-link">
-                        SIGN IN
+                        SIGN IN ACCOUNT
                     </a>
                 </div>
             </div>

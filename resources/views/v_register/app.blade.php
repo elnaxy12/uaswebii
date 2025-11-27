@@ -31,7 +31,8 @@
                                 <label>
                                     <input
                                         class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
-                                        type="text" name="first_name" placeholder="First Name" value="{{ old('first_name') }}" required>
+                                        type="text" name="first_name" placeholder="First Name"
+                                        value="{{ old('first_name') }}" required>
                                     @error('first_name')
                                         <span class="text-red-500 text-xs">{{ $message }}</span>
                                     @enderror
@@ -39,19 +40,21 @@
                                 <label>
                                     <input
                                         class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
-                                        type="text" name="last_name" placeholder="Last Name" value="{{ old('last_name') }}" required>
+                                        type="text" name="last_name" placeholder="Last Name"
+                                        value="{{ old('last_name') }}" required>
                                     @error('last_name')
                                         <span class="text-red-500 text-xs">{{ $message }}</span>
                                     @enderror
                                 </label>
                             </div>
-                    
+
                             {{-- email & username --}}
                             <div class="flex gap-2">
                                 <label>
                                     <input
                                         class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
-                                        type="email" name="email" placeholder="Email" value="{{ old('email') }}" required>
+                                        type="email" name="email" placeholder="Email" value="{{ old('email') }}"
+                                        required>
                                     @error('email')
                                         <span class="text-red-500 text-xs">{{ $message }}</span>
                                     @enderror
@@ -59,13 +62,14 @@
                                 <label>
                                     <input
                                         class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
-                                        type="text" name="username" placeholder="Username" value="{{ old('username') }}" required>
+                                        type="text" name="username" placeholder="Username" value="{{ old('username') }}"
+                                        required>
                                     @error('username')
                                         <span class="text-red-500 text-xs">{{ $message }}</span>
                                     @enderror
                                 </label>
                             </div>
-                    
+
                             {{-- password --}}
                             <div class="flex gap-2">
                                 <label>
@@ -79,10 +83,11 @@
                                 <label>
                                     <input
                                         class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
-                                        type="password" name="password_confirmation" placeholder="Repeat Password" required>
+                                        type="password" name="password_confirmation" placeholder="Repeat Password"
+                                        required>
                                 </label>
                             </div>
-                    
+
                             {{-- address & phone (optional) --}}
                             <div class="flex gap-2">
                                 <label>
@@ -96,7 +101,7 @@
                                         type="text" name="phone" placeholder="Phone" value="{{ old('phone') }}">
                                 </label>
                             </div>
-                    
+
                             {{-- button register --}}
                             <div>
                                 <button type="submit"
@@ -104,7 +109,7 @@
                                     Register
                                 </button>
                             </div>
-                    
+
                             {{-- have account --}}
                             <div class="mb-2">
                                 <a class="text-white text-xs hover:text-blue-900" href="/login">Have an Account?</a>
@@ -113,6 +118,10 @@
                     </form>
                 </div>
             </div>
+        </div>
+
+        <div class="fixed top-3 left-3">
+            <img src="https://news.adidas.com/dist/images/adidas-news-web.svg" width="100px" alt="Logo Adidas">
         </div>
     </div>
 </body>

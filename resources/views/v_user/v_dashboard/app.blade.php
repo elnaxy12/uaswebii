@@ -1,12 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Tab Dashboard | Adidas</title>
-</head>
+@include('base2.start')
+
 <body>
-    
+    @include('base2.navbar')
+    <div id="smooth-wrapper">
+        <div id="smooth-content">
+            <div class="flex md:flex-row flex-col">
+                @include('base2.sidebar')
+                @include('base2.profile')
+            </div>
+            @include('base2.end')
+        </div>
+    </div>
 </body>
-</html>
