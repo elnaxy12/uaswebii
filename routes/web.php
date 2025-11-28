@@ -11,7 +11,7 @@ use App\Http\Controllers\Admin\DashboardController;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
 
 Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');

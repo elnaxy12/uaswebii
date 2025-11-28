@@ -121,7 +121,9 @@
         </div>
 
         <div class="fixed top-3 left-3">
-            <img src="https://news.adidas.com/dist/images/adidas-news-web.svg" width="100px" alt="Logo Adidas">
+            <a href="{{ route('welcome') }}">
+                <img src="https://news.adidas.com/dist/images/adidas-news-web.svg" width="100px" alt="Logo Adidas">
+            </a>
         </div>
     </div>
 </body>

@@ -61,3 +61,24 @@
         }
     });
 </script>
+
+<script>
+    // =======================
+    // animasi fadeIn
+    // =======================
+    window.addEventListener("DOMContentLoaded", () => {
+        const overlay = document.getElementById("overlay");
+
+        // pastikan elemen terlihat
+        overlay.style.display = "block";
+
+        // jalankan fadeIn
+        setTimeout(() => {
+            overlay.classList.add("show");
+        }, 1000); // delay kecil supaya transition bekerja
+    });
+</script>
+
+</body>
+
+</html>

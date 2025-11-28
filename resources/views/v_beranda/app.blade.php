@@ -635,10 +635,6 @@
                     <a href="https://www.adidas.com/us" target="_blank" rel="noopener noreferrer" class="btn-link">
                         JOIN US
                     </a>
-
-                    <a href="https://www.adidas.com/us" target="_blank" rel="noopener noreferrer" class="btn-link">
-                        SIGN IN
-                    </a>
                 </div>
             </div>
 
