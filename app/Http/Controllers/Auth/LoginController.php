@@ -17,43 +17,42 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        // Validasi input
+        // Validasi
         $request->validate([
             'email' => 'required|email',
             'password' => 'required|min:6',
+            'remember' => 'accepted'
+        ], [
+            'remember.accepted' => 'You must agree to Remember Me to continue.',
         ]);
 
         $credentials = $request->only('email', 'password');
-        $email = $request->email;
+        $remember = true; // karena wajib accepted pasti true
 
-        // Cek apakah email exists di database
-        $userExists = User::where('email', $email)->exists();
-        $adminExists = Admin::where('email', $email)->exists();
+        // LOGIN USER
+        if (Auth::guard('web')->attempt($credentials, $remember)) {
+            $request->session()->regenerate();
+            return redirect()->intended('/beranda')->with('success', 'Login berhasil!');
+        }
 
         // LOGIN ADMIN
-        if (Auth::guard('admin')->attempt($credentials)) {
+        if (Auth::guard('admin')->attempt($credentials, $remember)) {
             $request->session()->regenerate();
             return redirect()->intended('/admin/dashboard/analytics');
         }
 
-        // LOGIN USER
-        if (Auth::guard('web')->attempt($credentials)) {
-            $request->session()->regenerate();
-            return redirect()->intended('/dashboard');
-        }
+        // Cek email ada atau tidak
+        $email = $request->email;
+        $userExists = User::where('email', $email)->exists();
+        $adminExists = Admin::where('email', $email)->exists();
 
-        // Error handling yang lebih spesifik
         if (!$userExists && !$adminExists) {
             return back()->with('error', 'Email is not registered in the system.');
         }
 
-        if (($userExists || $adminExists) && !Auth::guard('web')->attempt($credentials) && !Auth::guard('admin')->attempt($credentials)) {
-            return back()->with('error', 'The password you entered is incorrect.');
-        }
-
-        // Fallback error
-        return back()->with('error', 'An error occurred while logging in. Please try again.');
+        return back()->with('error', 'The password you entered is incorrect.');
     }
+
 
     public function logout(Request $request)
     {

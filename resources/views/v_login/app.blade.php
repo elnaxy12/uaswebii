@@ -70,11 +70,15 @@
                             {{-- remember me --}}
                             <div class="flex md:justify-start md:w-xs w-[14rem]">
                                 <label for="check" class="flex gap-1 cursor-pointer">
-                                    <input id="check" class="scale-75 cursor-pointer" type="checkbox" name="remember">
+                                    <input id="check" class="scale-75 cursor-pointer" type="checkbox" name="remember" value="1">
                                     <span class="text-white text-xs select-none font-thin m-auto h-full">
                                         Remember me
                                     </span>
                                 </label>
+
+                                @error('remember')
+                                    <p class="text-red-400 md:text-xs text-[10px] mt-1 absolute md:translate-y-4 translate-y-3">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             {{-- button login --}}

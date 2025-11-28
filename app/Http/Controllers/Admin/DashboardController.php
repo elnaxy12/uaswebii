@@ -19,4 +19,21 @@ class DashboardController extends Controller
         $admin = Auth::guard('admin')->user();
         return view('v_admin.v_dashboard.app2', compact('admin'));
     }
+
+
+    // controller user
+    public function dashboard() {
+        $user = Auth::guard('web')->user();
+        return view('v_user.v_dashboard.app', compact('user'));
+    }
+
+    public function wishlists() {
+        $user = Auth::guard('web')->user();
+        return view('v_user.v_wishlists.app', compact('user'));
+    }
+
+    public function cart() {
+        $user = Auth::guard('web')->user();
+        return view('v_user.v_cart.app', compact('user'));
+    }
 }

@@ -1,4 +1,4 @@
-<div class="md:w-3xs w-full h-screen flex items-center">
+<div class="md:pt-[12rem] pt-[4rem] w-3xs">
     <div class="flex w-full flex-col gap-3 mt-10 pl-5">
         <p class="font-bold text-lg font-sans select-none">My Dashboard</p>
         <div class="flex flex-col justify-start gap-1">

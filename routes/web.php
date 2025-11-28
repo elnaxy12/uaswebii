@@ -22,24 +22,29 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+
 // User routes
+
 Route::middleware('auth')->group(function () {
+
     Route::get('/beranda', function () {
         return view('v_beranda.app');
     })->name('beranda');
-    
-    Route::get('/dashboard', function () {
-        return view('v_user.v_dashboard.app');
-    })->name('user.dashboard');
 
-    Route::get('/wishlists', function () {
-        return view('v_user.v_wishlists.app');
-    })->name('user.wishlists');
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'dashboard'])
+        ->name('user.dashboard');
 
-    Route::get('/cart', function() {
-        return view('v_user.v_cart.app');
-    })->name('user.cart');
+    // Wishlists
+    Route::get('/wishlists', [DashboardController::class, 'wishlists'])
+        ->name('user.wishlists');
+
+    // Cart
+    Route::get('/cart', [DashboardController::class, 'cart'])
+        ->name('user.cart');
 });
+
+
 
 // Admin routes
 Route::middleware(['auth:admin'])->group(function () {

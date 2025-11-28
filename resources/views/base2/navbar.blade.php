@@ -1,10 +1,10 @@
 <div id="navbar" class="full-navbar">
-    <div class="col1">
+    <div class="col1 hidden! md:flex!">
         <p class="id">&#127470;&#127465;</p>
         <p class="ads">"Style meets savings—shop the latest collection now!"</p>
     </div>
     <div class="col2">
-        <div class="col1">
+        <div class="col1 md:justify-start! justify-center! w-full! md:ml-4! ml-0!">
             <a id="backToTop" href="{{ route('beranda') }}">`Adidas</a>
         </div>
         <div id="navMenu" class="col2">
