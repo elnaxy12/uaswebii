@@ -4,15 +4,17 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\EtalaseController;
+use App\Http\Controllers\ProductController;
 
 
 // routes/web.php
 
 
 Route::get('/', function () {
-    return view('welcome');
+    $products = \App\Models\Product::all(); 
+    return view('welcome', compact('products'));
 })->name('welcome');
-
 
 Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
@@ -54,3 +56,8 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/dashboard/ecommerce', [DashboardController::class, 'ecommerce'])
         ->name('admin.dashboard.ecommerce');
 });
+
+
+
+
+Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');

@@ -5,7 +5,7 @@
     </div>
     <div class="col2">
         <div class="col1 md:justify-start! justify-center! w-full! md:ml-4! ml-0!">
-            <a id="backToTop" href="{{ route('beranda') }}">`Adidas</a>
+            <a id="backToTop" href="{{ auth()->check() ? route('beranda') : route('welcome') }}">Adidas</a>
         </div>
         <div id="navMenu" class="col2">
             <div id="menuToggle" class="col4">

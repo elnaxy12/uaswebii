@@ -11,13 +11,20 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Admin
-        Admin::create([
-            'name' => 'Admin',
-            'email' => 'admin@gmail.com',
-            'password' => Hash::make('P@55word'),
-            'address' => 'Indonesia',
-            'role' => 'admin',
+        // Admin (hindari duplikat)
+        Admin::firstOrCreate(
+            ['email' => 'admin@gmail.com'], // cek dulu email
+            [
+                'name' => 'Admin',
+                'password' => Hash::make('P@55word'),
+                'address' => 'Indonesia',
+                'role' => 'admin',
+            ]
+        );
+
+        // Seeder lain
+        $this->call([
+            ProductSeeder::class,
         ]);
     }
 }
