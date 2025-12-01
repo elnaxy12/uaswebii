@@ -134,7 +134,7 @@
                         </svg>
                     </button>
                     <div id="slider" class="etalase-slide no-underline">
-                        <a href="{{ route('product.show', 'samba-og-shoes-692b2fbbe08aa') }}">
+                        <a href="{{ route('product.show', 'samba-og-shoes-brown-rbxUvS') }}">
                             <div class="slide">
                                 <div class="prototype">
                                     <button class="appreciate">

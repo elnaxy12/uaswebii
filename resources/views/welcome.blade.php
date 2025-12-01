@@ -135,7 +135,7 @@
                         </svg>
                     </button>
                     <div id="slider" class="etalase-slide no-underline">
-                        <a href="{{ route('product.show', 'samba-og-shoes-692b2fbbe08aa') }}">
+                        <a href="{{ route('product.show', 'samba-og-shoes-brown-rbxUvS') }}">
                             <div class="slide">
                                 <div class="prototype">
                                     <button class="appreciate">
@@ -155,7 +155,7 @@
                                 <p class="badge-product">MEN'S ORIGINALS</p>
                             </div>
                         </a>
-                        <a href="{{ route('product.show', 'swift-run-10-shoes-692b2fbbf3c33') }}">
+                        <a href="{{ route('product.show', 'swift-run-10-shoes-rGyrpJ') }}">
                             <div class="slide">
                                 <div class="prototype">
                                     <button class="appreciate">

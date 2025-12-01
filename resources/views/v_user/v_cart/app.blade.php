@@ -9,8 +9,9 @@
         <div id="smooth-content">
             <div class="flex md:flex-row flex-col">
                 @include('base2.sidebar')
-                @include('index2.cart')
+                @yield('content')
             </div>
         </div>
     </div>
+
     @include('base2.end')

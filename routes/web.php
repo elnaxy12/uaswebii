@@ -6,27 +6,25 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\EtalaseController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CartController;
 
-
-// routes/web.php
-
-
+// Home page
 Route::get('/', function () {
-    $products = \App\Models\Product::all(); 
+    $products = \App\Models\Product::all();
     return view('welcome', compact('products'));
 })->name('welcome');
 
+
+// Auth
 Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
-
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 
-// User routes
-
+// User routes (AUTH)
 Route::middleware('auth')->group(function () {
 
     Route::get('/beranda', function () {
@@ -41,23 +39,44 @@ Route::middleware('auth')->group(function () {
     Route::get('/wishlists', [DashboardController::class, 'wishlists'])
         ->name('user.wishlists');
 
-    // Cart
-    Route::get('/cart', [DashboardController::class, 'cart'])
-        ->name('user.cart');
-});
+    // ============================
+    // CART SYSTEM (BARU)
+    // ============================
 
+    // Tampilkan cart
+    Route::get('/cart', [CartController::class, 'index'])
+        ->name('user.cart');
+
+    // Tambah ke cart
+    Route::post('/cart/store', [CartController::class, 'store'])
+        ->name('cart.store');
+
+        
+    // Hapus item dengan DELETE method
+    Route::delete('/cart/{cart}', [CartController::class, 'destroy'])
+        ->name('cart.destroy'); // ⬅️ INI YANG BENAR
+
+    // Update quantity (AJAX)
+    Route::post('/cart/{cart}/update-quantity', [CartController::class, 'updateQuantity'])
+        ->name('cart.update-quantity');
+
+    // Update size (AJAX)
+    Route::post('/cart/{cart}/update-size', [CartController::class, 'updateSize'])
+        ->name('cart.update-size');
+
+});
 
 
 // Admin routes
 Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/dashboard/analytics', [DashboardController::class, 'index'])
         ->name('admin.dashboard.analytics');
-    
+
     Route::get('/admin/dashboard/ecommerce', [DashboardController::class, 'ecommerce'])
         ->name('admin.dashboard.ecommerce');
 });
 
 
-
-
+// Products
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product.show');

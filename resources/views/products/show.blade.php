@@ -12,48 +12,240 @@
         type="image/svg+xml" />
 
     <script src="https://cdn.tailwindcss.com"></script>
-    @vite(['resources/css/app.css', 'resources/css/beranda.css'])
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    @vite(['resources/css/app.css', 'resources/css/beranda.css', 'resources/js/scrollsmooth.js'])
 </head>
 
 <body id="overlay" class="fadeIn">
     @include('base2.navbar')
-    <div class="container mx-auto">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            <!-- Product Image -->
-            <div class="bg-white p-6">
-                <img src="{{ $product->image }}" alt="{{ $product->name }}" class="w-full h-auto">
-            </div>
+    <div id="smooth-wrapper">
+        <div id="smooth-content">
+            <div class="container mx-auto px-4 py-8">
+                <!-- Breadcrumb Navigation -->
+                <nav class="mb-6 text-sm text-gray-600">
+                    <a href="{{ url('/') }}" class="hover:text-black transition">Home</a>
+                    <span class="mx-2">/</span>
+                    <a href="" class="hover:text-black transition">Products</a>
+                    <span class="mx-2">/</span>
+                    <span class="text-black font-medium">{{ $product->name }}</span>
+                </nav>
 
-            <!-- Product Info -->
-            <div class="bg-white p-6">
-                <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ $product->name }}</h1>
-                <span class="inline-block bg-black text-white px-3 py-1 rounded-full text-sm font-medium mb-4">
-                    {{ $product->badge }}
-                </span>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                    <!-- Product Image Section -->
+                    <div class="bg-white p-4 md:p-6">
+                        <div class="mb-4">
+                            <img src="{{ $product->image }}" alt="{{ $product->name }}"
+                                class="w-full h-auto transition duration-300">
+                        </div>
+                    </div>
 
-                <!-- Price & Stock -->
-                <div class="mt-6">
-                    <p class="text-4xl font-bold">${{ number_format($product->price, 2) }}</p>
-                    <p class="text-gray-600 mt-2">
-                        Stock: <strong class="text-gray-900">{{ $product->stock }}</strong> items available
-                    </p>
+                    <!-- Product Info Section -->
+                    <div class="bg-white p-4 md:p-6 rounded-lg shadow-sm">
+                        <!-- Product Title & Badge -->
+                        <div class="mb-4">
+                            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{{ $product->name }}</h1>
+                            @if($product->badge)
+                                <span
+                                    class="inline-block bg-black text-white px-3 py-1 rounded-full text-xs md:text-sm font-medium">
+                                    {{ $product->badge }}
+                                </span>
+                            @endif
+                        </div>
+
+                        <!-- Price & Views -->
+                        <div class="mb-6">
+                            <p class="text-3xl md:text-4xl font-bold text-gray-900">
+                                ${{ number_format($product->price, 2) }}
+                            </p>
+                            <div class="flex items-center space-x-4 mt-2">
+                                <p class="text-gray-600">
+                                    <i class="fas fa-box mr-1"></i>
+                                    Stock: <strong class="text-gray-900">{{ $product->stock }}</strong> available
+                                </p>
+                                @if($product->views > 0)
+                                    <p class="text-gray-600">
+                                        <i class="fas fa-eye mr-1"></i>
+                                        {{ $product->views }} views
+                                    </p>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Size Selection from Database -->
+                        <div class="mb-6">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="text-lg font-semibold text-gray-900">Select Size</h3>
+                                <span class="text-sm text-gray-500">(Required)</span>
+                            </div>
+
+                            @if($product->sizes && $product->sizes->count() > 0)
+                                <div class="flex flex-wrap gap-2 mb-3" id="sizeSelection">
+                                    @foreach($product->sizes as $size)
+                                        @php
+        $stock = $size->pivot->stock ?? 0;
+        $isAvailable = $stock > 0;
+        $isFirst = $loop->first;
+                                        @endphp
+
+                                        <button type="button" class="size-btn px-4 py-3 border rounded-lg text-sm font-medium transition-all duration-200
+                                                               @if($isAvailable)
+                                                                   hover:border-black hover:bg-gray-50 cursor-pointer
+                                                                   {{ $isFirst ? 'bg-black text-white border-black' : 'bg-white text-gray-900 border-gray-300' }}
+                                                               @else
+                                                                   opacity-50 cursor-not-allowed bg-gray-100 border-gray-200
+                                                               @endif" data-size-id="{{ $size->id }}"
+                                            data-size-code="{{ $size->code }}" data-stock="{{ $stock }}" {{ !$isAvailable ? 'disabled' : '' }}>
+                                            <div class="flex flex-col items-center">
+                                                <span class="font-medium">{{ $size->code }}</span>
+                                                @if(!$isAvailable)
+                                                    <span class="text-xs text-red-500 mt-1">Out of Stock</span>
+                                                @else
+                                                    <span class="text-xs text-gray-500 mt-1">{{ $stock }} left</span>
+                                                @endif
+                                            </div>
+                                        </button>
+                                    @endforeach
+                                </div>
+
+                                <div class="mb-2">
+                                    <p class="text-gray-700">
+                                        Selected: <span id="selectedSize" class="font-semibold text-black">
+                                            {{ $product->sizes->first()->code ?? 'None' }}
+                                        </span>
+                                    </p>
+                                    <p id="sizeStockInfo" class="text-sm mt-1">
+                                        @if(($product->sizes->first()->pivot->stock ?? 0) > 0)
+                                            <span class="text-green-600">
+                                                <i class="fas fa-check-circle mr-1"></i>
+                                                {{ $product->sizes->first()->pivot->stock }} items available
+                                            </span>
+                                        @endif
+                                    </p>
+                                </div>
+                            @else
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                    <p class="text-yellow-700 flex items-center">
+                                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                                        No sizes available for this product
+                                    </p>
+                                </div>
+                            @endif
+                        </div>
+
+                        <!-- Quantity Selector -->
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-3">Quantity</h3>
+                            <div class="flex items-center space-x-4 max-w-xs">
+                                <button id="decreaseQty"
+                                    class="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center 
+                                               hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition" disabled>
+                                    <i class="fas fa-minus text-gray-600"></i>
+                                </button>
+
+                                <input type="number" id="quantity" value="1" min="1" max="1"
+                                    class="w-20 text-center border border-gray-300 rounded-lg py-2 focus:border-black focus:ring-1 focus:ring-black outline-none"
+                                    readonly>
+
+                                <button id="increaseQty"
+                                    class="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center 
+                                               hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition" disabled>
+                                    <i class="fas fa-plus text-gray-600"></i>
+                                </button>
+
+                                <span class="text-sm text-gray-500">
+                                    Max: <span id="maxQuantity">1</span> items
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col sm:flex-row gap-4 mb-8">
+                            <form action="{{ route('cart.store') }}" method="POST" id="addToCartForm">
+                                @csrf
+                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                <input type="hidden" name="size_id" id="selectedSizeId" value="">
+                                <input type="hidden" name="quantity" id="selectedQuantity" value="1">
+
+                                <button type="submit" id="addToCartBtn"
+                                    class="bg-black text-white hover:bg-gray-800 font-semibold py-3 px-6 rounded-lg 
+                                           transition duration-200 flex items-center justify-center gap-2 opacity-50 cursor-not-allowed" disabled>
+                                    <i class="fas fa-shopping-cart"></i>
+                                    Add to Cart
+                                </button>
+                            </form>
+
+
+                            <button id="buyNowBtn"
+                                class="flex-1 border-2 border-black text-black hover:bg-black hover:text-white font-semibold py-3 px-6 rounded-lg 
+                                           transition duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled>
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                </svg>
+                                Buy Now
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- Product Details -->
+                <div class="border-t border-gray-200 pt-6">
+                    <h4 class="text-xl font-semibold text-gray-900 mb-4">Product Details</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        @if($product->description)
+                            <div class="col-span-2">
+                                <strong class="text-gray-700 text-sm font-medium block mb-1">Description:</strong>
+                                <p class="text-gray-600">{{ $product->description }}</p>
+                            </div>
+                        @endif
+
+                        <div>
+                            <strong class="text-gray-700 text-sm font-medium block mb-1">Category:</strong>
+                            <span class="text-gray-600">{{ $product->etalase->name ?? $product->etalase_id }}</span>
+                        </div>
+
+                        <div>
+                            <strong class="text-gray-700 text-sm font-medium block mb-1">Product ID:</strong>
+                            <span class="text-gray-600">{{ $product->id }}</span>
+                        </div>
+
+                        <div>
+                            <strong class="text-gray-700 text-sm font-medium block mb-1">Added Date:</strong>
+                            <span class="text-gray-600">{{ $product->created_at->format('M d, Y') }}</span>
+                        </div>
+
+                        <div>
+                            <strong class="text-gray-700 text-sm font-medium block mb-1">Last Updated:</strong>
+                            <span class="text-gray-600">{{ $product->updated_at->format('M d, Y') }}</span>
+                        </div>
+
+                        @if($product->sizes && $product->sizes->count() > 0)
+                            <div class="col-span-2">
+                                <strong class="text-gray-700 text-sm font-medium block mb-1">Available Sizes:</strong>
+                                <div class="flex flex-wrap gap-2 mt-2">
+                                    @foreach($product->sizes as $size)
+                                        @if(($size->pivot->stock ?? 0) > 0)
+                                            <span
+                                                class="inline-flex items-center px-3 py-1 rounded-full text-sm 
+                                                                     {{ $loop->first ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700' }}">
+                                                {{ $size->code }}
+                                                <span class="ml-1 text-xs">({{ $size->pivot->stock }})</span>
+                                            </span>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                    </div>
                 </div>
 
-                <!-- Actions -->
-                <div class="mt-8 flex flex-col sm:flex-row gap-4">
-                    <button class="bg-black text-white hover:bg-black/70  font-semibold py-3 px-6 rounded-lg 
-                                  transition duration-200 flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5.5M7 13l2.5 5.5m0 0L17 21" />
-                        </svg>
-                        Add to Cart
-                    </button>
+                <!-- Back Button -->
+                <div class="mt-8 pt-6 border-t border-gray-200">
                     @auth
-                        <!-- Jika user login, arahkan ke beranda -->
                         <a href="{{ route('beranda') }}"
-                            class="border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-6 
-                                              rounded-lg transition duration-200 flex items-center justify-center gap-2 no-underline">
+                            class="inline-flex items-center gap-2 text-gray-600 hover:text-black transition no-underline">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -61,10 +253,8 @@
                             Back to Beranda
                         </a>
                     @else
-                        <!-- Jika user belum login, arahkan ke home -->
                         <a href="{{ url('/') }}"
-                            class="border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-6 
-                                              rounded-lg transition duration-200 flex items-center justify-center gap-2 no-underline">
+                            class="inline-flex items-center gap-2 text-gray-600 hover:text-black transition no-underline">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -73,29 +263,188 @@
                         </a>
                     @endauth
                 </div>
-
-                <!-- Product Details -->
-                <div class="mt-8 pt-6 border-t border-gray-200">
-                    <h4 class="text-xl font-semibold text-gray-900 mb-4">Product Details</h4>
-                    <ul class="grid grid-cols-2 gap-4">
-                        <li>
-                            <strong class="text-gray-700 text-sm font-medium">Slug:</strong>
-                            <span class="text-gray-600 mt-1">{{ $product->slug }}</span>
-                        </li>
-                        <li>
-                            <strong class="text-gray-700 text-sm font-medium">Category:</strong>
-                            <span class="text-gray-600 mt-1">{{ $product->etalase_id }}</span>
-                        </li>
-                        <li>
-                            <strong class="text-gray-700 text-sm font-medium">Added:</strong>
-                            <span class="text-gray-600 mt-1">{{ $product->created_at->format('M d, Y') }}</span>
-                        </li>
-                    </ul>
-
-                </div>
             </div>
         </div>
     </div>
+
     @include('base2.end')
+
+    <!-- JavaScript for Interactive Features -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let selectedSizeId = null;
+        let selectedSizeCode = '';
+        let selectedStock = 0;
+        let quantity = 1;
+        let maxQuantity = 1;
+
+        const sizeButtons = document.querySelectorAll('.size-btn');
+        const quantityInput = document.getElementById('quantity');
+        const selectedSizeIdInput = document.getElementById('selectedSizeId');
+        const selectedQuantityInput = document.getElementById('selectedQuantity');
+        const addToCartBtn = document.getElementById('addToCartBtn');
+        const buyNowBtn = document.getElementById('buyNowBtn');
+        const decreaseBtn = document.getElementById('decreaseQty');
+        const increaseBtn = document.getElementById('increaseQty');
+        const maxQuantitySpan = document.getElementById('maxQuantity');
+        const selectedSizeSpan = document.getElementById('selectedSize');
+        const sizeStockInfo = document.getElementById('sizeStockInfo');
+
+        // Auto select first available size
+        const firstAvailableBtn = document.querySelector('.size-btn:not([disabled])');
+        if (firstAvailableBtn) {
+            selectSize(firstAvailableBtn);
+        }
+
+        // Size selection
+        sizeButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                if (this.disabled) return;
+                selectSize(this);
+            });
+        });
+
+        // Quantity controls
+        decreaseBtn.addEventListener('click', function () {
+            if (quantity > 1) {
+                quantity--;
+                updateQuantity();
+            }
+        });
+
+        increaseBtn.addEventListener('click', function () {
+            if (quantity < maxQuantity) {
+                quantity++;
+                updateQuantity();
+            }
+        });
+
+        quantityInput.addEventListener('change', function () {
+            let value = parseInt(this.value);
+            if (isNaN(value) || value < 1) value = 1;
+            if (value > maxQuantity) value = maxQuantity;
+            quantity = value;
+            updateQuantity();
+        });
+
+        // Functions
+        function selectSize(button) {
+            // Reset all buttons
+            sizeButtons.forEach(btn => {
+                btn.classList.remove('bg-black', 'text-white', 'border-black');
+                btn.classList.add('bg-white', 'text-gray-900', 'border-gray-300');
+            });
+
+            // Select clicked button
+            button.classList.remove('bg-white', 'text-gray-900', 'border-gray-300');
+            button.classList.add('bg-black', 'text-white', 'border-black');
+
+            // Update variables
+            selectedSizeId = button.dataset.sizeId;
+            selectedSizeCode = button.dataset.sizeCode;
+            selectedStock = parseInt(button.dataset.stock);
+            maxQuantity = Math.min(selectedStock, 10);
+
+            // Reset quantity to 1
+            quantity = 1;
+
+            // Update UI
+            selectedSizeSpan.textContent = selectedSizeCode;
+            maxQuantitySpan.textContent = maxQuantity;
+            quantityInput.max = maxQuantity;
+
+            if (selectedStock > 0) {
+                sizeStockInfo.innerHTML = `<span class="text-green-600">
+                <i class="fas fa-check-circle mr-1"></i>
+                ${selectedStock} items available
+            </span>`;
+            } else {
+                sizeStockInfo.innerHTML = `<span class="text-red-600">
+                <i class="fas fa-times-circle mr-1"></i>
+                Out of stock
+            </span>`;
+            }
+
+            // Update hidden inputs
+            updateHiddenInputs();
+            updateButtons();
+            updateQuantityControls();
+        }
+
+        function updateQuantity() {
+            quantityInput.value = quantity;
+            updateHiddenInputs();
+            updateQuantityControls();
+            updateButtons();
+        }
+
+        function updateHiddenInputs() {
+            selectedSizeIdInput.value = selectedSizeId;
+            selectedQuantityInput.value = quantity;
+        }
+
+        function updateQuantityControls() {
+            decreaseBtn.disabled = quantity <= 1;
+            increaseBtn.disabled = quantity >= maxQuantity;
+
+            // Update button styles
+            decreaseBtn.className = `w-10 h-10 rounded-full border flex items-center justify-center transition ${decreaseBtn.disabled ? 'border-gray-200 opacity-50 cursor-not-allowed' : 'border-gray-300 hover:bg-gray-50 cursor-pointer'
+                }`;
+
+            increaseBtn.className = `w-10 h-10 rounded-full border flex items-center justify-center transition ${increaseBtn.disabled ? 'border-gray-200 opacity-50 cursor-not-allowed' : 'border-gray-300 hover:bg-gray-50 cursor-pointer'
+                }`;
+        }
+
+        function updateButtons() {
+            const isEnabled = selectedSizeId && selectedStock > 0 && quantity > 0 && quantity <= selectedStock;
+
+            addToCartBtn.disabled = !isEnabled;
+            buyNowBtn.disabled = !isEnabled;
+
+            if (isEnabled) {
+                addToCartBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                buyNowBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            } else {
+                addToCartBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                buyNowBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        // Initialize
+        updateHiddenInputs();
+        updateButtons();
+        updateQuantityControls();
+    });
+</script>
+
+    <style>
+        /* Custom Styles */
+        .size-btn {
+            min-width: 70px;
+            transition: all 0.2s ease;
+        }
+
+        .size-btn:hover:not([disabled]) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        #quantity {
+            -moz-appearance: textfield;
+        }
+
+        #quantity::-webkit-outer-spin-button,
+        #quantity::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Hover effects for images */
+        img:hover {
+            opacity: 0.95;
+        }
+    </style>
 </body>
+
 </html>
