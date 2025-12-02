@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Adidas Etalase</title>
-    @vite (['resources/css/beranda.css', 'resources/js/scrollsmooth.js', ])
+    @vite (['resources/css/beranda.css', 'resources/js/scrollsmooth.js',])
 
     <link rel="icon"
         href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M23.5 18h-5.298a.5.5 0 0 1-.423-.233l-5.535-8.775a.499.499 0 0 1 .175-.701l3.888-2.225a.5.5 0 0 1 .671.167l6.945 11A.5.5 0 0 1 23.5 18zm-5.022-1h4.115l-6.205-9.828-3.02 1.728 5.11 8.1zm-3.463 1H9.721a.502.502 0 0 1-.423-.233L6.23 12.909a.499.499 0 0 1 .175-.701l3.892-2.229a.5.5 0 0 1 .671.167l4.47 7.086a.5.5 0 0 1-.423.768zm-5.019-1h4.112l-3.731-5.915-3.022 1.731L9.996 17zm-3.604 1H1.095a.5.5 0 0 1-.423-.233l-.595-.944a.5.5 0 0 1 .175-.701l3.892-2.224a.5.5 0 0 1 .671.167l2 3.168a.5.5 0 0 1-.423.767zm-5.021-1h4.115l-1.261-1.997-3.023 1.728.169.269z"/></svg>'
@@ -134,19 +134,54 @@
                             <path d="m15 18-6-6 6-6" />
                         </svg>
                     </button>
+
                     <div id="slider" class="etalase-slide no-underline">
-                        <a href="{{ route('product.show', 'samba-og-shoes-brown-rbxUvS') }}">
+                        @php
+                            $firstProduct = $products->get(0);
+                            $secondProduct = $products->get(1);
+                            $thirdProduct = $products->get(2);
+                            $fourthProduct = $products->get(3);
+                            $fifthProduct = $products->get(4);
+                            $sixthProduct = $products->get(5);
+                            $seventhProduct = $products->get(6);
+                            $eighthProduct = $products->get(7);
+                            $ninthProduct = $products->get(8);
+                            $tenthProduct = $products->get(9);
+                            $eleventhProduct = $products->get(10);
+                            $twelfthProduct = $products->get(11);
+                            $thirteenthProduct = $products->get(12);
+                            $fourteenthProduct = $products->get(13);
+                            $fifteenthProduct = $products->get(14);
+                            $sixteenthProduct = $products->get(15);
+                            $seventeenthProduct = $products->get(16);
+                            $eighteenthProduct = $products->get(17);
+                            $nineteenthProduct = $products->get(18);
+                            $twentiethProduct = $products->get(19);
+                            $twentyFirstProduct = $products->get(20);
+                            $twentySecondProduct = $products->get(21);
+                            $twentyThirdProduct = $products->get(22);
+                            $twentyFourthProduct = $products->get(23);
+                        @endphp
+
+                        <a
+                            href="{{ route('product.show', ['id' => $firstProduct->id, 'slug' => $firstProduct->slug]) }}">
                             <div class="slide">
                                 <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="1">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
                                     <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/606f418a01a14c419ac35e7c84a5e2d2_9366/Samba_OG_Shoes_Brown_JR0891_00_plp_standard.jpg"
                                         alt="" />
                                 </div>
@@ -155,18 +190,25 @@
                                 <p class="badge-product">MEN'S ORIGINALS</p>
                             </div>
                         </a>
-                        <a href="{{ route('product.show', 'swift-run-10-shoes-rGyrpJ') }}">
+                        <a
+                            href="{{ route('product.show', ['id' => $secondProduct->id, 'slug' => $secondProduct->slug]) }}">
                             <div class="slide">
                                 <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="2">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
                                     <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/9da93feaffd84fa5baf15e0b9727687a_9366/Swift_Run_1.0_Shoes_Grey_JR6898_00_plp_standard.jpg"
                                         alt="" />
                                 </div>
@@ -175,18 +217,25 @@
                                 <p class="badge-product">MEN'S SPORTSWEAR</p>
                             </div>
                         </a>
-                        <a href="{{ route('product.show', 'ultraboost-10-shoes-692b2fbc0076f') }}">
+                        <a
+                            href="{{ route('product.show', ['id' => $thirdProduct->id, 'slug' => $thirdProduct->slug]) }}">
                             <div class="slide">
                                 <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="3">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
                                     <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/e694f6e9261b48d6b255ca8a1388d3d5_9366/ULTRABOOST_1.0_SHOES_White_JR1987_HM1.jpg"
                                         alt="" />
                                 </div>
@@ -195,18 +244,25 @@
                                 <p class="badge-product">MEN'S SPORTSWEAR</p>
                             </div>
                         </a>
-                        <a href="{{ route('product.show', 'gazella-indoor-shoes-692b2fbc010a0') }}">
+                        <a
+                            href="{{ route('product.show', ['id' => $fourthProduct->id, 'slug' => $fourthProduct->slug]) }}">
                             <div class="slide">
                                 <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="4">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
                                     <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/911ec048adc4471f938af50867c2ad85_9366/Gazelle_Indoor_Shoes_Red_JI2063_00_plp_standard.jpg"
                                         alt="" />
                                 </div>
@@ -215,18 +271,25 @@
                                 <p class="badge-product">MEN'S ORIGINALS</p>
                             </div>
                         </a>
-                        <a href="{{ route('product.show', 'adizero-evo-sl-shoes-692b2fbc018c6') }}">
+                        <a
+                            href="{{ route('product.show', ['id' => $fifthProduct->id, 'slug' => $fifthProduct->slug]) }}">
                             <div class="slide">
                                 <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="5">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
                                     <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/ed03f2b031b04884a8481cec1ccca4e2_9366/Adizero_EVO_SL_Shoes_Black_JP7149_00_plp_standard.jpg"
                                         alt="" />
                                 </div>
@@ -235,18 +298,25 @@
                                 <p class="badge-product">PERFORMANCE</p>
                             </div>
                         </a>
-                        <a href="{{ route('product.show', 'samba-og-shoes-692b2fbc020a4') }}">
+                        <a
+                            href="{{ route('product.show', ['id' => $sixthProduct->id, 'slug' => $sixthProduct->slug]) }}">
                             <div class="slide">
                                 <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="6">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
                                     <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/ee99b4b9bde74f30a933a8bf011911ae_9366/Samba_OG_Shoes_Black_B75807_00_plp_standard.jpg"
                                         alt="" />
                                 </div>
@@ -255,18 +325,25 @@
                                 <p class="badge-product">MEN'S ORIGINALS</p>
                             </div>
                         </a>
-                        <a href="{{ route('product.show', 'ultraboost-10-shoes-692b2fbc0284a') }}">
+                        <a
+                            href="{{ route('product.show', ['id' => $seventhProduct->id, 'slug' => $seventhProduct->slug]) }}">
                             <div class="slide">
                                 <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="7">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
                                     <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/f0ca2dd8bdb84a2ab11faacb8802c4dc_9366/Ultraboost_1.0_Shoes_White_HQ4202_HM1.jpg"
                                         alt="" />
                                 </div>
@@ -275,18 +352,25 @@
                                 <p class="badge-product">MEN'S SPORTSWEAR</p>
                             </div>
                         </a>
-                        <a href="{{ route('product.show', 'samba-og-shoes-692b2fbc03031') }}">
+                        <a
+                            href="{{ route('product.show', ['id' => $eighthProduct->id, 'slug' => $eighthProduct->slug]) }}">
                             <div class="slide">
                                 <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="8">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
                                     <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/507b9464089e4c818536b4613435aebf_9366/Samba_OG_Shoes_Blue_ID2056_00_plp_standard.jpg"
                                         alt="" />
                                 </div>
@@ -321,18 +405,25 @@
                         </svg>
                     </button>
                     <div id="slider2" class="etalase-slide no-underline">
-                        <a href="{{ route('product.show', 'samba-og-shoes-692b2fbc039cd') }}">
+                        <a
+                            href="{{ route('product.show', ['id' => $ninthProduct->id, 'slug' => $ninthProduct->slug]) }}">
                             <div class="slide">
                                 <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="9">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
                                     <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/49d73d8eaccb48ee89ee3feb82ce098c_9366/Samba_OG_shoes_Black_JI2734_00_plp_standard.jpg"
                                         alt="" />
                                 </div>
@@ -341,18 +432,25 @@
                                 <p class="badge-product">WOMEN'S ORIGINALS</p>
                             </div>
                         </a>
-                        <a href="{{ route('product.show', 'sl-72-og-shoes-692b2fbc047ed') }}">
+                        <a
+                            href="{{ route('product.show', ['id' => $tenthProduct->id, 'slug' => $tenthProduct->slug]) }}">
                             <div class="slide">
                                 <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="10">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
                                     <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/6fb12406f5684eeea66762a868b73731_9366/SL_72_OG_Shoes_Brown_JI0189_00_plp_standard.jpg"
                                         alt="" />
                                 </div>
@@ -361,18 +459,25 @@
                                 <p class="badge-product">WOMEN'S ORIGINALS</p>
                             </div>
                         </a>
-                        <a href="{{ route('product.show', 'sl-72-og-shoes-692b2fbc04fe4') }}">
+                        <a
+                            href="{{ route('product.show', ['id' => $eleventhProduct->id, 'slug' => $eleventhProduct->slug]) }}">
                             <div class="slide">
                                 <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="11">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
                                     <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/24ec18f0e35e491d8be5b38c9f09c11b_9366/SL_72_OG_Shoes_Brown_JS3981_00_plp_standard.jpg"
                                         alt="" />
                                 </div>
@@ -381,18 +486,25 @@
                                 <p class="badge-product">WOMEN'S ORIGINALS</p>
                             </div>
                         </a>
-                        <a href="{{ route('product.show', 'cow-print-samba-long-tongue-shoes-692b2fbc057a8') }}">
+                        <a
+                            href="{{ route('product.show', ['id' => $twelfthProduct->id, 'slug' => $twelfthProduct->slug]) }}">
                             <div class="slide">
                                 <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="12">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
                                     <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/ad3d6d029e414c1ba24603629de60f5e_9366/Cow_Print_Samba_Long_Tongue_Shoes_White_JS3931_00_plp_standard.jpg"
                                         alt="" />
                                 </div>
@@ -401,18 +513,25 @@
                                 <p class="badge-product">WOMEN'S ORIGINALS</p>
                             </div>
                         </a>
-                        <a href="{{ route('product.show', 'samba-og-shoes-692b2fbc05fe0') }}">
+                        <a
+                            href="{{ route('product.show', ['id' => $thirteenthProduct->id, 'slug' => $thirteenthProduct->slug]) }}">
                             <div class="slide">
                                 <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="13">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
                                     <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/3f97a71da3ae4cb98250122966491184_9366/Samba_OG_Shoes_White_IG9030_00_plp_standard.jpg"
                                         alt="" />
                                 </div>
@@ -421,18 +540,25 @@
                                 <p class="badge-product">WOMEN'S ORIGINALS</p>
                             </div>
                         </a>
-                        <a href="{{ route('product.show', 'samba-long-tongue-shoes-692b2fbc067df') }}">
+                        <a
+                            href="{{ route('product.show', ['id' => $fourteenthProduct->id, 'slug' => $fourteenthProduct->slug]) }}">
                             <div class="slide">
                                 <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="14">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
                                     <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/1f525b85b19a4eda86742e0f46413bcf_9366/Samba_Long_Tongue_Shoes_White_JR5998_00_plp_standard.jpg"
                                         alt="" />
                                 </div>
@@ -441,18 +567,25 @@
                                 <p class="badge-product">WOMEN'S ORIGINALS</p>
                             </div>
                         </a>
-                        <a href="{{ route('product.show', 'samba-og-shoes-692b2fbc07133') }}">
+                        <a
+                            href="{{ route('product.show', ['id' => $fifteenthProduct->id, 'slug' => $fifteenthProduct->slug]) }}">
                             <div class="slide">
                                 <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="15">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
                                     <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/89282cea6ef8495caff848b041a0a3ce_9366/Samba_OG_Shoes_Black_IE5836_00_plp_standard.jpg"
                                         alt="" />
                                 </div>
@@ -461,18 +594,25 @@
                                 <p class="badge-product">WOMEN'S ORIGINALS</p>
                             </div>
                         </a>
-                        <a href="{{ route('product.show', 'samba-og-shoes-692b2fbc080d9') }}">
+                        <a
+                            href="{{ route('product.show', ['id' => $sixteenthProduct->id, 'slug' => $sixteenthProduct->slug]) }}">
                             <div class="slide">
                                 <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="16">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
                                     <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/b668a22ed8ee475e87beafeeedb96657_9366/Samba_OG_Shoes_Silver_JR0035_00_plp_standard.jpg"
                                         alt="" />
                                 </div>
@@ -507,18 +647,25 @@
                         </svg>
                     </button>
                     <div id="slider3" class="etalase-slide">
-                        <a href="{{ route('product.show', 'samba-og-shoes-kids-692b2fbc08bfa') }}">
+                        <a
+                            href="{{ route('product.show', ['id' => $seventeenthProduct->id, 'slug' => $seventeenthProduct->slug]) }}">
                             <div class="slide">
                                 <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="17">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
                                     <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/9fb258a11a25407ab06b52eed1cca37b_9366/Samba_OG_Shoes_Kids_White_IE3675_00_plp_standard.jpg"
                                         alt="" />
                                 </div>
@@ -527,18 +674,25 @@
                                 <p class="badge-product">ORIGINALS</p>
                             </div>
                         </a>
-                        <a href="{{ route('product.show', 'samba-og-shoes-692b2fbc0946d') }}">
+                        <a
+                            href="{{ route('product.show', ['id' => $eighteenthProduct->id, 'slug' => $eighteenthProduct->slug]) }}">
                             <div class="slide">
                                 <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="18">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
                                     <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/2c1a1838d62e4b23b8dddc26793bd47f_9366/Samba_OG_Shoes_Kids_White_JQ2843_00_plp_standard.jpg"
                                         alt="" />
                                 </div>
@@ -548,78 +702,24 @@
                             </div>
                         </a>
                         <a
-                            href="{{ route('product.show', 'samba-og-comfort-closure-elastic-lace-shoes-kids-692b2fbc09dd2') }}">
+                            href="{{ route('product.show', ['id' => $nineteenthProduct->id, 'slug' => $nineteenthProduct->slug]) }}">
                             <div class="slide">
                                 <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
-                                    <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/80690c33e4d348c58dae6b01ad83e760_9366/Defender_5_Small_Duffel_Bag_Black_JJ7410_00_plp_standard.jpg"
-                                        alt="" />
-                                </div>
-                                <p class="price">$28</p>
-                                <p class="title-product">DEFENDER 5 SMALL DUFFEL BAG</p>
-                                <p class="badge-product">SPORTSWEAR</p>
-                            </div>
-                        </a>
-                        <a href="{{ route('product.show', 'defender-5-small-duffel-bag-692b2fbc0a518') }}">
-                            <div class="slide">
-                                <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
-                                    <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/27b6e3345f9a4d59a5357e0a4b8a6aa6_9366/Al_Nassr_FC_25-26_Home_Jersey_Kids_Yellow_JN7981_000_plp_model.jpg"
-                                        alt="" />
-                                </div>
-                                <p class="price">$75</p>
-                                <p class="title-product">AL NASR FC 25/26 HOME JERSEY KIDS</p>
-                                <p class="badge-product">PERFORMANCE</p>
-                            </div>
-                        </a>
-                        <a href="{{ route('product.show', 'al-nasr-fc-2526-home-jersey-kids-692b2fbc0ac01') }}">
-                            <div class="slide">
-                                <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
-                                    <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/fc50a8f55f56430897757b1d9e2e3231_9366/Argentina_26_Home_Messi_Kids_Jersey_White_KA8115_000_plp_model.jpg"
-                                        alt="" />
-                                </div>
-                                <p class="price">$110</p>
-                                <p class="title-product">ARGENTINA 26 HOME MESSI KIDS JERSEY</p>
-                                <p class="badge-product">PERFORMANCE</p>
-                            </div>
-                        </a>
-                        <a href="{{ route('product.show', 'argentina-26-home-messi-kids-jersey-692b2fbc0b35c') }}">
-                            <div class="slide">
-                                <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="19">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
                                     <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/e7e49fce7e54448da09a2983c4fa43d0_9366/Samba_OG_Comfort_Closure_Elastic_Lace_Shoes_Kids_White_JQ3190_00_plp_standard.jpg"
                                         alt="" />
                                 </div>
@@ -629,18 +729,105 @@
                             </div>
                         </a>
                         <a
-                            href="{{ route('product.show', 'inter-miami-cf-2526-messi-away-jersey-kids-692b2fbc0bf55') }}">
+                            href="{{ route('product.show', ['id' => $twentiethProduct->id, 'slug' => $twentiethProduct->slug]) }}">
                             <div class="slide">
                                 <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="20">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
+                                    <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/80690c33e4d348c58dae6b01ad83e760_9366/Defender_5_Small_Duffel_Bag_Black_JJ7410_00_plp_standard.jpg"
+                                        alt="" />
+                                </div>
+                                <p class="price">$28</p>
+                                <p class="title-product">DEFENDER 5 SMALL DUFFEL BAG</p>
+                                <p class="badge-product">SPORTSWEAR</p>
+                            </div>
+                        </a>
+                        <a
+                            href="{{ route('product.show', ['id' => $twentyFirstProduct->id, 'slug' => $twentyFirstProduct->slug]) }}">
+                            <div class="slide">
+                                <div class="prototype">
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="21">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
+                                    <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/27b6e3345f9a4d59a5357e0a4b8a6aa6_9366/Al_Nassr_FC_25-26_Home_Jersey_Kids_Yellow_JN7981_000_plp_model.jpg"
+                                        alt="" />
+                                </div>
+                                <p class="price">$75</p>
+                                <p class="title-product">AL NASR FC 25/26 HOME JERSEY KIDS</p>
+                                <p class="badge-product">PERFORMANCE</p>
+                            </div>
+                        </a>
+                        <a
+                            href="{{ route('product.show', ['id' => $twentySecondProduct ->id, 'slug' => $twentySecondProduct->slug]) }}">
+                            <div class="slide">
+                                <div class="prototype">
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="22">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
+                                    <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/fc50a8f55f56430897757b1d9e2e3231_9366/Argentina_26_Home_Messi_Kids_Jersey_White_KA8115_000_plp_model.jpg"
+                                        alt="" />
+                                </div>
+                                <p class="price">$110</p>
+                                <p class="title-product">ARGENTINA 26 HOME MESSI KIDS JERSEY</p>
+                                <p class="badge-product">PERFORMANCE</p>
+                            </div>
+                        </a>
+                        <a
+                            href="{{ route('product.show', ['id' => $twentyThirdProduct->id, 'slug' => $twentyThirdProduct->slug]) }}">
+                            <div class="slide">
+                                <div class="prototype">
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="23">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
                                     <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/09518a69e074496ca06e33bf071d4386_9366/Inter_Miami_CF_25-26_Messi_Away_Jersey_Kids_Black_JI6820_000_plp_model.jpg"
                                         alt="" />
                                 </div>
@@ -649,18 +836,25 @@
                                 <p class="badge-product">PERFORMANCE</p>
                             </div>
                         </a>
-                        <a href="{{ route('product.show' ,'fifa-world-cup-26-trionda-pro-ball-692b2fbc0caa4') }}">
+                        <a
+                            href="{{ route('product.show', ['id' => $twentyFourthProduct->id, 'slug' => $twentyFourthProduct->slug]) }}">
                             <div class="slide">
                                 <div class="prototype">
-                                    <button class="appreciate">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round"
-                                            class="lucide lucide-heart-icon lucide-heart">
-                                            <path
-                                                d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
-                                        </svg>
-                                    </button>
+                                    @foreach ($products as $product)
+                                        <form action="{{ route('wishlists.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="24">
+                                            <button class="appreciate">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                    class="lucide lucide-heart-icon lucide-heart">
+                                                    <path
+                                                        d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endforeach
                                     <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/4229e87f23044869a5218fbc64c4fd71_9366/FIFA_World_Cup_26tm_Trionda_Pro_Ball_White_JD8021_HM1.jpg"
                                         alt="" />
                                 </div>

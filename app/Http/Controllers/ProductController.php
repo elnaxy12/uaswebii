@@ -9,14 +9,23 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function show($slug)
+    public function show($id, $slug)
     {
         $product = Product::with(['sizes' => function ($query) {
-            $query->orderBy('sort_order', 'asc'); // Update ini
-        }])->where('slug', $slug)->firstOrFail();
+            $query->orderBy('sort_order', 'asc');
+        }])->where('id', $id)->firstOrFail();
+
+        // Opsional: cek slug benar, kalau beda redirect ke slug asli
+        if ($product->slug !== $slug) {
+            return redirect()->route('product.show', [
+                'id' => $product->id,
+                'slug' => $product->slug
+            ]);
+        }
 
         return view('products.show', compact('product'));
     }
+
 
     public function index()
     {

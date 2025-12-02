@@ -1,6 +1,6 @@
 @include('base2.start')
 
-<title>Tab Wishlists | Adidas</title>
+<title>Tab Order | Adidas</title>
 </head>
 
 <body id="overlay" class="fadeIn">
@@ -9,8 +9,9 @@
         <div id="smooth-content">
             <div class="flex md:flex-row flex-col">
                 @include('base2.sidebar')
-                @yield('content-wishlists')
+                {{-- content --}}
             </div>
         </div>
     </div>
+
     @include('base2.end')

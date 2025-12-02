@@ -1,23 +1,31 @@
 @extends('v_user.v_cart.app')
 
 @section('content')
-    <div class="md:pt-[14rem] pt-4 pl-5 flex flex-col gap-2 w-5xl">
+    <div class="md:pt-[14rem] pt-4 pl-5 flex flex-col gap-2 md:w-5xl w-full">
         <h2 class="text-2xl font-semibold mb-4">Shopping Cart</h2>
+
 
         @if ($cartItems->isEmpty())
             <p class="text-gray-500">cart is still empty</p>
         @else
+            <div class="hidden md:grid grid-cols-4 w-full gap-4 items-center text-center">
+                <p>Name</p>
+                <p>Price</p>
+                <p>Total Price</p>
+                <p>Action</p>
+            </div>
             @foreach ($cartItems as $item)
-                <div class="flex gap-4 mb-4 p-4 items-center" id="cart-item-{{ $item->id }}">
+                <div class="flex md:flex-row flex-col gap-4 mb-4 p-4 items-center" id="cart-item-{{ $item->id }}">
                     @if($item->product && $item->product->image)
-                        <img src="{{ $item->product->image }}" alt="{{ $item->product->name }}" class="w-20 h-20 object-cover rounded">
+                        <img src="{{ $item->product->image }}" alt="{{ $item->product->name }}"
+                            class="md:w-20 md:h-20 w-40 h-40 object-cover rounded">
                     @else
                         <div class="w-20 h-20 bg-gray-200 rounded flex items-center justify-center">
                             <span class="text-gray-400">No Image</span>
                         </div>
                     @endif
 
-                    <div class="grid grid-cols-4 w-full gap-4 items-center">
+                    <div class="grid md:grid-cols-4 grid-cols-1 w-full gap-4 items-center">
                         <div class="text-2xl">
                             {{ $item->product->name ?? 'Product Not Found' }}
                         </div>

@@ -36,4 +36,9 @@ class DashboardController extends Controller
         $user = Auth::guard('web')->user();
         return view('v_user.v_cart.app', compact('user'));
     }
+
+    public function order() {
+        $user = Auth::guard('web')->user();
+        return view('v_user.v_order.app', compact('user'));
+    }
 }
