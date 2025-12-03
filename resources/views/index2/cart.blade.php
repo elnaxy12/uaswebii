@@ -17,8 +17,10 @@
             @foreach ($cartItems as $item)
                 <div class="flex md:flex-row flex-col gap-4 mb-4 p-4 items-center" id="cart-item-{{ $item->id }}">
                     @if($item->product && $item->product->image)
-                        <img src="{{ $item->product->image }}" alt="{{ $item->product->name }}"
-                            class="md:w-20 md:h-20 w-40 h-40 object-cover rounded">
+                        <a href="{{ route('product.show', ['id' => $item->product->id, 'slug' => $item->product->slug]) }}">
+                            <img src="{{ $item->product->image }}" alt="{{ $item->product->name }}"
+                                class="md:w-20 md:h-20 w-40 h-40 object-cover rounded">
+                        </a>
                     @else
                         <div class="w-20 h-20 bg-gray-200 rounded flex items-center justify-center">
                             <span class="text-gray-400">No Image</span>
@@ -26,16 +28,17 @@
                     @endif
 
                     <div class="grid md:grid-cols-4 grid-cols-1 w-full gap-4 items-center">
-                        <div class="text-2xl">
-                            {{ $item->product->name ?? 'Product Not Found' }}
-                        </div>
-
-                        <div class="text-sm">
+                        <a href="{{ route('product.show', ['id' => $item->product->id, 'slug' => $item->product->slug]) }}">
+                            <div class="text-2xl">
+                                {{ $item->product->name ?? 'Product Not Found' }}
+                            </div>
+                        </a>
+                        <div class="text-sm md:ml-5">
                             ${{ number_format($item->product->price ?? 0, 2) }}
                         </div>
 
                         <!-- Subtotal -->
-                        <div class="text-sm">
+                        <div class="text-sm md:ml-5">
                             Subtotal: $<span class="subtotal" data-cart-id="{{ $item->id }}">
                                 {{ number_format(($item->product->price ?? 0) * $item->quantity, 2) }}
                             </span>

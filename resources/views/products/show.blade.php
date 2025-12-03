@@ -18,7 +18,7 @@
 </head>
 
 <body id="overlay" class="fadeIn">
-    @include('base2.navbar')
+    {{-- @include('base2.navbar') --}}
     <div id="smooth-wrapper">
         <div id="smooth-content">
             <div class="container mx-auto px-4 py-8">
@@ -26,7 +26,7 @@
                 <nav class="mb-6 text-sm text-gray-600">
                     <a href="{{ url('/') }}" class="hover:text-black transition">Home</a>
                     <span class="mx-2">/</span>
-                    <a href="" class="hover:text-black transition">Products</a>
+                    <a class="hover:text-black transition">Products</a>
                     <span class="mx-2">/</span>
                     <span class="text-black font-medium">{{ $product->name }}</span>
                 </nav>
@@ -34,10 +34,17 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
                     <!-- Product Image Section -->
                     <div class="bg-white p-4 md:p-6">
-                        <div class="mb-4">
+                        <div id="backToTop" class="mb-4 overflow-hidden relative">
                             <img src="{{ $product->image }}" alt="{{ $product->name }}"
-                                class="w-full h-auto transition duration-300">
+                                class="w-full h-auto object-cover transition-transform ease-out duration-100 cursor-all-scroll" id="zoomImg">
                         </div>
+
+                        <div id="modal" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 overflow-auto select-none">
+                            <div class="flex justify-center items-center h-screen p-4">
+                                <img id="modalImg" src="{{ $product->image }}" class="max-h-[80vh] max-w-full rounded cursor-zoom-out" />
+                            </div>
+                        </div>
+
                     </div>
 
                     <!-- Product Info Section -->
@@ -190,79 +197,82 @@
 
                     </div>
                 </div>
-                <!-- Product Details -->
-                <div class="border-t border-gray-200 pt-6">
-                    <h4 class="text-xl font-semibold text-gray-900 mb-4">Product Details</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        @if($product->description)
-                            <div class="col-span-2">
-                                <strong class="text-gray-700 text-sm font-medium block mb-1">Description:</strong>
-                                <p class="text-gray-600">{{ $product->description }}</p>
-                            </div>
-                        @endif
 
-                        <div>
-                            <strong class="text-gray-700 text-sm font-medium block mb-1">Category:</strong>
-                            <span class="text-gray-600">{{ $product->etalase->name ?? $product->etalase_id }}</span>
-                        </div>
-
-                        <div>
-                            <strong class="text-gray-700 text-sm font-medium block mb-1">Product ID:</strong>
-                            <span class="text-gray-600">{{ $product->id }}</span>
-                        </div>
-
-                        <div>
-                            <strong class="text-gray-700 text-sm font-medium block mb-1">Added Date:</strong>
-                            <span class="text-gray-600">{{ $product->created_at->format('M d, Y') }}</span>
-                        </div>
-
-                        <div>
-                            <strong class="text-gray-700 text-sm font-medium block mb-1">Last Updated:</strong>
-                            <span class="text-gray-600">{{ $product->updated_at->format('M d, Y') }}</span>
-                        </div>
-
-                        @if($product->sizes && $product->sizes->count() > 0)
-                            <div class="col-span-2">
-                                <strong class="text-gray-700 text-sm font-medium block mb-1">Available Sizes:</strong>
-                                <div class="flex flex-wrap gap-2 mt-2">
-                                    @foreach($product->sizes as $size)
-                                        @if(($size->pivot->stock ?? 0) > 0)
-                                            <span
-                                                class="inline-flex items-center px-3 py-1 rounded-full text-sm 
-                                                                     {{ $loop->first ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700' }}">
-                                                {{ $size->code }}
-                                                <span class="ml-1 text-xs">({{ $size->pivot->stock }})</span>
-                                            </span>
-                                        @endif
-                                    @endforeach
+                <div class="h-screen">
+                    <!-- Product Details -->
+                    <div class="border-t border-gray-200 pt-6">
+                        <h4 class="text-xl font-semibold text-gray-900 mb-4 pt-4">Product Details</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            @if($product->description)
+                                <div class="col-span-2">
+                                    <strong class="text-gray-700 text-sm font-medium block mb-1">Description:</strong>
+                                    <p class="text-gray-600">{{ $product->description }}</p>
                                 </div>
-                            </div>
-                        @endif
-                    </div>
-                </div>
+                            @endif
 
-                <!-- Back Button -->
-                <div class="mt-8 pt-6 border-t border-gray-200">
-                    @auth
-                        <a href="{{ route('beranda') }}"
-                            class="inline-flex items-center gap-2 text-gray-600 hover:text-black transition no-underline">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                            </svg>
-                            Back to Beranda
-                        </a>
-                    @else
-                        <a href="{{ url('/') }}"
-                            class="inline-flex items-center gap-2 text-gray-600 hover:text-black transition no-underline">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                            </svg>
-                            Back to Home
-                        </a>
-                    @endauth
-                </div>
+                            <div>
+                                <strong class="text-gray-700 text-sm font-medium block mb-1">Category:</strong>
+                                <span class="text-gray-600">{{ $product->etalase->name ?? $product->etalase_id }}</span>
+                            </div>
+
+                            <div>
+                                <strong class="text-gray-700 text-sm font-medium block mb-1">Product ID:</strong>
+                                <span class="text-gray-600">{{ $product->id }}</span>
+                            </div>
+
+                            <div>
+                                <strong class="text-gray-700 text-sm font-medium block mb-1">Added Date:</strong>
+                                <span class="text-gray-600">{{ $product->created_at->format('M d, Y') }}</span>
+                            </div>
+
+                            <div>
+                                <strong class="text-gray-700 text-sm font-medium block mb-1">Last Updated:</strong>
+                                <span class="text-gray-600">{{ $product->updated_at->format('M d, Y') }}</span>
+                            </div>
+
+                            @if($product->sizes && $product->sizes->count() > 0)
+                                <div class="col-span-2">
+                                    <strong class="text-gray-700 text-sm font-medium block mb-1">Available Sizes:</strong>
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        @foreach($product->sizes as $size)
+                                            @if(($size->pivot->stock ?? 0) > 0)
+                                                <span
+                                                    class="inline-flex items-center px-3 py-1 rounded-full text-sm 
+                                                                        {{ $loop->first ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700' }}">
+                                                    {{ $size->code }}
+                                                    <span class="ml-1 text-xs">({{ $size->pivot->stock }})</span>
+                                                </span>
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Back Button -->
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        @auth
+                            <a href="{{ route('beranda') }}"
+                                class="inline-flex items-center gap-2 text-gray-600 hover:text-black transition no-underline">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                </svg>
+                                Back to Beranda
+                            </a>
+                        @else
+                            <a href="{{ url('/') }}"
+                                class="inline-flex items-center gap-2 text-gray-600 hover:text-black transition no-underline">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                </svg>
+                                Back to Home
+                            </a>
+                        @endauth
+                    </div>
+                 </div>
             </div>
         </div>
     </div>
@@ -270,153 +280,189 @@
     @include('base2.end')
 
     <!-- JavaScript for Interactive Features -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let selectedSizeId = null;
+            let selectedSizeCode = '';
+            let selectedStock = 0;
+            let quantity = 1;
+            let maxQuantity = 1;
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        let selectedSizeId = null;
-        let selectedSizeCode = '';
-        let selectedStock = 0;
-        let quantity = 1;
-        let maxQuantity = 1;
+            const sizeButtons = document.querySelectorAll('.size-btn');
+            const quantityInput = document.getElementById('quantity');
+            const selectedSizeIdInput = document.getElementById('selectedSizeId');
+            const selectedQuantityInput = document.getElementById('selectedQuantity');
+            const addToCartBtn = document.getElementById('addToCartBtn');
+            const buyNowBtn = document.getElementById('buyNowBtn');
+            const decreaseBtn = document.getElementById('decreaseQty');
+            const increaseBtn = document.getElementById('increaseQty');
+            const maxQuantitySpan = document.getElementById('maxQuantity');
+            const selectedSizeSpan = document.getElementById('selectedSize');
+            const sizeStockInfo = document.getElementById('sizeStockInfo');
 
-        const sizeButtons = document.querySelectorAll('.size-btn');
-        const quantityInput = document.getElementById('quantity');
-        const selectedSizeIdInput = document.getElementById('selectedSizeId');
-        const selectedQuantityInput = document.getElementById('selectedQuantity');
-        const addToCartBtn = document.getElementById('addToCartBtn');
-        const buyNowBtn = document.getElementById('buyNowBtn');
-        const decreaseBtn = document.getElementById('decreaseQty');
-        const increaseBtn = document.getElementById('increaseQty');
-        const maxQuantitySpan = document.getElementById('maxQuantity');
-        const selectedSizeSpan = document.getElementById('selectedSize');
-        const sizeStockInfo = document.getElementById('sizeStockInfo');
-
-        // Auto select first available size
-        const firstAvailableBtn = document.querySelector('.size-btn:not([disabled])');
-        if (firstAvailableBtn) {
-            selectSize(firstAvailableBtn);
-        }
-
-        // Size selection
-        sizeButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                if (this.disabled) return;
-                selectSize(this);
-            });
-        });
-
-        // Quantity controls
-        decreaseBtn.addEventListener('click', function () {
-            if (quantity > 1) {
-                quantity--;
-                updateQuantity();
+            // Auto select first available size
+            const firstAvailableBtn = document.querySelector('.size-btn:not([disabled])');
+            if (firstAvailableBtn) {
+                selectSize(firstAvailableBtn);
             }
-        });
 
-        increaseBtn.addEventListener('click', function () {
-            if (quantity < maxQuantity) {
-                quantity++;
-                updateQuantity();
-            }
-        });
-
-        quantityInput.addEventListener('change', function () {
-            let value = parseInt(this.value);
-            if (isNaN(value) || value < 1) value = 1;
-            if (value > maxQuantity) value = maxQuantity;
-            quantity = value;
-            updateQuantity();
-        });
-
-        // Functions
-        function selectSize(button) {
-            // Reset all buttons
-            sizeButtons.forEach(btn => {
-                btn.classList.remove('bg-black', 'text-white', 'border-black');
-                btn.classList.add('bg-white', 'text-gray-900', 'border-gray-300');
+            // Size selection
+            sizeButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    if (this.disabled) return;
+                    selectSize(this);
+                });
             });
 
-            // Select clicked button
-            button.classList.remove('bg-white', 'text-gray-900', 'border-gray-300');
-            button.classList.add('bg-black', 'text-white', 'border-black');
+            // Quantity controls
+            decreaseBtn.addEventListener('click', function () {
+                if (quantity > 1) {
+                    quantity--;
+                    updateQuantity();
+                }
+            });
 
-            // Update variables
-            selectedSizeId = button.dataset.sizeId;
-            selectedSizeCode = button.dataset.sizeCode;
-            selectedStock = parseInt(button.dataset.stock);
-            maxQuantity = Math.min(selectedStock, 10);
+            increaseBtn.addEventListener('click', function () {
+                if (quantity < maxQuantity) {
+                    quantity++;
+                    updateQuantity();
+                }
+            });
 
-            // Reset quantity to 1
-            quantity = 1;
+            quantityInput.addEventListener('change', function () {
+                let value = parseInt(this.value);
+                if (isNaN(value) || value < 1) value = 1;
+                if (value > maxQuantity) value = maxQuantity;
+                quantity = value;
+                updateQuantity();
+            });
 
-            // Update UI
-            selectedSizeSpan.textContent = selectedSizeCode;
-            maxQuantitySpan.textContent = maxQuantity;
-            quantityInput.max = maxQuantity;
+            // Functions
+            function selectSize(button) {
+                // Reset all buttons
+                sizeButtons.forEach(btn => {
+                    btn.classList.remove('bg-black', 'text-white', 'border-black');
+                    btn.classList.add('bg-white', 'text-gray-900', 'border-gray-300');
+                });
 
-            if (selectedStock > 0) {
-                sizeStockInfo.innerHTML = `<span class="text-green-600">
-                <i class="fas fa-check-circle mr-1"></i>
-                ${selectedStock} items available
-            </span>`;
-            } else {
-                sizeStockInfo.innerHTML = `<span class="text-red-600">
-                <i class="fas fa-times-circle mr-1"></i>
-                Out of stock
-            </span>`;
+                // Select clicked button
+                button.classList.remove('bg-white', 'text-gray-900', 'border-gray-300');
+                button.classList.add('bg-black', 'text-white', 'border-black');
+
+                // Update variables
+                selectedSizeId = button.dataset.sizeId;
+                selectedSizeCode = button.dataset.sizeCode;
+                selectedStock = parseInt(button.dataset.stock);
+                maxQuantity = Math.min(selectedStock, 10);
+
+                // Reset quantity to 1
+                quantity = 1;
+
+                // Update UI
+                selectedSizeSpan.textContent = selectedSizeCode;
+                maxQuantitySpan.textContent = maxQuantity;
+                quantityInput.max = maxQuantity;
+
+                if (selectedStock > 0) {
+                    sizeStockInfo.innerHTML = `<span class="text-green-600">
+                    <i class="fas fa-check-circle mr-1"></i>
+                    ${selectedStock} items available
+                </span>`;
+                } else {
+                    sizeStockInfo.innerHTML = `<span class="text-red-600">
+                    <i class="fas fa-times-circle mr-1"></i>
+                    Out of stock
+                </span>`;
+                }
+
+                // Update hidden inputs
+                updateHiddenInputs();
+                updateButtons();
+                updateQuantityControls();
             }
 
-            // Update hidden inputs
+            function updateQuantity() {
+                quantityInput.value = quantity;
+                updateHiddenInputs();
+                updateQuantityControls();
+                updateButtons();
+            }
+
+            function updateHiddenInputs() {
+                selectedSizeIdInput.value = selectedSizeId;
+                selectedQuantityInput.value = quantity;
+            }
+
+            function updateQuantityControls() {
+                decreaseBtn.disabled = quantity <= 1;
+                increaseBtn.disabled = quantity >= maxQuantity;
+
+                // Update button styles
+                decreaseBtn.className = `w-10 h-10 rounded-full border flex items-center justify-center transition ${decreaseBtn.disabled ? 'border-gray-200 opacity-50 cursor-not-allowed' : 'border-gray-300 hover:bg-gray-50 cursor-pointer'
+                    }`;
+
+                increaseBtn.className = `w-10 h-10 rounded-full border flex items-center justify-center transition ${increaseBtn.disabled ? 'border-gray-200 opacity-50 cursor-not-allowed' : 'border-gray-300 hover:bg-gray-50 cursor-pointer'
+                    }`;
+            }
+
+            function updateButtons() {
+                const isEnabled = selectedSizeId && selectedStock > 0 && quantity > 0 && quantity <= selectedStock;
+
+                addToCartBtn.disabled = !isEnabled;
+                buyNowBtn.disabled = !isEnabled;
+
+                if (isEnabled) {
+                    addToCartBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    buyNowBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                } else {
+                    addToCartBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    buyNowBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            }
+
+            // Initialize
             updateHiddenInputs();
             updateButtons();
             updateQuantityControls();
-        }
+        });
+    </script>
 
-        function updateQuantity() {
-            quantityInput.value = quantity;
-            updateHiddenInputs();
-            updateQuantityControls();
-            updateButtons();
-        }
+    <script>
+        const img = document.getElementById('zoomImg');
+        const container = img.parentElement;
+        const modal = document.getElementById('modal');
+        const closeModal = document.getElementById('modalImg');
 
-        function updateHiddenInputs() {
-            selectedSizeIdInput.value = selectedSizeId;
-            selectedQuantityInput.value = quantity;
-        }
+        // Zoom mengikuti cursor (reverse)
+        container.addEventListener('mousemove', (e) => {
+            const rect = container.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
 
-        function updateQuantityControls() {
-            decreaseBtn.disabled = quantity <= 1;
-            increaseBtn.disabled = quantity >= maxQuantity;
+            const scale = 2;
+            const moveX = -x * 250;
+            const moveY = -y * 250;
 
-            // Update button styles
-            decreaseBtn.className = `w-10 h-10 rounded-full border flex items-center justify-center transition ${decreaseBtn.disabled ? 'border-gray-200 opacity-50 cursor-not-allowed' : 'border-gray-300 hover:bg-gray-50 cursor-pointer'
-                }`;
+            img.style.transform = `scale(${scale}) translate(${moveX}px, ${moveY}px)`;
+        });
 
-            increaseBtn.className = `w-10 h-10 rounded-full border flex items-center justify-center transition ${increaseBtn.disabled ? 'border-gray-200 opacity-50 cursor-not-allowed' : 'border-gray-300 hover:bg-gray-50 cursor-pointer'
-                }`;
-        }
+        container.addEventListener('mouseleave', () => {
+            img.style.transform = 'scale(1) translate(0, 0)';
+        });
 
-        function updateButtons() {
-            const isEnabled = selectedSizeId && selectedStock > 0 && quantity > 0 && quantity <= selectedStock;
+        // Klik untuk buka modal
+        img.addEventListener('click', () => {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            navbar.classList.add('hidden');
 
-            addToCartBtn.disabled = !isEnabled;
-            buyNowBtn.disabled = !isEnabled;
+        });
 
-            if (isEnabled) {
-                addToCartBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                buyNowBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            } else {
-                addToCartBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                buyNowBtn.classList.add('opacity-50', 'cursor-not-allowed');
-            }
-        }
-
-        // Initialize
-        updateHiddenInputs();
-        updateButtons();
-        updateQuantityControls();
-    });
-</script>
+        closeModal.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        })
+    </script>
 
     <style>
         /* Custom Styles */
