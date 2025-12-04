@@ -93,7 +93,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
-                                        class="flex gap-2 justify-center items-center text-sm cursor-pointer border rounded-sm w-full py-2 bg-black text-white hover:bg-white hover:text-black hover:border">
+                                        class="flex gap-2 justify-center items-center text-sm cursor-pointer border rounded-sm w-full py-2 bg-black text-white hover:bg-white focus:bg-white focus:text-black focus:border hover:text-black hover:border">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
                                             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                             stroke-linejoin="round" class="lucide lucide-trash-icon lucide-trash">
@@ -111,19 +111,44 @@
             @endforeach
 
             <!-- Total -->
-            <div class="mt-6 p-4 border-t">
-                <div class="text-xl font-bold mb-4">
-                    Total: $<span id="cart-total">
-                        {{ number_format($cartItems->sum(function ($item) {
+            <div class="mt-6 p-4 border-t border-gray-200">
+                <div class="text-xl mb-4">
+                    Total: <span id="cart-total" class="text-gray-600">${{ number_format($cartItems->sum(function ($item) {
                 return ($item->product->price ?? 0) * $item->quantity;
             }), 2) }}
                     </span>
                 </div>
 
-                <div class="flex gap-4">
-                    <a href="{{ url('/') }}" class="inline-block bg-gray-200 text-black px-6 py-2 rounded hover:bg-gray-300">
-                        Continue Shopping
-                    </a>
+                <div class="flex gap-4 mt-6">
+                    @if (Auth::check())
+                        {{-- Jika sudah login → ke beranda --}}
+                        <a href="{{ route('beranda') }}"
+                            class="group inline-flex items-center gap-2 hover:text-black text-gray-600! px-6 py-2 border-b-white border-b-1 hover:border-b hover:border-gray-600 duration-200">
+
+                            <svg class="w-5 h-5 transform transition-all duration-300 -translate-x-2 group-hover:translate-x-0"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+
+                            Continue Shopping
+                        </a>
+
+                    @else
+                        {{-- Jika belum login → ke welcome --}}
+                        <a href="{{ route('welcome') }}"
+                            class="group inline-flex items-center gap-2 hover:text-black text-gray-600! px-6 py-2 border-b-white border-b-1 hover:border-b hover:border-gray-600 duration-200">
+
+                            <svg class="w-5 h-5 transform transition-all duration-300 -translate-x-2 group-hover:translate-x-0"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+
+                            Continue Shopping
+                        </a>
+                    @endif
+
                     {{-- <a href="{{ route('checkout') }}"
                         class="inline-block bg-black text-white px-6 py-2 rounded hover:bg-gray-800">
                         Proceed to Checkout

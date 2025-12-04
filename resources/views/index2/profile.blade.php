@@ -22,7 +22,7 @@
     </div>
     <div class="flex justify-end md:w-xl p-2">
         <button id="showBtn"
-            class="outline-solid outline-white pt-2 pb-2 pr-4 pl-4 outline-1 bg-black text-white rounded-xs text-xs cursor-pointer">
+            class="outline-solid outline-white pt-2 pb-2 pr-4 pl-4 outline-1 bg-black text-white rounded-xs text-xs cursor-pointer focus:bg-white focus:text-black focus:border-black border-white border-1">
             Edit Profil
         </button>
     </div>
@@ -71,7 +71,7 @@
                         rows="3">{{ old('address', $user->address) }}</textarea>
                 </div>
 
-                <button type="submit" class="bg-black text-white px-4 py-2 cursor-pointer">
+                <button type="submit" class="bg-black text-white px-4 py-2 cursor-pointer focus:bg-white focus:text-black focus:border-black border-white border-1">
                     Update Profil
                 </button>
             </form>
