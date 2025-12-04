@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\WishlistsController;
+use App\Http\Controllers\UserController;
 
 use App\Models\Product;
 
@@ -56,6 +57,9 @@ Route::middleware('auth')->group(function () {
     // Remove from wishlist
     Route::delete('/wishlist/{id}', [WishlistsController::class, 'destroy'])
         ->name('wishlists.destroy');
+
+    Route::put('/dashboard/update', [UserController::class, 'updateProfile'])
+        ->name('user.updateProfile');
 
 
 
