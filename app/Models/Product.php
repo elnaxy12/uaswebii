@@ -57,5 +57,8 @@ class Product extends Model
                     ->withPivot('stock', 'additional_price');
     }
 
-    // ... method lainnya tetap sama
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 }

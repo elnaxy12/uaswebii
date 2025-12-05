@@ -36,12 +36,15 @@
                     <div class="bg-white p-4 md:p-6">
                         <div id="backToTop" class="mb-4 overflow-hidden relative">
                             <img src="{{ $product->image }}" alt="{{ $product->name }}"
-                                class="w-full h-auto object-cover transition-transform ease-out duration-100 cursor-all-scroll" id="zoomImg">
+                                class="w-full h-auto object-cover transition-transform ease-out duration-100 cursor-all-scroll"
+                                id="zoomImg">
                         </div>
 
-                        <div id="modal" class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 overflow-auto select-none">
+                        <div id="modal"
+                            class="fixed inset-0 bg-black bg-opacity-70 hidden z-50 overflow-auto select-none">
                             <div class="flex justify-center items-center h-screen p-4">
-                                <img id="modalImg" src="{{ $product->image }}" class="max-h-[80vh] max-w-full rounded cursor-zoom-out" />
+                                <img id="modalImg" src="{{ $product->image }}"
+                                    class="max-h-[80vh] max-w-full rounded cursor-zoom-out" />
                             </div>
                         </div>
 
@@ -96,12 +99,12 @@
                                         @endphp
 
                                         <button type="button" class="size-btn px-4 py-3 border rounded-lg text-sm font-medium transition-all duration-200
-                                                               @if($isAvailable)
-                                                                   hover:border-black hover:bg-gray-50 cursor-pointer
-                                                                   {{ $isFirst ? 'bg-black text-white border-black' : 'bg-white text-gray-900 border-gray-300' }}
-                                                               @else
-                                                                   opacity-50 cursor-not-allowed bg-gray-100 border-gray-200
-                                                               @endif" data-size-id="{{ $size->id }}"
+                                                                       @if($isAvailable)
+                                                                           hover:border-black hover:bg-gray-50 cursor-pointer
+                                                                           {{ $isFirst ? 'bg-black text-white border-black' : 'bg-white text-gray-900 border-gray-300' }}
+                                                                       @else
+                                                                           opacity-50 cursor-not-allowed bg-gray-100 border-gray-200
+                                                                       @endif" data-size-id="{{ $size->id }}"
                                             data-size-code="{{ $size->code }}" data-stock="{{ $stock }}" {{ !$isAvailable ? 'disabled' : '' }}>
                                             <div class="flex flex-col items-center">
                                                 <span class="font-medium">{{ $size->code }}</span>
@@ -182,17 +185,24 @@
                                 </button>
                             </form>
 
+                            <form action="{{ route('checkout.buyNow') }}" method="POST">
+                                @csrf
+                                <input type="number" name="quantity" value="1" min="1" class="hidden">
+                                
+                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                <input type="hidden" name="size" id="buyNowSize">                                
+                                <button id="buyNowBtn" class="flex-1 border-2 border-black text-black hover:bg-black hover:text-white
+                                        font-semibold py-3 px-6 rounded-lg transition duration-200
+                                        flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled
+                                    type="submit">
 
-                            <button id="buyNowBtn"
-                                class="flex-1 border-2 border-black text-black hover:bg-black hover:text-white font-semibold py-3 px-6 rounded-lg 
-                                           transition duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                                disabled>
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                                </svg>
-                                Buy Now
-                            </button>
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                    </svg>
+                                    Buy Now
+                                </button>
+                            </form>
                         </div>
 
                     </div>
@@ -238,7 +248,7 @@
                                             @if(($size->pivot->stock ?? 0) > 0)
                                                 <span
                                                     class="inline-flex items-center px-3 py-1 rounded-full text-sm 
-                                                                        {{ $loop->first ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700' }}">
+                                                                                    {{ $loop->first ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700' }}">
                                                     {{ $size->code }}
                                                     <span class="ml-1 text-xs">({{ $size->pivot->stock }})</span>
                                                 </span>
@@ -272,7 +282,7 @@
                             </a>
                         @endauth
                     </div>
-                 </div>
+                </div>
             </div>
         </div>
     </div>
@@ -280,6 +290,34 @@
     @include('base2.end')
 
     <!-- JavaScript for Interactive Features -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const qtyMain = document.getElementById('quantity');  // quantity utama
+        const qtyBuyNow = document.querySelector('form[action="{{ route('checkout.buyNow') }}"] input[name="quantity"]');
+
+        if (qtyMain && qtyBuyNow) {
+
+            // Set awal
+            qtyBuyNow.value = qtyMain.value;
+
+            // Kalau quantity berubah manual
+            qtyMain.addEventListener('input', function () {
+                qtyBuyNow.value = qtyMain.value;
+            });
+
+            // Kalau pakai tombol +
+            document.getElementById('increaseQty')?.addEventListener('click', function () {
+                qtyBuyNow.value = qtyMain.value;
+            });
+
+            // Kalau pakai tombol -
+            document.getElementById('decreaseQty')?.addEventListener('click', function () {
+                qtyBuyNow.value = qtyMain.value;
+            });
+        }
+    });
+</script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             let selectedSizeId = null;

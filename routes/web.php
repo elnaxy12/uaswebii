@@ -8,6 +8,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\WishlistsController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\CheckoutController;
 
 use App\Models\Product;
 
@@ -27,7 +29,6 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-
 // User routes (AUTH)
 Route::middleware('auth')->group(function () {
 
@@ -42,9 +43,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])
         ->name('user.dashboard');
 
-    // Order
-    Route::get('/order', [DashboardController::class, 'order'])
-        ->name('user.order');
+    // Halaman order user
+    Route::get('/order', [OrderController::class, 'index'])->name('user.order');
+
+    // Checkout dari cart
+    Route::post('/order/store', [OrderController::class, 'store'])->name('order.store');
+
+    // Batalkan order
+    Route::delete('/order/{order}/cancel', [OrderController::class, 'cancel'])->name('order.cancel');
+
+    // Detail order
+    Route::get('/order/{order}', [OrderController::class, 'show'])->name('order.show');
 
     // Wishlist page
     Route::get('/wishlists', [WishlistsController::class, 'index'])
@@ -89,6 +98,18 @@ Route::middleware('auth')->group(function () {
         ->name('cart.update-size');
 
 });
+
+
+Route::middleware('auth')->group(function () {
+    Route::post('/order/cart/checkout', [OrderController::class, 'createFromCart'])->name('order.createFromCart');
+});
+
+
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+Route::post('/checkout/process', [CheckoutController::class, 'processCheckout'])->name('checkout.process');
+
+Route::post('/checkout/buy-now', [CheckoutController::class, 'buyNow'])
+      ->name('checkout.buyNow');
 
 
 // Admin routes

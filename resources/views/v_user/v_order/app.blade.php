@@ -9,7 +9,7 @@
         <div id="smooth-content">
             <div class="flex md:flex-row flex-col">
                 @include('base2.sidebar')
-                {{-- content --}}
+                @yield('content-order') 
             </div>
         </div>
     </div>

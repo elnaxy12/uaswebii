@@ -113,13 +113,17 @@
             <!-- Total -->
             <div class="mt-6 p-4 border-t border-gray-200">
                 <div class="text-xl mb-4">
-                    Total: <span id="cart-total" class="text-gray-600">${{ number_format($cartItems->sum(function ($item) {
-                return ($item->product->price ?? 0) * $item->quantity;
+                    Total: <span id="cart-total" class="text-gray-600">
+                        ${{ number_format($cartItems->sum(function ($item) {
+                $qty = intval($item->quantity);
+                if ($qty < 1)
+                    $qty = 1;
+                return ($item->product->price ?? 0) * $qty;
             }), 2) }}
                     </span>
                 </div>
 
-                <div class="flex gap-4 mt-6">
+                <div class="flex gap-4 mt-6 justify-between">
                     @if (Auth::check())
                         {{-- Jika sudah login → ke beranda --}}
                         <a href="{{ route('beranda') }}"
@@ -148,11 +152,13 @@
                             Continue Shopping
                         </a>
                     @endif
+                    <form action="{{ route('checkout') }}" method="GET">
+                        <button type="submit"
+                            class="inline-block bg-black text-white px-6 py-2 rounded hover:bg-white hover:border hover:text-black focus:bg-white border-1 focus:text-black focus:border focus:border-black cursor-pointer text-sm">
+                            Proceed to Checkout
+                        </button>
+                    </form>
 
-                    {{-- <a href="{{ route('checkout') }}"
-                        class="inline-block bg-black text-white px-6 py-2 rounded hover:bg-gray-800">
-                        Proceed to Checkout
-                    </a> --}}
                 </div>
             </div>
         @endif
