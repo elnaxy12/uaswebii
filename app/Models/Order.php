@@ -14,7 +14,7 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'status', // pending, completed, canceled, dll
-        'total_price'
+        'total'
     ];
 
     // Relasi ke User

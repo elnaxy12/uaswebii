@@ -10,9 +10,7 @@ use App\Http\Controllers\WishlistsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CheckoutController;
-
 use App\Models\Product;
-
 
 // Home page
 Route::get('/', function () {
@@ -104,12 +102,20 @@ Route::middleware('auth')->group(function () {
     Route::post('/order/cart/checkout', [OrderController::class, 'createFromCart'])->name('order.createFromCart');
 });
 
+Route::middleware(['auth'])->group(function () {
+    // Halaman checkout
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
 
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
-Route::post('/checkout/process', [CheckoutController::class, 'processCheckout'])->name('checkout.process');
+    // Proses checkout
+    Route::post('/checkout/process', [CheckoutController::class, 'processCheckout'])->name('checkout.process');
 
-Route::post('/checkout/buy-now', [CheckoutController::class, 'buyNow'])
-      ->name('checkout.buyNow');
+    // Buy Now
+    Route::post('/buy-now', [CheckoutController::class, 'buyNow'])->name('buy.now');
+
+
+    Route::get('/buy-now/cancel', [CheckoutController::class, 'cancelBuyNow'])->name('buy.now.cancel');
+
+});
 
 
 // Admin routes

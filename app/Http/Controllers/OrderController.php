@@ -35,7 +35,7 @@ class OrderController extends Controller
         }
 
         // Hitung total harga
-        $totalPrice = $cartItems->sum(function ($item) {
+        $total = $cartItems->sum(function ($item) {
             return $item->quantity * $item->product->price;
         });
 
@@ -43,7 +43,7 @@ class OrderController extends Controller
         $order = Order::create([
             'user_id' => $user->id,
             'status' => 'pending',
-            'total_price' => $totalPrice,
+            'total' => $total,
         ]);
 
         // Simpan order item

@@ -178,33 +178,26 @@
                                 <input type="hidden" name="quantity" id="selectedQuantity" value="1">
 
                                 <button type="submit" id="addToCartBtn"
-                                    class="bg-black text-white hover:bg-gray-800 font-semibold py-3 px-6 rounded-lg 
+                                    class="bg-black text-white hover:bg-gray-800 font-semibold py-3 px-6 rounded-lg h-full
                                            transition duration-200 flex items-center justify-center gap-2 opacity-50 cursor-not-allowed" disabled>
                                     <i class="fas fa-shopping-cart"></i>
                                     Add to Cart
                                 </button>
                             </form>
 
-                            <form action="{{ route('checkout.buyNow') }}" method="POST">
+                            <form action="{{ route('buy.now') }}" method="POST">
                                 @csrf
-                                <input type="number" name="quantity" value="1" min="1" class="hidden">
-                                
+                                <input type="hidden" id="buyNowSize" name="size_id">
+                                <input type="hidden" id="buyNowQuantity" name="quantity">
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                <input type="hidden" name="size" id="buyNowSize">                                
-                                <button id="buyNowBtn" class="flex-1 border-2 border-black text-black hover:bg-black hover:text-white
-                                        font-semibold py-3 px-6 rounded-lg transition duration-200
-                                        flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled
-                                    type="submit">
 
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                                    </svg>
+                                <button id="buyNowBtn" disabled class="flex-1 border-2 border-black text-black hover:bg-black hover:text-white
+                                    font-semibold py-3 px-6 rounded-lg transition duration-200
+                                    flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" type="submit">
                                     Buy Now
                                 </button>
                             </form>
                         </div>
-
                     </div>
                 </div>
 
@@ -293,7 +286,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const qtyMain = document.getElementById('quantity');  // quantity utama
-        const qtyBuyNow = document.querySelector('form[action="{{ route('checkout.buyNow') }}"] input[name="quantity"]');
+        const qtyBuyNow = document.querySelector('form[action="{{ route('buy.now') }}"] input[name="quantity"]');
 
         if (qtyMain && qtyBuyNow) {
 
@@ -427,9 +420,17 @@
             }
 
             function updateHiddenInputs() {
-                selectedSizeIdInput.value = selectedSizeId;
-                selectedQuantityInput.value = quantity;
+                selectedSizeIdInput.value = selectedSizeId; // untuk form utama / Add to Cart
+                selectedQuantityInput.value = quantity;     // untuk form utama / Add to Cart
+
+                // update form Buy Now juga
+                const buyNowSizeInput = document.getElementById('buyNowSize');
+                if (buyNowSizeInput) buyNowSizeInput.value = selectedSizeId;
+
+                const buyNowQuantityInput = document.getElementById('buyNowQuantity');
+                if (buyNowQuantityInput) buyNowQuantityInput.value = quantity;
             }
+
 
             function updateQuantityControls() {
                 decreaseBtn.disabled = quantity <= 1;
