@@ -14,7 +14,7 @@ class Order extends Model
     protected $fillable = [
         'user_id',
         'status', // pending, completed, canceled, dll
-        'total'
+        'total',
     ];
 
     // Relasi ke User
@@ -31,6 +31,11 @@ class Order extends Model
     public function payment()
     {
         return $this->hasOne(Payment::class);
+    }
+
+    public function size()
+    {
+        return $this->belongsTo(Size::class);
     }
 
     // Relasi ke OrderItem

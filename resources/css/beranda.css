@@ -293,6 +293,10 @@ a {
     fill: black;
 }
 
+:focus svg {
+    fill: black;
+}
+
 .main-wrapper .container-slide .etalase-slide .slide p {
     margin-left: 5px;
 }

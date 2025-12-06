@@ -1,4 +1,4 @@
-<div class="md:pt-[14rem] pt-4 pl-5 flex flex-col gap-2">
+<div class="md:pt-[14rem] pt-4 pl-5 flex flex-col gap-2 container">
     <h1 class="text-4xl font-sans select-none font-semibold">My Profile</h1>
     <div class="flex flex-col gap-2">
         <h1 class="font-semibold select-none">Account Information</h1>
@@ -71,7 +71,8 @@
                         rows="3">{{ old('address', $user->address) }}</textarea>
                 </div>
 
-                <button type="submit" class="bg-black text-white px-4 py-2 cursor-pointer focus:bg-white focus:text-black focus:border-black border-white border-1">
+                <button type="submit"
+                    class="bg-black text-white px-4 py-2 cursor-pointer focus:bg-white focus:text-black focus:border-black border-white border-1">
                     Update Profil
                 </button>
             </form>
@@ -85,7 +86,7 @@
     const myDiv = document.getElementById('myDiv');
 
     showBtn.addEventListener('click', () => {
-        myDiv.classList.remove('hidden'); 
+        myDiv.classList.remove('hidden');
     });
 
     hideBtn.addEventListener('click', () => {

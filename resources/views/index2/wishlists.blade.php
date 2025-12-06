@@ -4,11 +4,11 @@
     <div class="md:pt-[14rem] pt-4 px-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 container">
         @if ($items->isEmpty())
             <div class="flex flex-col gap-2 md:justify-normal md:items-baseline md:pt-0 justify-center items-center pt-4">
-                <h1 class="text-4xl font-sans select-none font-semibold font-sans">My Wishlists</h1>
+                <h1 class="text-4xl font-sans select-none font-semibold font-sans">Your Wishlists</h1>
                 <p>Your Favorite is Empty</p>
             </div>
         @else
-            <h1 class="text-4xl font-sans select-none font-semibold font-sans">My Wishlists</h1>
+            <h1 class="text-4xl font-sans select-none font-semibold font-sans">Your Wishlists</h1>
             @foreach ($items as $item)
                 <a class="flex justify-center"
                     href="{{ route('product.show', ['id' => $item->product->id, 'slug' => $item->product->slug]) }}">
@@ -44,7 +44,6 @@
                                 </svg>
                             </button>
                         </form>
-
                     </div>
                 </a>
             @endforeach
