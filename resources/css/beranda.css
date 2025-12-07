@@ -282,19 +282,23 @@ a {
     cursor: pointer;
 }
 
-.main-wrapper
-    .container-slide
-    .etalase-slide
-    .slide
-    .prototype
-    button.appreciate:hover
-    svg {
+button.appreciate svg:hover {
     stroke: black;
     fill: black;
 }
 
-:focus svg {
+button.appreciate svg:focus {
+    outline: none; 
+    box-shadow: none; 
+    cursor: pointer;
+    stroke: black;
     fill: black;
+}
+
+.col3 a:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+    transition: ease-in-out 100ms;
 }
 
 .main-wrapper .container-slide .etalase-slide .slide p {

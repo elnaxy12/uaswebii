@@ -4,11 +4,16 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Size;
+use Illuminate\Support\Facades\DB;
 
 class SizeSeeder extends Seeder
 {
     public function run(): void
     {
+        
+DB::table('sizes')->delete();
+
+
         $sizes = [
             ['code' => 'XS', 'name' => 'Extra Small', 'sort_order' => 1],
             ['code' => 'S', 'name' => 'Small', 'sort_order' => 2],

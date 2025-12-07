@@ -31,11 +31,11 @@
                     @php $total = 0; @endphp
                     @foreach($cartItems as $item)
                         @php
-    $price = $item->product->price ?? 0;
-    $qty = $item->quantity ?? 1;
-    $subtotal = $price * $qty;
-    $total += $subtotal;
-    $sizeCode = $item->size->code ?? 'No Size Selected';
+                            $price = $item->product->price ?? 0;
+                            $qty = $item->quantity ?? 1;
+                            $subtotal = $price * $qty;
+                            $total += $subtotal;
+                            $sizeCode = $item->size->code ?? 'No Size Selected';
                         @endphp
                         <tr class="text-center border-b-gray-200 border-b">
                             <td class="p-2">{{ $item->product->name }}</td>
@@ -99,7 +99,7 @@
             </select>
 
             <button type="submit"
-                class="inline-block border bg-black text-white px-6 py-2 rounded hover:bg-white hover:border-black hover:text-black cursor-pointer text-sm">
+                class="inline-block border bg-black text-white px-6 py-2 rounded hover:bg-white hover:border-black hover:text-black cursor-pointer text-sm focus:bg-white focus:border-black focus:text-black">
                 Confirm & Place Order
             </button>
         </form>
