@@ -8,7 +8,7 @@ class Cart extends Model
     protected $fillable = [
         'user_id',
         'product_id',
-        'size_id', // ✅ PASTIKAN ADA
+        'size_id', 
         'quantity'
     ];
     
