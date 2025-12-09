@@ -16,7 +16,8 @@
 </head>
 
 <body>
-    <div class="element w-full h-">
+    <div class="w-full bg-[#020617]">
+        <canvas id="aurora"></canvas>
         <div class="relative w-full h-screen">
             <div class="absolute" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
                 <div
@@ -47,7 +48,9 @@
                                     class="md:w-xs w-[14rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
                                     type="password" name="password_confirmation" required>
                             </label>
-                            <button class="bg-white md:w-3xs w-[10rem] md:p-2 p-[4px] rounded-2xl md:mt-5 cursor-pointer" type="submit">Reset Password</button>
+                            <button
+                                class="bg-white md:w-3xs w-[10rem] md:p-2 p-[4px] rounded-2xl md:mt-5 cursor-pointer"
+                                type="submit">Reset Password</button>
                         </div>
                     </form>
 
@@ -71,7 +74,7 @@
                 </div>
             </div>
 
-            <div class="fixed top-3 left-3">
+            <div class="fixed top-3 left-3 bg-white px-2 py-2">
                 <a href="{{ route('welcome') }}">
                     <img src="https://news.adidas.com/dist/images/adidas-news-web.svg" width="100px" alt="Logo Adidas">
                 </a>
@@ -92,6 +95,7 @@
             });
         });
     </script>
+    <script src="{{asset('js/aurora.js')}}"></script>
 </body>
 
 </html>

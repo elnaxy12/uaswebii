@@ -24,3 +24,9 @@ body {
     --angle: 220deg;
     background: linear-gradient(var(--angle), #0e1c26 20%, #2a454b 100%);
 }
+
+#aurora {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}

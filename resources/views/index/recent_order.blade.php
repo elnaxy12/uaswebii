@@ -9,18 +9,21 @@
             <!-- table head -->
             <thead class="text-left">
                 <tr>
-                    <th class="w-1/2 pb-10 text-sm font-extrabold tracking-wide">Customer</th>
-                    <th class="w-1/4 pb-10 text-sm font-extrabold tracking-wide">Product</th>
-                    <th class="w-1/4 pb-10 text-sm font-extrabold tracking-wide">Invoice</th>
-                    <th class="w-1/4 pb-10 text-sm font-extrabold tracking-wide">Price</th>
-                    <th class="w-1/4 pb-10 text-sm font-extrabold tracking-wide">Status</th>
+                    <th class="w-1/2 text-sm font-extrabold tracking-wide">Customer</th>
+                    <th class="w-1/2 text-sm font-extrabold tracking-wide">Product</th>
+                    <th class="w-1/2 text-sm font-extrabold tracking-wide">Invoice</th>
+                    <th class="w-1/2 text-sm font-extrabold tracking-wide">Price</th>
+                    <th class="w-1/2 text-sm font-extrabold tracking-wide">Status</th>
                 </tr>
             </thead>
 
             <!-- table body -->
             <tbody class="text-left text-gray-600">
+                @php $count = 0; @endphp
+
                 @foreach ($orders as $order)
                     @foreach ($order->items as $item)
+                        @break($count >= 4)
                         <tr class="border-b">
                             <!-- customer -->
                             <td class="py-4 text-xs font-semibold flex items-center gap-3">
@@ -34,13 +37,13 @@
                             </td>
 
                             <!-- invoice -->
-                            <td class="py-4 text-xs font-semibold text-center">
+                            <td class="py-4 px-4 text-xs font-semibold ">
                                 #{{ $order->id }}
                             </td>
 
                             <!-- price -->
                             <td class="py-4 text-xs font-semibold">
-                                Rp {{ number_format($order->total, 0, ',', '.') }}
+                                ${{ number_format($order->total, 0, ',', '.') }}
                             </td>
 
                             <!-- status -->
@@ -49,6 +52,7 @@
                             </td>
 
                         </tr>
+                        @php $count++; @endphp
                     @endforeach
                 @endforeach
             </tbody>

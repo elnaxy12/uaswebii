@@ -16,7 +16,8 @@
 </head>
 
 <body>
-    <div class="element w-full h-">
+    <div class="w-full bg-[#020617]">
+        <canvas id="aurora"></canvas>
         <div class="relative w-full h-screen">
             <div class="absolute" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
                 <div
@@ -70,14 +71,18 @@
                             {{-- remember me --}}
                             <div class="flex md:justify-start md:w-xs w-[14rem]">
                                 <label for="check" class="flex gap-1 cursor-pointer">
-                                    <input id="check" class="scale-75 cursor-pointer" type="checkbox" name="remember" value="1">
+                                    <input id="check" class="scale-75 cursor-pointer" type="checkbox" name="remember"
+                                        value="1">
                                     <span class="text-white text-xs select-none font-thin m-auto h-full">
                                         Remember me
                                     </span>
                                 </label>
 
                                 @error('remember')
-                                    <p class="text-red-400 md:text-xs text-[10px] mt-1 absolute md:translate-y-4 translate-y-3">{{ $message }}</p>
+                                    <p
+                                        class="text-red-400 md:text-xs text-[10px] mt-1 absolute md:translate-y-4 translate-y-3">
+                                        {{ $message }}
+                                    </p>
                                 @enderror
                             </div>
 
@@ -91,7 +96,8 @@
 
                             {{-- forgot password --}}
                             <div class="mb-2">
-                                <a class="text-white text-xs hover:text-blue-900" href="{{ route('password.request') }}">
+                                <a class="text-white text-xs hover:text-blue-900"
+                                    href="{{ route('password.request') }}">
                                     Forgot Password?
                                 </a>
                             </div>
@@ -116,7 +122,7 @@
                 </div>
             </div>
 
-            <div class="fixed top-3 left-3">
+            <div class="fixed top-3 left-3 bg-white px-2 py-2">
                 <a href="{{ route('welcome') }}">
                     <img src="https://news.adidas.com/dist/images/adidas-news-web.svg" width="100px" alt="Logo Adidas">
                 </a>
@@ -138,6 +144,7 @@
         });
     </script>
 
+    <script src="{{asset('js/aurora.js')}}"></script>
 </body>
 
 </html>
