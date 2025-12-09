@@ -5,7 +5,7 @@
             <a href="{{ route('user.order') }}" class="hover:text-black/80! transition-all duration-100 hover:border-b-black hover:bg-gray-100 focus:border-b-black border-b-white border-b-1 cursor-pointer">Order</a>
             <a href="{{ route('user.cart') }}" class="hover:text-black/80! transition-all duration-100 hover:border-b-black hover:bg-gray-100 focus:border-b-black border-b-white border-b-1 cursor-pointer">Cart</a>
             <a href="{{ route('user.wishlists') }}" class="hover:text-black/80! transition-all duration-100 hover:border-b-black hover:bg-gray-100 focus:border-b-black border-b-white border-b-1 cursor-pointer">Wishlists</a>
-            <form action="{{ route('logout') }}" method="POST" class="text-red-600 transition-all duration-100 hover:text-red-600/80 hover:bg-gray-100 cursor-pointer hover:border-b-red-600 focus:border-b-red-600 hover:border-b-1 focus:border-b-1">
+            <form action="{{ route('logout') }}" method="POST" class="text-red-600 transition-all duration-100 hover:text-red-600/80 hover:bg-gray-100 cursor-pointer hover:border-b-red-600 border-b-white border-b-1 hover:border-b-1 focus:border-b-red-600 focus:border-b-1">
                 @csrf
                 <button class="cursor-pointer">Log Out</button>
             </form>

@@ -563,8 +563,12 @@ footer .footer-content p {
         text-align: center;
     }
 
+    .full-banner {
+        padding-top: 9rem;
+    }
+
     .full-banner .banner {
-        height: 359px;
+        height: 79vh;
         background-size: cover;
         display: flex;
         align-items: self-end;

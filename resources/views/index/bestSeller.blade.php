@@ -5,79 +5,44 @@
             <h1 class="font-extrabold text-lg">best sellers</h1>
             <a href="#" class="btn-gray text-sm">view all</a>
         </div>
-    
+
         <table class="table-auto w-full mt-5 text-right">
-    
             <thead>
                 <tr>
-                    <td class="py-4 font-extrabold text-sm text-left">product</td>
-                    <td class="py-4 font-extrabold text-sm">price</td>
-                    <td class="py-4 font-extrabold text-sm">sold</td>
-                    <td class="py-4 font-extrabold text-sm">profit</td>
+                    <th class="py-4 px-2 font-extrabold text-sm text-left">Product</th>
+                    <th class="py-4 px-5 font-extrabold text-sm">Price</th>
+                    <th class="py-4 px-5 font-extrabold text-sm">Sold</th>
+                    <th class="py-4 px-5 font-extrabold text-sm">Profit</th>
                 </tr>
             </thead>
-    
+
             <tbody>
-    
-                <!-- item -->
-                <tr class="">
-                    <td class="py-4 text-sm text-gray-600 flex flex-row items-center text-left">
-                        <div class="w-8 h-8 overflow-hidden mr-3">
-                            <img src="img/sneakers.svg" class="object-cover">
-                        </div>
-                        Sneakers and Tennis 
-                    </td>
-                    <td class="py-4 text-xs text-gray-600">$ <span class="num-2"></span></td>
-                    <td class="py-4 text-xs text-gray-600"><span class="num-3"></span></td>
-                    <td class="py-4 text-xs text-gray-600">$ <span class="num-4"></span></td>
-                </tr>
-                <!-- end item -->
-    
-                <!-- item -->
-                <tr class="">
-                    <td class="py-4 text-sm text-gray-600 flex flex-row items-center">
-                        <div class="w-8 h-8 overflow-hidden mr-3">
-                            <img src="img/socks.svg" class="object-cover">
-                        </div>
-                        Crazy Socks & Graphic Socks for Men
-                    </td>
-                    <td class="py-4 text-xs text-gray-600">$ <span class="num-2"></span></td>
-                    <td class="py-4 text-xs text-gray-600"><span class="num-3"></span></td>
-                    <td class="py-4 text-xs text-gray-600">$ <span class="num-4"></span></td>
-                </tr>
-                <!-- end item -->
-    
-                <!-- item -->
-                <tr class="">
-                    <td class="py-4 text-sm text-gray-600 flex flex-row items-center">
-                        <div class="w-8 h-8 overflow-hidden mr-3">
-                            <img src="img/soccer.svg" class="object-cover">
-                        </div>
-                        Adidas Soccer Ball
-                    </td>
-                    <td class="py-4 text-xs text-gray-600">$ <span class="num-2"></span></td>
-                    <td class="py-4 text-xs text-gray-600"><span class="num-3"></span></td>
-                    <td class="py-4 text-xs text-gray-600">$ <span class="num-4"></span></td>
-                </tr>
-                <!-- end item -->
-    
-                <!-- item -->
-                <tr class="">
-                    <td class="py-4 text-sm text-gray-600 flex flex-row items-center">
-                        <div class="w-8 h-8 overflow-hidden mr-3">
-                            <img src="img/food.svg" class="object-cover">
-                        </div>
-                        Best Chocolate Chip Cookies
-                    </td>
-                    <td class="py-4 text-xs text-gray-600">$ <span class="num-2"></span></td>
-                    <td class="py-4 text-xs text-gray-600"><span class="num-3"></span></td>
-                    <td class="py-4 text-xs text-gray-600">$ <span class="num-4"></span></td>
-                </tr>
-                <!-- end item -->
-    
+                @foreach ($bestSellers->sortByDesc('total_sold')->take(4) as $item)
+                    <tr class="border-b">
+                        <!-- Product -->
+                        <td class="py-3 text-left flex items-center gap-3">
+                            <img src="{{ $item->product->image }}" class="object-cover w-20">
+                            <span class="text-xs">{{ $item->product->name }}</span>
+                        </td>
+
+                        <!-- Price -->
+                        <td class="py-4 px-5">
+                            ${{ number_format($item->product->price, 0, ',', '.') }}
+                        </td>
+
+                        <!-- Sold -->
+                        <td class="py-4 px-5">
+                            {{ $item->total_sold }}
+                        </td>
+
+                        <!-- Profit -->
+                        <td class="py-4 px-5 font-semibold">
+                            ${{ number_format($item->total_sold * $item->product->price, 0, ',', '.') }}
+                        </td>
+                    </tr>
+                @endforeach
             </tbody>
-    
         </table>
-    
+
     </div>
 </div>
