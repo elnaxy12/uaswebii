@@ -736,7 +736,7 @@
                             <i class="fad fa-wallet"></i>
                         </div>
                         <div class="flex flex-col">
-                            <h1 class="font-semibold text-xs"><span class="num-2"></span> Sales</h1>
+                            <h1 class="font-semibold text-xs"> Sales</h1>
                             <p class="text-xs"><span class="num-2"></span> payments</p>
                         </div>
                     </div>
@@ -750,8 +750,12 @@
                             <i class="fad fa-shopping-cart"></i>
                         </div>
                         <div class="flex flex-col">
-                            <h1 class="font-semibold text-xs"><span class="num-2"></span> Orders</h1>
-                            <p class="text-xs"><span class="num-2"></span> items</p>
+                            <h1 class="font-semibold text-xs">
+                                {{ $orderCount }} Orders
+                            </h1>
+                            <p class="text-xs">
+                                {{ $totalQuantity }} Items
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -764,8 +768,9 @@
                             <i class="fad fa-blog"></i>
                         </div>
                         <div class="flex flex-col">
-                            <h1 class="font-semibold text-xs"><span class="num-2"></span> Posts</h1>
-                            <p class="text-xs"><span class="num-2"></span> active</p>
+                            <h1 class="font-semibold text-xs">
+                                {{ $canceledOrders }} Canceled Orders
+                            </h1>
                         </div>
                     </div>
                 </div>
@@ -792,8 +797,9 @@
                             <i class="fad fa-user"></i>
                         </div>
                         <div class="flex flex-col">
-                            <h1 class="font-semibold text-xs"><span class="num-2"></span> Members</h1>
-                            <p class="text-xs"><span class="num-2"></span> online</p>
+                            <h1 class="font-semibold text-xs">
+                                {{ $totalUsers }} Users
+                            </h1>
                         </div>
                     </div>
                 </div>

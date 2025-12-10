@@ -8,13 +8,20 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\OrderItem;
 use App\Models\Order;
+use App\Models\User;
 
 class DashboardController extends Controller
 {
     public function index()
     {
         $admin = Auth::guard('admin')->user();
-        return view('v_admin.v_dashboard.app', compact('admin'));
+        $orderCount = Order::count();
+        $totalQuantity = OrderItem::sum('quantity');
+        $totalUsers    = User::count();
+        $canceledOrders  = Order::where('status', 'canceled')->count();
+
+
+        return view('v_admin.v_dashboard.app', compact('admin', 'orderCount', 'totalQuantity', 'totalUsers', 'canceledOrders'));
     }
 
     public function ecommerce()

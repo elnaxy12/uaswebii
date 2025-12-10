@@ -3,7 +3,6 @@
     <div class="card-body">
         <div class="flex flex-row justify-between items-center">
             <h1 class="font-extrabold text-lg">best sellers</h1>
-            <a href="#" class="btn-gray text-sm">view all</a>
         </div>
 
         <table class="table-auto w-full mt-5 text-right">
@@ -18,7 +17,7 @@
 
             <tbody>
                 @foreach ($bestSellers->sortByDesc('total_sold')->take(4) as $item)
-                    <tr class="border-b">
+                    <tr>
                         <!-- Product -->
                         <td class="py-3 text-left flex items-center gap-3">
                             <img src="{{ $item->product->image }}" class="object-cover w-20">
