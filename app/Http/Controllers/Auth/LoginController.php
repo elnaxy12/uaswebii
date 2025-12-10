@@ -50,7 +50,7 @@ class LoginController extends Controller
             return back()->with('error', 'Email is not registered in the system.');
         }
 
-        return back()->with('error', 'The password you entered is incorrect.');
+        return back()->with('error', 'The password or Email you entered is incorrect.');
     }
 
 

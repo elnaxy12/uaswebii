@@ -136,6 +136,9 @@ Route::middleware(['auth:admin'])->group(function () {
 
     Route::get('/admin/dashboard/ecommerce', [DashboardController::class, 'ecommerce'])
         ->name('admin.dashboard.ecommerce');
+
+    Route::get('/admin/dashboard/users', [DashboardController::class, 'users'])
+        ->name('admin.dashboard.users');
 });
 
 

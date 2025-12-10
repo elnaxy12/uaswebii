@@ -9,19 +9,22 @@ use Illuminate\Support\Facades\DB;
 use App\Models\OrderItem;
 use App\Models\Order;
 use App\Models\User;
+use App\Models\Product;
 
 class DashboardController extends Controller
 {
     public function index()
     {
         $admin = Auth::guard('admin')->user();
-        $orderCount = Order::count();
+        $productCount = Product::count();
+        $totalOrders = Order::count();
+        $orderCount = Order::where('status', Order::STATUS_PENDING)->count();
         $totalQuantity = OrderItem::sum('quantity');
         $totalUsers    = User::count();
         $canceledOrders  = Order::where('status', 'canceled')->count();
 
 
-        return view('v_admin.v_dashboard.app', compact('admin', 'orderCount', 'totalQuantity', 'totalUsers', 'canceledOrders'));
+        return view('v_admin.v_dashboard.app', compact('admin', 'orderCount', 'totalQuantity', 'totalUsers', 'canceledOrders', 'productCount', 'totalOrders'));
     }
 
     public function ecommerce()
@@ -43,6 +46,13 @@ class DashboardController extends Controller
             ->get();
 
         return view('v_admin.v_dashboard.app2', compact('admin', 'bestSellers', 'orders'));
+    }
+
+    public function users()
+    {
+        $admin = Auth::guard('admin')->user();
+        $users = User::latest()->paginate(10);
+        return view('v_admin.v_data.v_users.app', compact('admin', 'users'));
     }
 
 

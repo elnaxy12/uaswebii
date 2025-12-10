@@ -11,9 +11,11 @@ class Order extends Model
 {
     use HasFactory;
 
+     const STATUS_PENDING = 'pending';
+
     protected $fillable = [
         'user_id',
-        'status', // pending, completed, canceled, dll
+        'status',
         'total',
     ];
 
