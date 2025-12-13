@@ -55,6 +55,13 @@ class DashboardController extends Controller
         return view('v_admin.v_data.v_users.app', compact('admin', 'users'));
     }
 
+    public function pendingOrder()
+    {
+        $admin = Auth::guard('admin')->user();
+        return view('v_admin.v_data.v_order.app', compact('admin'));
+
+    }
+
 
     // controller user
     public function dashboard()

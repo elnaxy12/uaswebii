@@ -139,6 +139,9 @@ Route::middleware(['auth:admin'])->group(function () {
 
     Route::get('/admin/dashboard/users', [DashboardController::class, 'users'])
         ->name('admin.dashboard.users');
+
+    Route::get('/admin/dashboard/order', [DashboardController::class, 'pendingOrder'])
+            ->name('admin.dashboard.pendingOrder');
 });
 
 
