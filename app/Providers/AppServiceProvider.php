@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
+use App\Models\Order;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +21,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+
+        View::composer('base.sidebar', function ($view) {
+            $view->with([
+                'totalOrders'     => Order::count(),
+                'pendingOrders'   => Order::where('status', 'pending')->count(),
+                'waitingPaymentOrders'  => Order::where('status', 'waiting_payment')->count(),
+                'shippedOrders'   => Order::where('status', 'shipped')->count(),
+                'deliveredOrders' => Order::where('status', 'delivered')->count(),
+                'canceledOrders'  => Order::where('status', 'canceled')->count(),
+            ]);
+        });
+
     }
 }

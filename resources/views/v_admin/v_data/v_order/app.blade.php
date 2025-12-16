@@ -17,5 +17,117 @@
     <!-- strat wrapper -->
     <div class="flex h-screen">
         @include('base.sidebar')
+        <div class="bg-white rounded-xl w-full">
+            <h2 class="text-sm font-bold mb-4 p-5">
+                Orders
+            </h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="text-gray-500 border-b text-left">
+                        <tr>
+                            <th class="p-3">Order ID</th>
+                            <th class="p-3">Customer ID</th>
+                            <th class="p-3">Total</th>
+                            <th class="p-3">Status</th>
+                            <th class="p-3">Payment Method</th>
+                            <th class="p-3">Date</th>
+                            <th class="p-3 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($orders as $order)
+                            <tr class="border-b">
+                                <td class="p-3">#{{ $order->id }}</td>
+                                <td class="p-3">{{ $order->user_id}}</td>
+                                <td class="p-3">${{ number_format($order->total, 0, ',', '.') }}</td>
+                                <td class="p-3">
+                                    <span class="px-2 py-1 rounded text-xs
+                                                @if($order->status == 'pending') bg-yellow-100 text-yellow-600
+                                                @elseif($order->status == 'shipped') bg-blue-100 text-blue-600
+                                                @elseif($order->status == 'delivered') bg-green-100 text-green-600
+                                                @else bg-red-100 text-red-600 @endif">
+                                        {{ ucfirst($order->status) }}
+                                    </span>
+                                </td>
+                                <td class="p-3 text-xs">
+                                    {{ strtoupper($order->payment->payment_method ?? '-') }}
+                                </td>
+                                <td class="p-3">{{ $order->created_at->format('d M Y') }}</td>
+                                <td class="p-3 text-center">
+
+                                    {{-- CANCELED (GLOBAL - READ ONLY) --}}
+                                    @if ($order->status === 'canceled')
+                                        <span class="text-xs text-red-600 font-semibold">Canceled</span>
+
+                                        {{-- COD --}}
+                                    @elseif ($order->payment?->payment_method === 'cod')
+
+                                        @if ($order->status !== 'delivered')
+                                            <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="status" value="delivered">
+                                                <button class="bg-green-600 text-white text-xs px-3 py-1 rounded">
+                                                    Confirm Delivered
+                                                </button>
+                                            </form>
+                                        @else
+                                            <span class="text-xs text-green-600 font-semibold">Delivered</span>
+                                        @endif
+
+                                        {{-- E-WALLET --}}
+                                    @elseif ($order->payment?->payment_method === 'ewallet')
+
+                                        @if ($order->status === 'pending')
+                                            <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="status" value="shipped">
+                                                <button class="bg-purple-600 text-white text-xs px-3 py-1 rounded">
+                                                    Mark as Shipped
+                                                </button>
+                                            </form>
+
+                                        @elseif ($order->status === 'shipped')
+                                            <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="status" value="delivered">
+                                                <button class="bg-green-600 text-white text-xs px-3 py-1 rounded">
+                                                    Confirm Delivered
+                                                </button>
+                                            </form>
+                                        @else
+                                            <span class="text-xs text-gray-400">{{ ucfirst($order->status) }}</span>
+                                        @endif
+
+                                        {{-- TRANSFER / VA --}}
+                                    @else
+
+                                        @if ($order->status === 'pending')
+                                            <form action="{{ route('admin.orders.sendPaymentEmail', $order->id) }}" method="POST">
+                                                @csrf
+                                                <button class="bg-blue-600 text-white text-xs px-3 py-1 rounded">
+                                                    Send Payment Email
+                                                </button>
+                                            </form>
+
+                                        @elseif ($order->status === 'waiting_payment')
+                                            <span class="text-xs text-gray-400">Waiting Payment</span>
+                                        @endif
+
+                                    @endif
+
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="p-4 text-center text-gray-500">Belum ada order</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </body>

@@ -36,7 +36,7 @@
                             <label>
                                 <input placeholder="Email"
                                     class="md:w-xs w-[14rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
-                                    type="email" name="email" value="{{ request('email') }}" required>
+                                    type="email" name="email" value="{{ request('email') }}" required readonly>
                             </label>
                             <label>
                                 <input placeholder="New Password"

@@ -8,6 +8,8 @@ use App\Models\OrderItem;
 use App\Models\Cart;
 use Auth;
 use DB;
+use App\Mail\PaymentLinkMail;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -82,4 +84,20 @@ class OrderController extends Controller
         $order->load('orderItems.product');
         return view('v_user.v_order.detail', compact('order'));
     }
+
+    public function sendPaymentEmail($orderId)
+    {
+        $order = Order::findOrFail($orderId);
+        $paymentLink = "https://paymentkamu.com/pay/{$order->id}";
+
+        // Kirim email
+        Mail::to($order->user->email)->send(new PaymentLinkMail($order, $paymentLink));
+
+        // Update status order jadi waiting_payment
+        $order->status = 'waiting_payment';
+        $order->save();
+
+        return back()->with('success', 'Email link pembayaran sudah dikirim ke user dan status diubah menjadi waiting_payment.');
+    }
+
 }

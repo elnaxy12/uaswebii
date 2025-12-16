@@ -142,6 +142,16 @@ Route::middleware(['auth:admin'])->group(function () {
 
     Route::get('/admin/dashboard/order', [DashboardController::class, 'pendingOrder'])
             ->name('admin.dashboard.pendingOrder');
+
+    Route::patch(
+        '/admin/order/{order}/status',
+        [DashboardController::class, 'updateOrderStatus']
+    )->name('admin.orders.updateStatus');
+
+    Route::post(
+        '/admin/orders/{order}/send-payment-email',
+        [OrderController::class, 'sendPaymentEmail']
+    )->name('admin.orders.sendPaymentEmail');
 });
 
 

@@ -55,11 +55,45 @@ class DashboardController extends Controller
         return view('v_admin.v_data.v_users.app', compact('admin', 'users'));
     }
 
-    public function pendingOrder()
+    public function pendingOrder(Request $request)
     {
-        $admin = Auth::guard('admin')->user();
-        return view('v_admin.v_data.v_order.app', compact('admin'));
+        $admin  = Auth::guard('admin')->user();
+        $status = $request->query('status');
 
+        $orders = Order::with(['user', 'payment'])
+            ->when(
+                in_array($status, ['pending', 'shipped', 'waiting_payment', 'delivered', 'canceled']),
+                fn ($q) => $q->where('status', $status)
+            )
+            ->latest()
+            ->paginate(10);
+
+
+        return view('v_admin.v_data.v_order.app', [
+            'admin'           => $admin,
+            'orders'          => $orders,
+            'status'          => $status ?? null,
+            'totalOrders'     => Order::count(),
+            'pendingOrders'   => Order::where('status', 'pending')->count(),
+            'waitingPaymentOrders'   => Order::where('status', 'waiting_payment')->count(),
+            'shippedOrders'   => Order::where('status', 'shipped')->count(),
+            'deliveredOrders' => Order::where('status', 'delivered')->count(),
+            'canceledOrders'  => Order::where('status', 'canceled')->count(),
+        ]);
+    }
+
+
+    public function updateOrderStatus(Request $request, Order $order)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,waiting_payment,paid,shipped,delivered,canceled'
+        ]);
+
+        $order->update([
+            'status' => $request->status
+        ]);
+
+        return back()->with('success', 'Status order berhasil diubah');
     }
 
 
