@@ -64,7 +64,7 @@
                 @if(!empty($order->payment))
                     <div class="grid grid-cols-[140px_1fr] gap-2">
                         <span class="font-semibold">Payment</span>
-                        <span>: {{ strtoupper($order->payment->payment_method) }}</span>
+                        <span>: {{ ucfirst($order->payment->payment_method) }}</span>
                     </div>
                 @endif
 
