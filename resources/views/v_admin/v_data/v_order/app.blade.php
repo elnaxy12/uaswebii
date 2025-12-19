@@ -62,7 +62,13 @@
                                         {{-- COD --}}
                                     @elseif ($order->payment?->payment_method === 'cod')
 
-                                        @if ($order->status !== 'delivered')
+                                        @if ($order->status === 'pending')
+                                            <button onclick="openShippingModal({{ $order->id }})"
+                                                class="bg-purple-600 text-white text-xs px-3 py-1 rounded">
+                                                Mark as Shipped
+                                            </button>
+
+                                        @elseif ($order->status === 'shipped')
                                             <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST">
                                                 @csrf
                                                 @method('PATCH')
@@ -72,21 +78,16 @@
                                                 </button>
                                             </form>
                                         @else
-                                            <span class="text-xs text-green-600 font-semibold">Delivered</span>
+                                            <span class="text-xs text-gray-400">{{ ucfirst($order->status) }}</span>
                                         @endif
 
                                         {{-- E-WALLET --}}
                                     @elseif ($order->payment?->payment_method === 'ewallet')
 
                                         @if ($order->status === 'pending')
-                                            <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST">
-                                                @csrf
-                                                @method('PATCH')
-                                                <input type="hidden" name="status" value="shipped">
-                                                <button class="bg-purple-600 text-white text-xs px-3 py-1 rounded">
-                                                    Mark as Shipped
-                                                </button>
-                                            </form>
+                                            <button onclick="openShippingModal({{ $order->id }})"
+                                                class="bg-purple-600 text-white text-xs px-3 py-1 rounded">
+                                                Mark as Shipped </button>
 
                                         @elseif ($order->status === 'shipped')
                                             <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST">
@@ -127,6 +128,44 @@
                         @endforelse
                     </tbody>
                 </table>
+
+                <div id="shippingModal" class="fixed inset-0 bg-black bg-opacity-50 hidden">
+                    <div class="bg-white p-4 rounded w-96 mx-auto mt-20">
+                        <form method="POST" id="shippingForm">
+                            @csrf
+                            @method('PATCH')
+
+                            <input type="hidden" name="status" value="shipped">
+                            <input name="shipping_service" placeholder="Kurir" required
+                                class="w-full mb-2 border p-2 outline-none">
+                            <input name="tracking_number" placeholder="No Resi" required
+                                class="w-full mb-2 border p-2 outline-none">
+                            <input type="datetime-local" name="shipped_at" required
+                                class="w-full mb-2 border p-2 outline-none">
+                            <input type="date" name="estimated_arrival" required
+                                class="w-full mb-2 border p-2 outline-none">
+
+                            <div class="flex justify-between">
+                                <button type="button" onclick="closeShippingModal()">Cancel</button>
+                                <button class="bg-purple-600 text-white px-3 py-1 rounded">
+                                    Confirm Shipped
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <script>
+                    function openShippingModal(orderId) {
+                        const form = document.getElementById('shippingForm');
+                        form.action = `/admin/order/${orderId}/status`;
+                        document.getElementById('shippingModal').classList.remove('hidden');
+                    }
+
+                    function closeShippingModal() {
+                        document.getElementById('shippingModal').classList.add('hidden');
+                    }
+                </script>
             </div>
         </div>
     </div>

@@ -46,14 +46,39 @@
         <div class="bg-gray-100 p-4 rounded-lg">
             <h2 class="text-xl font-semibold mb-4">Order #{{ $order->id }}</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-                <div><span class="font-semibold">Status:</span> <span class="capitalize">{{ $order->status }}</span>
+                <div class="grid grid-cols-[140px_1fr] gap-2">
+                    <span class="font-semibold">Status</span>
+                    <span class="capitalize">: {{ $order->status }}</span>
                 </div>
-                <div><span class="font-semibold">Date:</span> {{ $order->created_at->format('d M Y H:i') }}</div>
-                <div><span class="font-semibold">Total Price:</span> ${{ number_format($order->total, 2) }}</div>
+
+                <div class="grid grid-cols-[140px_1fr] gap-2">
+                    <span class="font-semibold">Order Date</span>
+                    <span>: {{ $order->created_at->format('d M Y') }}</span>
+                </div>
+
+                <div class="grid grid-cols-[140px_1fr] gap-2">
+                    <span class="font-semibold">Total Price</span>
+                    <span>: ${{ number_format($order->total, 2) }}</span>
+                </div>
+
                 @if(!empty($order->payment))
-                    <div><span class="font-semibold">Payment:</span> {{ $order->payment->payment_method }}</div>
+                    <div class="grid grid-cols-[140px_1fr] gap-2">
+                        <span class="font-semibold">Payment</span>
+                        <span>: {{ strtoupper($order->payment->payment_method) }}</span>
+                    </div>
                 @endif
+
+                <div class="grid grid-cols-[140px_1fr] gap-2">
+                    <span class="font-semibold">Shipped At</span>
+                    <span>: {{ $order->shippingCalendar?->shipped_at?->format('d M Y') ?? '-' }}</span>
+                </div>
+
+                <div class="grid grid-cols-[140px_1fr] gap-2">
+                    <span class="font-semibold">Estimated Arrival</span>
+                    <span>: {{ $order->shippingCalendar?->estimated_arrival?->format('d M Y') ?? '-' }}</span>
+                </div>
             </div>
+
         </div>
 
         <!-- Order Items -->
@@ -115,8 +140,9 @@
                                 class="px-3 py-2 w-full outline-none" readonly>
                         </td>
                         <td class="p-2">
-                            <textarea rows="3" class="px-3 py-2 w-full outline-none "
-                                readonly>{{ auth()->user()->address }}</textarea>
+                            <div class="px-3 py-2 w-full h-20 overflow-auto items-center flex">
+                                {{ auth()->user()->address }}
+                            </div>
                         </td>
                     </tr>
                 </tbody>

@@ -11,12 +11,14 @@ class Order extends Model
 {
     use HasFactory;
 
-     const STATUS_PENDING = 'pending';
+    public const STATUS_PENDING = 'pending';
 
     protected $fillable = [
         'user_id',
         'status',
         'total',
+        'shipping_service',
+        'tracking_number'
     ];
 
     // Relasi ke User
@@ -50,5 +52,14 @@ class Order extends Model
     public function calculateTotal()
     {
         return $this->orderItems->sum(fn ($item) => $item->price * $item->quantity);
+    }
+
+    public function shippingCalendar()
+    {
+        return $this->hasOne(
+            ShippingCalendar::class,
+            'order_id',
+            'id'
+        );
     }
 }

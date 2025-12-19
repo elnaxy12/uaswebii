@@ -143,6 +143,18 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/dashboard/order', [DashboardController::class, 'pendingOrder'])
             ->name('admin.dashboard.pendingOrder');
 
+
+    Route::get(
+        'admin/dashboard/calender',
+        [DashboardController::class, 'calender']
+    )->name('admin.dashboard.calender');
+
+    Route::get(
+        'admin/dashboard/calender/events',
+        [DashboardController::class, 'calenderEvents']
+    )->name('admin.dashboard.calender.events');
+
+
     Route::patch(
         '/admin/order/{order}/status',
         [DashboardController::class, 'updateOrderStatus']

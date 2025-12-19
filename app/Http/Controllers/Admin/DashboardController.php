@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\ShippingCalendar;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -10,6 +11,8 @@ use App\Models\OrderItem;
 use App\Models\Order;
 use App\Models\User;
 use App\Models\Product;
+
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -55,6 +58,48 @@ class DashboardController extends Controller
         return view('v_admin.v_data.v_users.app', compact('admin', 'users'));
     }
 
+    public function calender()
+    {
+        $admin = Auth::guard('admin')->user();
+        return view('v_admin.v_data.v_calender.app', compact('admin'));
+    }
+
+
+    public function calenderEvents()
+    {
+        $events = [];
+
+        foreach (ShippingCalendar::all() as $item) {
+
+            if ($item->shipped_at) {
+                $events[] = [
+                    'title' => 'Shipped: ' . $item->title,
+                    'start' => $item->shipped_at->toDateString(),
+                    'status' => 'shipped',
+                ];
+            }
+
+            if ($item->estimated_arrival) {
+                $events[] = [
+                    'title' => 'ETA: ' . $item->title,
+                    'start' => $item->estimated_arrival->toDateString(),
+                    'status' => 'late',
+                ];
+            }
+
+            if ($item->delivered_at) {
+                $events[] = [
+                    'title' => 'Delivered: ' . $item->title,
+                    'start' => $item->delivered_at->toDateString(),
+                    'status' => 'delivered',
+                ];
+            }
+        }
+
+        return response()->json($events);
+    }
+
+
     public function pendingOrder(Request $request)
     {
         $admin  = Auth::guard('admin')->user();
@@ -86,12 +131,49 @@ class DashboardController extends Controller
     public function updateOrderStatus(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|in:pending,waiting_payment,paid,shipped,delivered,canceled'
+            'status' => 'required|in:pending,waiting_payment,paid,shipped,delivered,canceled',
+            'shipping_service' => 'nullable|string|max:50',
+            'tracking_number' => 'nullable|string|max:100',
+            'shipped_at' => 'nullable|date',
+            'estimated_arrival' => 'nullable|date|after_or_equal:shipped_at',
         ]);
 
+        // Update order
         $order->update([
-            'status' => $request->status
+            'status' => $request->status,
+            'shipping_service' => $request->shipping_service,
+            'tracking_number' => $request->tracking_number,
         ]);
+
+        /* ===============================
+           SHIPPED → BUAT / UPDATE KALENDER
+        =============================== */
+        if ($request->status === 'shipped') {
+            ShippingCalendar::updateOrCreate(
+                ['order_id' => $order->id],
+                [
+                    'user_id' => $order->user_id,
+                    'title' => 'Order Delivery #' . $order->id,
+                    'shipped_at' => $request->shipped_at ?? now(),
+                    'estimated_arrival' => $request->estimated_arrival ?? now()->addDays(3),
+                    'status' => 'shipped',
+                ]
+            );
+        }
+
+        /* ===============================
+           DELIVERED → UPDATE KALENDER
+        =============================== */
+        if ($request->status === 'delivered') {
+            if (!$order->shippingCalendar) {
+                return back()->withErrors('Order belum dikirim');
+            }
+
+            $order->shippingCalendar->update([
+                'delivered_at' => now(),
+                'status' => 'delivered',
+            ]);
+        }
 
         return back()->with('success', 'Status order berhasil diubah');
     }
