@@ -4,30 +4,33 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\Cart;
-use Auth;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Mail\PaymentLinkMail;
 use Illuminate\Support\Facades\Mail;
+use App\Jobs\CancelOrderJob;
 
 class OrderController extends Controller
 {
-    // Tampilkan semua order user
+    // =========================
+    // LIST ORDER USER
+    // =========================
     public function index()
     {
-        $orders = Order::where('user_id', auth()->id())->latest()->get();
+        $orders = Order::where('user_id', auth()->id())
+            ->latest()
+            ->get();
+
         return view('index2.order', compact('orders'));
     }
 
-    // Checkout / buat order baru dari cart
-
-
+    // =========================
+    // CHECKOUT DARI CART
+    // =========================
     public function createFromCart()
     {
         $user = auth()->user();
 
-        // Ambil cart + relasi product untuk menghindari null
         $cartItems = Cart::with('product')
             ->where('user_id', $user->id)
             ->get();
@@ -36,68 +39,120 @@ class OrderController extends Controller
             return back()->with('error', 'Keranjang masih kosong!');
         }
 
-        // Hitung total harga
-        $total = $cartItems->sum(function ($item) {
-            return $item->quantity * $item->product->price;
+        DB::transaction(function () use ($user, $cartItems) {
+
+            $order = Order::create([
+                'user_id' => $user->id,
+                'status' => 'waiting_payment',
+                'payment_expired_at' => now()->addSeconds(30),
+                'total' => null,
+            ]);
+
+            foreach ($cartItems as $item) {
+
+                $order->items()->create([
+                    'product_id' => $item->product_id,
+                    'size_id' => $item->size_id,
+                    'quantity' => $item->quantity,
+                    'price' => $item->product->price,
+                ]);
+
+                if ($item->size_id) {
+                    DB::table('product_sizes')
+                        ->where('product_id', $item->product_id)
+                        ->where('size_id', $item->size_id)
+                        ->decrement('stock', $item->quantity);
+                } else {
+                    DB::table('products')
+                        ->where('id', $item->product_id)
+                        ->decrement('stock', $item->quantity);
+                }
+            }
+
+            Cart::where('user_id', $user->id)->delete();
         });
 
-        // Simpan order
-        $order = Order::create([
-            'user_id' => $user->id,
-            'status' => 'pending',
-            'total' => $total,
-        ]);
-
-        // Simpan order item
-        foreach ($cartItems as $item) {
-            $order->items()->create([
-                'product_id' => $item->product_id,
-                'quantity' => $item->quantity,
-                'price' => $item->product->price,
-            ]);
-        }
-
-        // Hapus cart user
-        Cart::where('user_id', $user->id)->delete();
-
         return redirect()->route('user.order')
-            ->with('success', 'Order berhasil dibuat!');
+            ->with('success', 'Order berhasil dibuat, silakan lakukan pembayaran.');
     }
 
-
-    // Batalkan order
+    // =========================
+    // CANCEL ORDER MANUAL
+    // =========================
     public function cancel(Order $order)
     {
-        if ($order->user_id != auth()->id()) {
+        if ($order->user_id !== auth()->id()) {
             abort(403);
         }
-        $order->update(['status' => 'canceled']);
-        return redirect()->back()->with('success', 'Order dibatalkan!');
+
+        if ($order->status !== 'waiting_payment') {
+            return back()->with('error', 'Order tidak bisa dibatalkan');
+        }
+
+        DB::transaction(function () use ($order) {
+
+            foreach ($order->items as $item) {
+                if ($item->size_id) {
+                    DB::table('product_sizes')
+                        ->where('product_id', $item->product_id)
+                        ->where('size_id', $item->size_id)
+                        ->increment('stock', $item->quantity);
+                } else {
+                    DB::table('products')
+                        ->where('id', $item->product_id)
+                        ->increment('stock', $item->quantity);
+                }
+            }
+
+            $order->update(['status' => 'cancelled']);
+        });
+
+        return back()->with('success', 'Order dibatalkan & stok dikembalikan');
     }
 
-    // Detail order
+    // =========================
+    // DETAIL ORDER
+    // =========================
     public function show(Order $order)
     {
-        if ($order->user_id != auth()->id()) {
+        if ($order->user_id !== auth()->id()) {
             abort(403);
         }
-        $order->load('orderItems.product');
+
+        $order->load('items.product');
+
         return view('v_user.v_order.detail', compact('order'));
     }
 
+    // =========================
+    // KIRIM EMAIL PEMBAYARAN
+    // =========================
     public function sendPaymentEmail($orderId)
     {
-        $order = Order::findOrFail($orderId);
+        $order = Order::with('user')->findOrFail($orderId);
+
+        // ❌ jangan reset order yang sudah selesai
+        if (!in_array($order->status, ['pending', 'waiting_payment'])) {
+            return back()->with('error', 'Order sudah diproses.');
+        }
+
         $paymentLink = "https://paymentkamu.com/pay/{$order->id}";
 
-        // Kirim email
-        Mail::to($order->user->email)->send(new PaymentLinkMail($order, $paymentLink));
+        Mail::to($order->user->email)
+            ->send(new PaymentLinkMail($order, $paymentLink));
 
-        // Update status order jadi waiting_payment
-        $order->status = 'waiting_payment';
-        $order->save();
+        // ✅ SET expired SEKALI SAJA
+        if (!$order->payment_expired_at) {
 
-        return back()->with('success', 'Email link pembayaran sudah dikirim ke user dan status diubah menjadi waiting_payment.');
+            $order->update([
+                'status' => 'waiting_payment',
+                'payment_expired_at' => now()->addSeconds(30),
+            ]);
+
+            CancelOrderJob::dispatch($order->id)
+                ->delay($order->payment_expired_at);
+        }
+
+        return back()->with('success', 'Link pembayaran berhasil dikirim ke email.');
     }
-
 }

@@ -112,7 +112,7 @@
                                                     Send Payment Email
                                                 </button>
                                             </form>
-
+ 
                                         @elseif ($order->status === 'waiting_payment')
                                             <span class="text-xs text-gray-400">Waiting Payment</span>
                                         @endif

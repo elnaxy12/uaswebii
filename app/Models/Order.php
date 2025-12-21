@@ -7,9 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\OrderItem;
 
+use Illuminate\Support\Facades\DB;
+
+
 class Order extends Model
 {
     use HasFactory;
+
+    protected $table = 'orders';
 
     public const STATUS_PENDING = 'pending';
 
@@ -18,6 +23,7 @@ class Order extends Model
         'status',
         'total',
         'shipping_service',
+        'payment_expired_at',
         'tracking_number'
     ];
 
@@ -61,5 +67,25 @@ class Order extends Model
             'order_id',
             'id'
         );
+    }
+
+    public function cancelAndRestoreStock($status = 'expired')
+    {
+        if ($this->status !== 'waiting_payment') {
+            return;
+        }
+
+        foreach ($this->items as $item) {
+            if ($item->size_id) {
+                DB::table('product_sizes')
+                    ->where('product_id', $item->product_id)
+                    ->where('size_id', $item->size_id)
+                    ->increment('stock', $item->quantity);
+            } else {
+                $item->product->increment('stock', $item->quantity);
+            }
+        }
+
+        $this->update(['status' => $status]);
     }
 }
