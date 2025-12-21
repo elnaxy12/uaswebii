@@ -9,7 +9,6 @@ class CancelExpiredOrders extends Command
 {
     protected $signature = 'orders:cancel-expired';
     protected $description = 'Cancel waiting payment orders and restore stock';
-
     public function handle()
     {
         $orders = Order::where('status', 'waiting_payment')
