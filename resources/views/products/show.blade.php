@@ -65,9 +65,14 @@
 
                         <!-- Price & Views -->
                         <div class="mb-6">
-                            <p class="text-3xl md:text-4xl font-bold text-gray-900">
-                                ${{ number_format($product->price, 2) }}
+                            @php
+                                $price = $product->price + ($size->additional_price ?? 0);
+                            @endphp
+                            <p id="productPrice" class="text-3xl md:text-4xl font-bold text-gray-900">
+                                ${{ number_format($product->price + ($product->sizes->first()->pivot->additional_price ?? 0), 2) }}
                             </p>
+
+
                             <div class="flex items-center space-x-4 mt-2">
                                 <p class="text-gray-600">
                                     <i class="fas fa-box mr-1"></i>
@@ -93,18 +98,19 @@
                                 <div class="flex flex-wrap gap-2 mb-3" id="sizeSelection">
                                     @foreach($product->sizes as $size)
                                         @php
-        $stock = $size->pivot->stock ?? 0;
-        $isAvailable = $stock > 0;
-        $isFirst = $loop->first;
+                                            $stock = $size->pivot->stock ?? 0;
+                                            $isAvailable = $stock > 0;
+                                            $isFirst = $loop->first;
                                         @endphp
 
                                         <button type="button" class="size-btn px-4 py-3 border rounded-lg text-sm font-medium transition-all duration-200
-                                                                       @if($isAvailable)
-                                                                           hover:border-black hover:bg-gray-50 cursor-pointer
-                                                                           {{ $isFirst ? 'bg-black text-white border-black' : 'bg-white text-gray-900 border-gray-300' }}
-                                                                       @else
-                                                                           opacity-50 cursor-not-allowed bg-gray-100 border-gray-200
-                                                                       @endif" data-size-id="{{ $size->id }}"
+                                                                                @if($isAvailable)
+                                                                                    hover:border-black hover:bg-gray-50 cursor-pointer
+                                                                                    {{ $isFirst ? 'bg-black text-white border-black' : 'bg-white text-gray-900 border-gray-300' }}
+                                                                                @else
+                                                                                    opacity-50 cursor-not-allowed bg-gray-100 border-gray-200
+                                                                                @endif" data-size-id="{{ $size->id }}"
+                                            data-additional-price="{{ $size->pivot->additional_price }}"
                                             data-size-code="{{ $size->code }}" data-stock="{{ $stock }}" {{ !$isAvailable ? 'disabled' : '' }}>
                                             <div class="flex flex-col items-center">
                                                 <span class="font-medium">{{ $size->code }}</span>
@@ -191,7 +197,8 @@
                                 <input type="hidden" id="buyNowQuantity" name="quantity">
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
 
-                                <button id="buyNowBtn" disabled class="flex-1 border-2 border-black text-black hover:bg-black hover:text-white
+                                <button id="buyNowBtn" disabled
+                                    class="flex-1 border-2 border-black text-black hover:bg-black hover:text-white
                                     font-semibold py-3 px-6 rounded-lg transition duration-200
                                     flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" type="submit">
                                     Buy Now
@@ -241,7 +248,7 @@
                                             @if(($size->pivot->stock ?? 0) > 0)
                                                 <span
                                                     class="inline-flex items-center px-3 py-1 rounded-full text-sm 
-                                                                                    {{ $loop->first ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700' }}">
+                                                                                                {{ $loop->first ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700' }}">
                                                     {{ $size->code }}
                                                     <span class="ml-1 text-xs">({{ $size->pivot->stock }})</span>
                                                 </span>
@@ -283,33 +290,46 @@
     @include('base2.end')
 
     <!-- JavaScript for Interactive Features -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const qtyMain = document.getElementById('quantity');  // quantity utama
-        const qtyBuyNow = document.querySelector('form[action="{{ route('buy.now') }}"] input[name="quantity"]');
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const qtyMain = document.getElementById('quantity');  // quantity utama
+            const qtyBuyNow = document.querySelector('form[action="{{ route('buy.now') }}"] input[name="quantity"]');
 
-        if (qtyMain && qtyBuyNow) {
+            if (qtyMain && qtyBuyNow) {
 
-            // Set awal
-            qtyBuyNow.value = qtyMain.value;
-
-            // Kalau quantity berubah manual
-            qtyMain.addEventListener('input', function () {
+                // Set awal
                 qtyBuyNow.value = qtyMain.value;
-            });
 
-            // Kalau pakai tombol +
-            document.getElementById('increaseQty')?.addEventListener('click', function () {
-                qtyBuyNow.value = qtyMain.value;
-            });
+                // Kalau quantity berubah manual
+                qtyMain.addEventListener('input', function () {
+                    qtyBuyNow.value = qtyMain.value;
+                });
 
-            // Kalau pakai tombol -
-            document.getElementById('decreaseQty')?.addEventListener('click', function () {
-                qtyBuyNow.value = qtyMain.value;
+                // Kalau pakai tombol +
+                document.getElementById('increaseQty')?.addEventListener('click', function () {
+                    qtyBuyNow.value = qtyMain.value;
+                });
+
+                // Kalau pakai tombol -
+                document.getElementById('decreaseQty')?.addEventListener('click', function () {
+                    qtyBuyNow.value = qtyMain.value;
+                });
+            }
+        });
+    </script>
+
+    <script>
+        const basePrice = {{ $product->price }};
+
+        document.querySelectorAll('.size-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const additionalPrice = parseFloat(this.dataset.additionalPrice) || 0;
+                const priceElement = document.querySelector('#productPrice'); // beri id di <p> harga
+                priceElement.textContent = '$' + (basePrice + additionalPrice).toFixed(2);
             });
-        }
-    });
-</script>
+        });
+
+    </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {

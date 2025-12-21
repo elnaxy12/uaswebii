@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request; 
+use Illuminate\Http\Request;
 use App\Models\Cart;
+use Illuminate\Support\Facades\DB;
+use App\Models\Product;
+use App\Models\Size;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
+    // Menampilkan halaman cart
     public function index()
     {
         // Ambil semua cart items milik user yang login
@@ -14,105 +19,163 @@ class CartController extends Controller
             ->where('user_id', auth()->id())
             ->get();
 
-        // Debug: Cek data
-        // dd($cartItems);
+        // Hitung additional_price dan subtotal
+        foreach ($cartItems as $item) {
+            $item->additional_price = 0;
+            if ($item->size_id) {
+                $item->additional_price = DB::table('product_sizes')
+                    ->where('product_id', $item->product->id)
+                    ->where('size_id', $item->size_id)
+                    ->value('additional_price') ?? 0;
+            }
 
-        // Pastikan $cartItems selalu Collection, bukan null
-        $cartItems = $cartItems ?? collect([]);
+            $item->price = ($item->product->price ?? 0) + $item->additional_price;
+            $item->subtotal = $item->price * $item->quantity;
+        }
 
         return view('index2.cart', compact('cartItems'));
     }
 
+
+    // Menambahkan item ke cart
     public function store(Request $request)
     {
-        // Validasi SEMUA field yang dikirim form
         $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
-            'size_id' => 'required|exists:sizes,id', // ✅ PASTIKAN ADA
+            'size_id' => 'required|exists:sizes,id',
             'quantity' => 'required|integer|min:1',
         ]);
 
-        // Cek apakah produk dengan size yang sama sudah ada di cart
+        // Cek apakah produk+size sudah ada di cart
         $existingCartItem = Cart::where('user_id', auth()->id())
             ->where('product_id', $validated['product_id'])
-            ->where('size_id', $validated['size_id']) // ✅ TAMBAHKAN SIZE
+            ->where('size_id', $validated['size_id'])
             ->first();
 
         if ($existingCartItem) {
-            // Update quantity jika sudah ada
+            // Update quantity
             $existingCartItem->increment('quantity', $validated['quantity']);
-            // $message = 'Jumlah produk di keranjang diperbarui!';
         } else {
-            // Buat item keranjang baru dengan SEMUA data
+            // Buat cart item baru
             Cart::create([
                 'user_id' => auth()->id(),
                 'product_id' => $validated['product_id'],
-                'size_id' => $validated['size_id'], // ✅ TAMBAHKAN SIZE
+                'size_id' => $validated['size_id'],
                 'quantity' => $validated['quantity'],
             ]);
-            // $message = 'Produk berhasil ditambahkan ke keranjang!';
         }
 
-        return redirect()->route('user.cart')
-            ->with('success');
+        return redirect()->route('user.cart')->with('success', 'Item berhasil ditambahkan ke keranjang.');
     }
 
+    // Hapus item dari cart
     public function destroy($id)
     {
         $cart = Cart::findOrFail($id);
 
-        // Cek ownership
+        // Cek kepemilikan
         if ($cart->user_id != auth()->id()) {
             abort(403);
         }
 
         $cart->delete();
 
-        return redirect()->route('user.cart')
-            ->with('success', 'Item removed from cart.');
+        return redirect()->route('user.cart')->with('success', 'Item berhasil dihapus dari keranjang.');
     }
 
-    public function updateQuantity(Request $request, $id)
+    // Update quantity via AJAX
+    public function updateQuantity(Request $request, Cart $cart)
     {
-        $cart = Cart::findOrFail($id);
-
         if ($cart->user_id != auth()->id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
         }
 
-        $request->validate([
-            'quantity' => 'required|integer|min:1'
-        ]);
+        $request->validate(['quantity' => 'required|integer|min:1']);
 
-        // Update quantity
+        // Update quantity di DB
         $cart->update(['quantity' => $request->quantity]);
 
-        return response()->json([
-            'success' => true,
-            'price' => $cart->product->price,
-            'quantity' => $cart->quantity
-        ]);
+        return response()->json(['success' => true, 'quantity' => $cart->quantity]);
     }
 
-    public function updateSize(Request $request, $id)
-    {
-        $cart = Cart::findOrFail($id);
 
-        if ($cart->user_id != auth()->id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+    // Update size via AJAX
+    public function updateSize(Request $request, Cart $cart)
+    {
+        // =========================
+        // AUTH CHECK
+        // =========================
+        if ($cart->user_id !== auth()->id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized'
+            ], 403);
         }
 
+        // =========================
+        // VALIDATION
+        // =========================
         $request->validate([
-            'size_id' => 'required|exists:sizes,id'
+            'size_id' => 'nullable|exists:sizes,id',
+            'quantity' => 'nullable|integer|min:1'
         ]);
 
-        // Update size
-        $cart->update(['size_id' => $request->size_id]);
+        // =========================
+        // DEFAULT VALUE
+        // =========================
+        $quantity = $request->quantity ?? $cart->quantity;
 
+        // =========================
+        // IF SIZE SELECTED
+        // =========================
+        if ($request->size_id) {
+
+            // Ambil size + pivot stock
+            $size = $cart->product
+                ->sizes()
+                ->where('sizes.id', $request->size_id)
+                ->first();
+
+            if (!$size) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Size tidak valid untuk produk ini'
+                ], 422);
+            }
+
+            $stock = (int) ($size->pivot->stock ?? 0);
+
+            // Jika stok 0, paksa quantity 1 (aman)
+            if ($stock <= 0) {
+                $quantity = 1;
+            } else {
+                // Potong quantity jika melebihi stok
+                $quantity = min($quantity, $stock);
+            }
+
+        } else {
+            // =========================
+            // SIZE DIHAPUS (NULL)
+            // =========================
+            $quantity = max(1, $quantity);
+        }
+
+        // =========================
+        // UPDATE CART
+        // =========================
+        $cart->update([
+            'size_id'  => $request->size_id,
+            'quantity' => $quantity
+        ]);
+
+        // =========================
+        // RESPONSE
+        // =========================
         return response()->json([
-            'success' => true
+            'success'  => true,
+            'quantity' => $quantity
         ]);
     }
 
-    // ... method index tetap sama
+
 }

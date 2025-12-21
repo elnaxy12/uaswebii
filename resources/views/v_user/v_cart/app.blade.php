@@ -1,6 +1,7 @@
 @include('base2.start')
 
 <title>Tab Cart | Adidas</title>
+<meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body id="overlay" class="fadeIn">

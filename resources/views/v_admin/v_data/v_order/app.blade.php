@@ -64,7 +64,7 @@
 
                                         @if ($order->status === 'pending')
                                             <button onclick="openShippingModal({{ $order->id }})"
-                                                class="bg-purple-600 text-white text-xs px-3 py-1 rounded">
+                                                class="bg-purple-600 text-white text-xs px-3 py-2 rounded w-full">
                                                 Mark as Shipped
                                             </button>
 
@@ -86,7 +86,7 @@
 
                                         @if ($order->status === 'pending')
                                             <button onclick="openShippingModal({{ $order->id }})"
-                                                class="bg-purple-600 text-white text-xs px-3 py-1 rounded">
+                                                class="bg-purple-600 text-white text-xs px-3 py-2 rounded w-full">
                                                 Mark as Shipped </button>
 
                                         @elseif ($order->status === 'shipped')
@@ -108,7 +108,7 @@
                                         @if ($order->status === 'pending')
                                             <form action="{{ route('admin.orders.sendPaymentEmail', $order->id) }}" method="POST">
                                                 @csrf
-                                                <button class="bg-blue-600 text-white text-xs px-3 py-1 rounded">
+                                                <button class="bg-blue-600 text-white text-xs px-3 py-2 rounded w-full">
                                                     Send Payment Email
                                                 </button>
                                             </form>
@@ -140,14 +140,14 @@
                                 class="w-full mb-2 border p-2 outline-none">
                             <input name="tracking_number" placeholder="No Resi" required
                                 class="w-full mb-2 border p-2 outline-none">
-                            <input type="datetime-local" name="shipped_at" required
+                            <input type="date" name="shipped_at" required
                                 class="w-full mb-2 border p-2 outline-none">
                             <input type="date" name="estimated_arrival" required
                                 class="w-full mb-2 border p-2 outline-none">
 
                             <div class="flex justify-between">
-                                <button type="button" onclick="closeShippingModal()">Cancel</button>
-                                <button class="bg-purple-600 text-white px-3 py-1 rounded">
+                                <button class="text-sm py-1 px-2" type="button" onclick="closeShippingModal()">Cancel</button>
+                                <button class="bg-purple-600 text-white px-3 py-1 rounded text-sm">
                                     Confirm Shipped
                                 </button>
                             </div>

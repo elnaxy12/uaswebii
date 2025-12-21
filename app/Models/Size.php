@@ -13,23 +13,23 @@ class Size extends Model
         'code',
         'name',
         'description',
-        'sort_order' // Update ini
+        'sort_order' 
     ];
 
     protected $casts = [
-        'sort_order' => 'integer' // Update ini
+        'sort_order' => 'integer' 
     ];
 
     public function products()
     {
         return $this->belongsToMany(Product::class, 'product_sizes')
-                    ->withPivot('stock', 'additional_price')
+                    ->withPivot('stock', 'additional_price	')
                     ->withTimestamps();
     }
 
     public function scopeOrdered($query)
     {
-        return $query->orderBy('sort_order'); // Update ini
+        return $query->orderBy('sort_order'); 
     }
 
     public function scopeAvailable($query)

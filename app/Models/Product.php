@@ -42,7 +42,6 @@ class Product extends Model
     {
         return $this->belongsToMany(Size::class, 'product_sizes')
                     ->withPivot('stock', 'additional_price')
-                    ->orderBy('sort_order') // Update ini
                     ->withTimestamps();
     }
 
@@ -53,7 +52,7 @@ class Product extends Model
     {
         return $this->belongsToMany(Size::class, 'product_sizes')
                     ->wherePivot('stock', '>', 0)
-                    ->orderBy('sort_order') // Update ini
+                    ->orderBy('sort_order') 
                     ->withPivot('stock', 'additional_price');
     }
 

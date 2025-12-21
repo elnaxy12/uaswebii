@@ -32,20 +32,20 @@
                     @foreach($cartItems as $item)
                         @php
                             $price = $item->product->price ?? 0;
-                            $qty = $item->quantity ?? 1;
-                            $subtotal = $price * $qty;
+                            $additional = $item->additional_price ?? 0;
+                            $qty = $item->quantity ?? 0;
+                            $subtotal = ($price + $additional) * $qty;
                             $total += $subtotal;
-                            $sizeCode = $item->size->code ?? 'No Size Selected';
                         @endphp
-                        <tr class="text-center border-b-gray-200 border-b">
+
+                        <tr class="text-center">
                             <td class="p-2">{{ $item->product->name }}</td>
-                            <td class="p-2">{{ $sizeCode }}</td>
-                            <td class="p-2">${{ number_format($price, 2) }}</td>
+                            <td class="p-2">{{ $item->size->code ?? '-' }}</td>
+                            <td class="p-2">${{ number_format($price + $additional, 2) }}</td>
                             <td class="p-2">{{ $qty }}</td>
                             <td class="p-2">${{ number_format($subtotal, 2) }}</td>
                         </tr>
                     @endforeach
-
                 </tbody>
             </table>
 
@@ -98,7 +98,7 @@
                 <option value="ewallet">E-Wallet</option>
             </select>
 
-            <button type="submit"
+            <button type="submit" onclick="this.disabled=true; this.form.submit();"
                 class="inline-block border bg-black text-white px-6 py-2 rounded hover:bg-white hover:border-black hover:text-black cursor-pointer text-sm focus:bg-white focus:border-black focus:text-black">
                 Confirm & Place Order
             </button>

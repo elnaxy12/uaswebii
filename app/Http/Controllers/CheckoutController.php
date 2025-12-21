@@ -14,17 +14,34 @@ use Illuminate\Support\Facades\DB;
 
 class CheckoutController extends Controller
 {
-    // Halaman checkout
+    /* =======================
+     |  HALAMAN CHECKOUT
+     ======================= */
     public function index()
     {
         $user = Auth::user();
 
-        // Ambil cart user
-        $cartItems = Cart::with('product', 'size')
+        $cartItems = Cart::with(['product', 'size'])
             ->where('user_id', $user->id)
             ->get();
 
-        // Cek Buy Now di session
+        // Ambil additional_price dari product_sizes
+        foreach ($cartItems as $item) {
+            $item->additional_price = 0;
+
+            if ($item->product_id && $item->size_id) {
+                $pivot = DB::table('product_sizes')
+                    ->where('product_id', $item->product_id)
+                    ->where('size_id', $item->size_id)
+                    ->first();
+
+                if ($pivot) {
+                    $item->additional_price = $pivot->additional_price;
+                }
+            }
+        }
+
+        // Buy Now
         if (session('order_source') === 'product') {
             $cartItems = $this->getBuyNowItem();
         }
@@ -32,60 +49,77 @@ class CheckoutController extends Controller
         return view('v_user.v_checkout.app', compact('cartItems'));
     }
 
-    // Proses checkout
+    /* =======================
+     |  PROSES CHECKOUT
+     ======================= */
     public function processCheckout(Request $request)
     {
         $request->validate([
-            'first_name' => 'required|string',
-            'last_name'  => 'required|string',
-            'email'      => 'required|email',
-            'phone'      => 'required|string',
-            'address'    => 'required|string',
-            'payment_method' => 'required|string'
+            'first_name'      => 'required|string',
+            'last_name'       => 'required|string',
+            'email'           => 'required|email',
+            'phone'           => 'required|string',
+            'address'         => 'required|string',
+            'payment_method'  => 'required|string',
         ]);
 
         $user = Auth::user();
 
-        // Ambil cart / Buy Now
         $cartItems = session('order_source') === 'product'
             ? $this->getBuyNowItem()
-            : Cart::with('product', 'size')->where('user_id', $user->id)->get();
+            : Cart::with(['product', 'size'])->where('user_id', $user->id)->get();
 
         if ($cartItems->isEmpty()) {
-            return redirect()->back()->with('error', 'Tidak ada item untuk checkout.');
+            return back()->with('error', 'Cart kosong');
         }
 
         DB::beginTransaction();
         try {
-            // Hitung total
-            $total = $cartItems->sum(fn ($item) => $item->product->price * $item->quantity);
 
-            // Simpan order
+            /* ===== HITUNG TOTAL ===== */
+            $total = 0;
+            foreach ($cartItems as $item) {
+                $price = $this->getItemPrice($item);
+                $total += $price * $item->quantity;
+            }
+
+            /* ===== BUAT ORDER ===== */
             $order = Order::create([
-                'user_id' => $user->id,
-                'total'   => $total,
-                'status'  => 'pending',
-                'first_name' => $request->first_name,
-                'last_name'  => $request->last_name,
-                'email'      => $request->email,
-                'phone'      => $request->phone,
-                'address'    => $request->address,
+                'user_id'        => $user->id,
+                'total'          => $total,
+                'status'         => 'pending',
+                'first_name'     => $request->first_name,
+                'last_name'      => $request->last_name,
+                'email'          => $request->email,
+                'phone'          => $request->phone,
+                'address'        => $request->address,
                 'payment_method' => $request->payment_method,
             ]);
 
-            // Simpan order items
+            /* ===== ORDER ITEMS + STOCK ===== */
             foreach ($cartItems as $item) {
+
+                $price = $this->getItemPrice($item);
+
                 OrderItem::create([
                     'order_id'   => $order->id,
                     'product_id' => $item->product->id,
                     'size_id'    => $item->size_id,
                     'quantity'   => $item->quantity,
-                    'price'      => $item->product->price,
-                    'subtotal'   => $item->product->price * $item->quantity,
+                    'price'      => $price,
+                    'subtotal'   => $price * $item->quantity,
                 ]);
+
+                // Kurangi stok jika pakai size
+                if ($item->size_id) {
+                    DB::table('product_sizes')
+                        ->where('product_id', $item->product->id)
+                        ->where('size_id', $item->size_id)
+                        ->decrement('stock', $item->quantity);
+                }
             }
 
-            // Simpan payment
+            /* ===== PAYMENT ===== */
             Payment::create([
                 'order_id'       => $order->id,
                 'payment_method' => $request->payment_method,
@@ -93,10 +127,12 @@ class CheckoutController extends Controller
                 'payment_status' => 'pending',
             ]);
 
-            // Hapus cart
+            /* ===== CLEAR CART ===== */
             if (session('order_source') !== 'product') {
                 Cart::where('user_id', $user->id)->delete();
             }
+
+            session()->forget(['order_source', 'product_id', 'size_id', 'quantity']);
 
             DB::commit();
 
@@ -104,11 +140,13 @@ class CheckoutController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            return back()->with('error', $e->getMessage());
         }
     }
 
-    // Buy Now
+    /* =======================
+     |  BUY NOW
+     ======================= */
     public function buyNow(Request $request)
     {
         session([
@@ -121,35 +159,64 @@ class CheckoutController extends Controller
         return redirect()->route('checkout');
     }
 
-    // Buat item Buy Now supaya size selalu ada
+    /* =======================
+     |  BUILD BUY NOW ITEM
+     ======================= */
     private function getBuyNowItem()
     {
-        $product = Product::find(session('product_id'));
-        $sizeId  = session('size_id');
+        $product  = Product::find(session('product_id'));
+        $sizeId   = session('size_id');
         $quantity = session('quantity');
 
         if (!$product) {
             return collect([]);
         }
 
-        // Ambil size dari database jika ada sizeId
-        $size = $sizeId ? \App\Models\Size::find($sizeId) : null;
+        $size = $sizeId ? Size::find($sizeId) : null;
 
-        return collect([(object) [
-            'product' => $product,
-            'size'    => $size,
-            'size_id' => $sizeId,
-            'quantity' => $quantity,
+        $additional_price = 0;
+        if ($sizeId) {
+            $additional_price = DB::table('product_sizes')
+                ->where('product_id', $product->id)
+                ->where('size_id', $sizeId)
+                ->value('additional_price') ?? 0;
+        }
+
+        return collect([(object)[
+            'product'          => $product,
+            'size'             => $size,
+            'size_id'          => $sizeId,
+            'quantity'         => $quantity,
+            'additional_price' => $additional_price,
         ]]);
     }
 
-    public function cancelBuyNow()
-    {
-        // Hapus session Buy Now
-        session()->forget(['order_source', 'product_id', 'size_id', 'quantity']);
 
-        // Redirect ke halaman sebelumnya atau ke list produk
-        return redirect()->back();
+    /* =======================
+     |  PRICE CALCULATOR
+     ======================= */
+    private function getItemPrice($item)
+    {
+        $base = $item->product->price ?? 0;
+
+        if (!$item->size_id) {
+            return $base;
+        }
+
+        $additional_price = DB::table('product_sizes')
+            ->where('product_id', $item->product->id)
+            ->where('size_id', $item->size_id)
+            ->value('additional_price') ?? 0;
+
+        return $base + $additional_price;
     }
 
+    /* =======================
+     |  CANCEL BUY NOW
+     ======================= */
+    public function cancelBuyNow()
+    {
+        session()->forget(['order_source', 'product_id', 'size_id', 'quantity']);
+        return redirect()->back();
+    }
 }

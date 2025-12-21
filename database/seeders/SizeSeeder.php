@@ -10,8 +10,8 @@ class SizeSeeder extends Seeder
 {
     public function run(): void
     {
-        
-DB::table('sizes')->delete();
+
+        DB::table('sizes')->delete();
 
 
         $sizes = [
