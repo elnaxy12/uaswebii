@@ -6,9 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\OrderItem;
-
 use Illuminate\Support\Facades\DB;
-
 
 class Order extends Model
 {
@@ -24,7 +22,8 @@ class Order extends Model
         'total',
         'shipping_service',
         'payment_expired_at',
-        'tracking_number'
+        'tracking_number',
+        'invoice_number'
     ];
 
     public function user()
@@ -84,5 +83,13 @@ class Order extends Model
         }
 
         $this->update(['status' => $status]);
+    }
+
+    protected static function booted()
+    {
+        static::created(function ($order) {
+            $order->invoice_number = 'INV-' . date('Ymd') . '-' . str_pad($order->id, 4, '0', STR_PAD_LEFT);
+            $order->save();
+        });
     }
 }

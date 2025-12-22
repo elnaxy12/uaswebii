@@ -123,7 +123,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="p-4 text-center text-gray-500">Belum ada order</td>
+                                <td colspan="6" class="p-4 text-center text-gray-500">No orders yet</td>
                             </tr>
                         @endforelse
                     </tbody>

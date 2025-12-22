@@ -11,7 +11,6 @@ use App\Models\OrderItem;
 use App\Models\Order;
 use App\Models\User;
 use App\Models\Product;
-
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -58,14 +57,8 @@ class DashboardController extends Controller
         return view('v_admin.v_data.v_users.app', compact('admin', 'users'));
     }
 
-    public function calender()
-    {
-        $admin = Auth::guard('admin')->user();
-        return view('v_admin.v_data.v_calender.app', compact('admin'));
-    }
 
-
-    public function calenderEvents()
+    public function calendarEvents()
     {
         $events = [];
 
@@ -194,5 +187,21 @@ class DashboardController extends Controller
     {
         $user = Auth::guard('web')->user();
         return view('v_user.v_order.app', compact('user'));
+    }
+    public function calendar()
+    {
+        $admin = Auth::guard('admin')->user();
+        return view('v_admin.v_data.v_calendar.app', compact('admin'));
+    }
+
+    public function invoice()
+    {
+        $admin = Auth::guard('admin')->user();
+
+        $orders = Order::with('user')
+            ->latest()
+            ->paginate(9);
+
+        return view('v_admin.v_data.v_invoice.app', compact('orders', 'admin'));
     }
 }

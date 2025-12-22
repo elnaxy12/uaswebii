@@ -34,7 +34,7 @@
                 initialView: 'dayGridMonth',
                 height: 650,
 
-                events: "{{ route('admin.dashboard.calender.events') }}",
+                events: "{{ route('admin.dashboard.calendar.events') }}",
 
                 eventDidMount: function (info) {
                     if (info.event.extendedProps.status === 'shipped') {

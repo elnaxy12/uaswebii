@@ -143,16 +143,15 @@ Route::middleware(['auth:admin'])->group(function () {
     Route::get('/admin/dashboard/order', [DashboardController::class, 'pendingOrder'])
             ->name('admin.dashboard.pendingOrder');
 
+    Route::get(
+        'admin/dashboard/calendar',
+        [DashboardController::class, 'calendar']
+    )->name('admin.dashboard.calendar');
 
     Route::get(
-        'admin/dashboard/calender',
-        [DashboardController::class, 'calender']
-    )->name('admin.dashboard.calender');
-
-    Route::get(
-        'admin/dashboard/calender/events',
-        [DashboardController::class, 'calenderEvents']
-    )->name('admin.dashboard.calender.events');
+        'admin/dashboard/calendar/events',
+        [DashboardController::class, 'calendarEvents']
+    )->name('admin.dashboard.calendar.events');
 
 
     Route::patch(
@@ -164,6 +163,9 @@ Route::middleware(['auth:admin'])->group(function () {
         '/admin/orders/{order}/send-payment-email',
         [OrderController::class, 'sendPaymentEmail']
     )->name('admin.orders.sendPaymentEmail');
+
+    Route::get('/admin/dashboard/invoice', [DashboardController::class, 'invoice'])
+        ->name('admin.dashboard.invoice');
 });
 
 

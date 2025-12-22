@@ -18,7 +18,7 @@
             </thead>
 
             <!-- table body -->
-            <tbody class="text-left text-gray-600">
+            <tbody class="text-left">
                 @php $count = 0; @endphp
 
                 @foreach ($orders as $order)
@@ -26,28 +26,28 @@
                         @break($count >= 4)
                         <tr>
                             <!-- customer -->
-                            <td class="py-3 text-xs font-semibold flex items-center gap-3">
+                            <td class="py-3 text-xs flex items-center gap-3">
                                 <img src="{{ $item->product->image }}" alt="{{ $item->product->name }}"
                                     class="w-20 object-cover">
                             </td>
 
                             <!-- product -->
-                            <td class="text-xs font-semibold">
+                            <td class="text-xs">
                                 {{ $item->product->name }}
                             </td>
 
                             <!-- invoice -->
-                            <td class="px-4 text-xs font-semibold ">
+                            <td class="px-4 text-xs">
                                 #{{ $order->id }}
                             </td>
 
                             <!-- price -->
-                            <td class="text-xs font-semibold">
+                            <td class="text-xs">
                                 ${{ number_format($order->total, 0, ',', '.') }}
                             </td>
 
                             <!-- status -->
-                            <td class="text-xs font-semibold capitalize">
+                            <td class="text-xs capitalize">
                                 {{ $order->status }}
                             </td>
 
