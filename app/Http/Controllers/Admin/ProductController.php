@@ -1,5 +1,4 @@
 <?php
-// app/Http/Controllers/Admin/ProductController.php
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -32,10 +31,8 @@ class ProductController extends Controller
             'sizes.*.stock' => 'required|integer|min:0',
         ]);
         
-        // Upload image
         $imagePath = $request->file('image')->store('products', 'public');
         
-        // Create product
         $product = Product::create([
             'name' => $request->name,
             'slug' => Str::slug($request->name) . '-' . time(),
@@ -47,7 +44,6 @@ class ProductController extends Controller
             'is_active' => $request->has('is_active'),
         ]);
         
-        // Attach sizes with stock
         if ($request->has('sizes')) {
             foreach ($request->sizes as $sizeData) {
                 $product->sizes()->attach($sizeData['size_id'], [

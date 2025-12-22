@@ -24,7 +24,11 @@
             <div class="container mx-auto px-4 py-8">
                 <!-- Breadcrumb Navigation -->
                 <nav class="mb-6 text-sm text-gray-600">
-                    <a href="{{ url('/') }}" class="hover:text-black transition">Home</a>
+                    @auth
+                        <a href="{{ route('beranda') }}" class="hover:text-black transition">Beranda</a>
+                    @else
+                        <a href="{{ url('/') }}" class="hover:text-black transition">Home</a>
+                    @endauth
                     <span class="mx-2">/</span>
                     <a class="hover:text-black transition">Products</a>
                     <span class="mx-2">/</span>
@@ -66,7 +70,7 @@
                         <!-- Price & Views -->
                         <div class="mb-6">
                             @php
-                                $price = $product->price + ($size->additional_price ?? 0);
+$price = $product->price + ($size->additional_price ?? 0);
                             @endphp
                             <p id="productPrice" class="text-3xl md:text-4xl font-bold text-gray-900">
                                 ${{ number_format($product->price + ($product->sizes->first()->pivot->additional_price ?? 0), 2) }}
@@ -98,9 +102,9 @@
                                 <div class="flex flex-wrap gap-2 mb-3" id="sizeSelection">
                                     @foreach($product->sizes as $size)
                                         @php
-                                            $stock = $size->pivot->stock ?? 0;
-                                            $isAvailable = $stock > 0;
-                                            $isFirst = $loop->first;
+        $stock = $size->pivot->stock ?? 0;
+        $isAvailable = $stock > 0;
+        $isFirst = $loop->first;
                                         @endphp
 
                                         <button type="button" class="size-btn px-4 py-3 border rounded-lg text-sm font-medium transition-all duration-200
@@ -241,14 +245,20 @@
                             </div>
 
                             @if($product->sizes && $product->sizes->count() > 0)
-                                <div class="col-span-2">
-                                    <strong class="text-gray-700 text-sm font-medium block mb-1">Available Sizes:</strong>
-                                    <div class="flex flex-wrap gap-2 mt-2">
+                                                            <div class="col-span-2">
+                                                                <strong class="text-gray-700 text-sm font-medium block mb-1">Available Sizes:</strong>
+                                                                <div class="flex flex-wrap gap-2 mt-2">
+                                        @php
+                                            $maxStock = $product->sizes
+                                                ->pluck('pivot.stock')
+                                                ->max();
+                                        @endphp
                                         @foreach($product->sizes as $size)
                                             @if(($size->pivot->stock ?? 0) > 0)
-                                                <span
-                                                    class="inline-flex items-center px-3 py-1 rounded-full text-sm 
-                                                                                                {{ $loop->first ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-700' }}">
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm
+                                                    {{ $size->pivot->stock == $maxStock
+                                                        ? 'bg-green-100 text-green-800'
+                                                        : 'bg-gray-100 text-gray-700' }}">
                                                     {{ $size->code }}
                                                     <span class="ml-1 text-xs">({{ $size->pivot->stock }})</span>
                                                 </span>
@@ -403,8 +413,9 @@
                 // Update variables
                 selectedSizeId = button.dataset.sizeId;
                 selectedSizeCode = button.dataset.sizeCode;
-                selectedStock = parseInt(button.dataset.stock);
-                maxQuantity = Math.min(selectedStock, 10);
+                selectedStock = parseInt(button.dataset.stock) || 0;
+                maxQuantity = selectedStock;
+
 
                 // Reset quantity to 1
                 quantity = 1;

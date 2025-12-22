@@ -138,16 +138,12 @@ class DashboardController extends Controller
             'estimated_arrival' => 'nullable|date|after_or_equal:shipped_at',
         ]);
 
-        // Update order
         $order->update([
             'status' => $request->status,
             'shipping_service' => $request->shipping_service,
             'tracking_number' => $request->tracking_number,
         ]);
 
-        /* ===============================
-           SHIPPED → BUAT / UPDATE KALENDER
-        =============================== */
         if ($request->status === 'shipped') {
             ShippingCalendar::updateOrCreate(
                 ['order_id' => $order->id],
@@ -161,9 +157,6 @@ class DashboardController extends Controller
             );
         }
 
-        /* ===============================
-           DELIVERED → UPDATE KALENDER
-        =============================== */
         if ($request->status === 'delivered') {
             if (!$order->shippingCalendar) {
                 return back()->withErrors('Order belum dikirim');
@@ -179,7 +172,6 @@ class DashboardController extends Controller
     }
 
 
-    // controller user
     public function dashboard()
     {
         $user = Auth::guard('web')->user();

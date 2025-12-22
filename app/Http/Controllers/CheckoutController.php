@@ -14,9 +14,6 @@ use Illuminate\Support\Facades\DB;
 
 class CheckoutController extends Controller
 {
-    /* =======================
-     |  HALAMAN CHECKOUT
-     ======================= */
     public function index()
     {
         $user = Auth::user();
@@ -25,7 +22,6 @@ class CheckoutController extends Controller
             ->where('user_id', $user->id)
             ->get();
 
-        // Ambil additional_price dari product_sizes
         foreach ($cartItems as $item) {
             $item->additional_price = 0;
 
@@ -41,7 +37,6 @@ class CheckoutController extends Controller
             }
         }
 
-        // Buy Now
         if (session('order_source') === 'product') {
             $cartItems = $this->getBuyNowItem();
         }
@@ -49,9 +44,6 @@ class CheckoutController extends Controller
         return view('v_user.v_checkout.app', compact('cartItems'));
     }
 
-    /* =======================
-     |  PROSES CHECKOUT
-     ======================= */
     public function processCheckout(Request $request)
     {
         $request->validate([
@@ -76,14 +68,12 @@ class CheckoutController extends Controller
         DB::beginTransaction();
         try {
 
-            /* ===== HITUNG TOTAL ===== */
             $total = 0;
             foreach ($cartItems as $item) {
                 $price = $this->getItemPrice($item);
                 $total += $price * $item->quantity;
             }
 
-            /* ===== BUAT ORDER ===== */
             $order = Order::create([
                 'user_id'        => $user->id,
                 'total'          => $total,
@@ -96,7 +86,6 @@ class CheckoutController extends Controller
                 'payment_method' => $request->payment_method,
             ]);
 
-            /* ===== ORDER ITEMS + STOCK ===== */
             foreach ($cartItems as $item) {
 
                 $price = $this->getItemPrice($item);
@@ -110,7 +99,6 @@ class CheckoutController extends Controller
                     'subtotal'   => $price * $item->quantity,
                 ]);
 
-                // Kurangi stok jika pakai size
                 if ($item->size_id) {
                     DB::table('product_sizes')
                         ->where('product_id', $item->product->id)
@@ -119,7 +107,6 @@ class CheckoutController extends Controller
                 }
             }
 
-            /* ===== PAYMENT ===== */
             Payment::create([
                 'order_id'       => $order->id,
                 'payment_method' => $request->payment_method,
@@ -127,7 +114,6 @@ class CheckoutController extends Controller
                 'payment_status' => 'pending',
             ]);
 
-            /* ===== CLEAR CART ===== */
             if (session('order_source') !== 'product') {
                 Cart::where('user_id', $user->id)->delete();
             }
@@ -144,9 +130,6 @@ class CheckoutController extends Controller
         }
     }
 
-    /* =======================
-     |  BUY NOW
-     ======================= */
     public function buyNow(Request $request)
     {
         session([
@@ -159,9 +142,6 @@ class CheckoutController extends Controller
         return redirect()->route('checkout');
     }
 
-    /* =======================
-     |  BUILD BUY NOW ITEM
-     ======================= */
     private function getBuyNowItem()
     {
         $product  = Product::find(session('product_id'));
@@ -192,9 +172,6 @@ class CheckoutController extends Controller
     }
 
 
-    /* =======================
-     |  PRICE CALCULATOR
-     ======================= */
     private function getItemPrice($item)
     {
         $base = $item->product->price ?? 0;
@@ -211,9 +188,6 @@ class CheckoutController extends Controller
         return $base + $additional_price;
     }
 
-    /* =======================
-     |  CANCEL BUY NOW
-     ======================= */
     public function cancelBuyNow()
     {
         session()->forget(['order_source', 'product_id', 'size_id', 'quantity']);

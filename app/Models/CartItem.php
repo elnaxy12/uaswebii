@@ -30,7 +30,6 @@ class CartItem extends Model
         return $this->belongsTo(Cart::class);
     }
 
-    /** Harga tambahan dari pivot */
     public function additionalPrice(): int
     {
         return $this->product
@@ -40,7 +39,6 @@ class CartItem extends Model
             ?->additional_price ?? 0;
     }
 
-    /** Stock dari pivot */
     public function stock(): int
     {
         return $this->product
@@ -50,13 +48,11 @@ class CartItem extends Model
             ?->stock ?? 0;
     }
 
-    /** Harga per item */
     public function pricePerItem(): int
     {
         return ($this->product?->price ?? 0) + $this->additionalPrice();
     }
 
-    /** Subtotal */
     public function subtotal(): int
     {
         return $this->pricePerItem() * ($this->quantity ?? 1);

@@ -27,17 +27,11 @@ class Product extends Model
 
     protected $appends = ['total_stock'];
 
-    /**
-     * Get the category that owns the product.
-     */
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    /**
-     * Get the sizes for the product.
-     */
     public function sizes(): BelongsToMany
     {
         return $this->belongsToMany(Size::class, 'product_sizes')
@@ -45,9 +39,6 @@ class Product extends Model
                     ->withTimestamps();
     }
 
-    /**
-     * Get only available sizes (with stock > 0)
-     */
     public function availableSizes(): BelongsToMany
     {
         return $this->belongsToMany(Size::class, 'product_sizes')

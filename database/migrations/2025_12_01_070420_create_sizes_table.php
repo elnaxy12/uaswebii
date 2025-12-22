@@ -12,7 +12,7 @@ return new class () extends Migration {
             $table->string('code', 10)->unique();
             $table->string('name', 50);
             $table->text('description')->nullable();
-            $table->integer('sort_order')->default(0); // Ganti 'order' menjadi 'sort_order'
+            $table->integer('sort_order')->default(0); 
             $table->timestamps();
         });
     }

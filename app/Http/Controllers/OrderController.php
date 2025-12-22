@@ -12,9 +12,6 @@ use App\Jobs\CancelOrderJob;
 
 class OrderController extends Controller
 {
-    // =========================
-    // LIST ORDER USER
-    // =========================
     public function index()
     {
         $orders = Order::where('user_id', auth()->id())
@@ -24,9 +21,6 @@ class OrderController extends Controller
         return view('index2.order', compact('orders'));
     }
 
-    // =========================
-    // CHECKOUT DARI CART
-    // =========================
     public function createFromCart()
     {
         $user = auth()->user();
@@ -76,9 +70,6 @@ class OrderController extends Controller
             ->with('success', 'Order berhasil dibuat, silakan lakukan pembayaran.');
     }
 
-    // =========================
-    // CANCEL ORDER MANUAL
-    // =========================
     public function cancel(Order $order)
     {
         if ($order->user_id !== auth()->id()) {
@@ -110,9 +101,6 @@ class OrderController extends Controller
         return back()->with('success', 'Order dibatalkan & stok dikembalikan');
     }
 
-    // =========================
-    // DETAIL ORDER
-    // =========================
     public function show(Order $order)
     {
         if ($order->user_id !== auth()->id()) {
@@ -124,14 +112,10 @@ class OrderController extends Controller
         return view('v_user.v_order.detail', compact('order'));
     }
 
-    // =========================
-    // KIRIM EMAIL PEMBAYARAN
-    // =========================
     public function sendPaymentEmail($orderId)
     {
         $order = Order::with('user')->findOrFail($orderId);
 
-        // ❌ jangan reset order yang sudah selesai
         if (!in_array($order->status, ['pending', 'waiting_payment'])) {
             return back()->with('error', 'Order sudah diproses.');
         }
@@ -141,7 +125,6 @@ class OrderController extends Controller
         Mail::to($order->user->email)
             ->send(new PaymentLinkMail($order, $paymentLink));
 
-        // ✅ SET expired SEKALI SAJA
         if (!$order->payment_expired_at) {
 
             $order->update([

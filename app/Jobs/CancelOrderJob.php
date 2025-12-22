@@ -25,17 +25,14 @@ class CancelOrderJob implements ShouldQueue
     {
         $order = Order::with('items')->find($this->orderId);
 
-        // ❌ order tidak ada / sudah diproses
         if (!$order || $order->status !== 'waiting_payment') {
             return;
         }
 
-        // ⏰ belum expired
         if (now()->lessThan($order->payment_expired_at)) {
             return;
         }
 
-        // 🔄 restore stock
         foreach ($order->items as $item) {
             if ($item->size_id) {
                 DB::table('product_sizes')
@@ -49,7 +46,6 @@ class CancelOrderJob implements ShouldQueue
             }
         }
 
-        // ❌ cancel order
         $order->update(['status' => 'canceled']);
     }
 }

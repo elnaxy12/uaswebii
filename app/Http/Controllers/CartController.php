@@ -11,15 +11,12 @@ use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
-    // Menampilkan halaman cart
     public function index()
     {
-        // Ambil semua cart items milik user yang login
         $cartItems = Cart::with(['product', 'size'])
             ->where('user_id', auth()->id())
             ->get();
 
-        // Hitung additional_price dan subtotal
         foreach ($cartItems as $item) {
             $item->additional_price = 0;
             if ($item->size_id) {
@@ -37,7 +34,6 @@ class CartController extends Controller
     }
 
 
-    // Menambahkan item ke cart
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -46,17 +42,14 @@ class CartController extends Controller
             'quantity' => 'required|integer|min:1',
         ]);
 
-        // Cek apakah produk+size sudah ada di cart
         $existingCartItem = Cart::where('user_id', auth()->id())
             ->where('product_id', $validated['product_id'])
             ->where('size_id', $validated['size_id'])
             ->first();
 
         if ($existingCartItem) {
-            // Update quantity
             $existingCartItem->increment('quantity', $validated['quantity']);
         } else {
-            // Buat cart item baru
             Cart::create([
                 'user_id' => auth()->id(),
                 'product_id' => $validated['product_id'],
@@ -68,12 +61,10 @@ class CartController extends Controller
         return redirect()->route('user.cart')->with('success', 'Item berhasil ditambahkan ke keranjang.');
     }
 
-    // Hapus item dari cart
     public function destroy($id)
     {
         $cart = Cart::findOrFail($id);
 
-        // Cek kepemilikan
         if ($cart->user_id != auth()->id()) {
             abort(403);
         }
@@ -83,7 +74,6 @@ class CartController extends Controller
         return redirect()->route('user.cart')->with('success', 'Item berhasil dihapus dari keranjang.');
     }
 
-    // Update quantity via AJAX
     public function updateQuantity(Request $request, Cart $cart)
     {
         if ($cart->user_id != auth()->id()) {
@@ -92,19 +82,14 @@ class CartController extends Controller
 
         $request->validate(['quantity' => 'required|integer|min:1']);
 
-        // Update quantity di DB
-        $cart->update(['quantity' => $request->quantity]);
+       $cart->update(['quantity' => $request->quantity]);
 
         return response()->json(['success' => true, 'quantity' => $cart->quantity]);
     }
 
 
-    // Update size via AJAX
     public function updateSize(Request $request, Cart $cart)
     {
-        // =========================
-        // AUTH CHECK
-        // =========================
         if ($cart->user_id !== auth()->id()) {
             return response()->json([
                 'success' => false,
@@ -112,25 +97,15 @@ class CartController extends Controller
             ], 403);
         }
 
-        // =========================
-        // VALIDATION
-        // =========================
         $request->validate([
             'size_id' => 'nullable|exists:sizes,id',
             'quantity' => 'nullable|integer|min:1'
         ]);
 
-        // =========================
-        // DEFAULT VALUE
-        // =========================
         $quantity = $request->quantity ?? $cart->quantity;
 
-        // =========================
-        // IF SIZE SELECTED
-        // =========================
         if ($request->size_id) {
 
-            // Ambil size + pivot stock
             $size = $cart->product
                 ->sizes()
                 ->where('sizes.id', $request->size_id)
@@ -145,32 +120,21 @@ class CartController extends Controller
 
             $stock = (int) ($size->pivot->stock ?? 0);
 
-            // Jika stok 0, paksa quantity 1 (aman)
             if ($stock <= 0) {
                 $quantity = 1;
             } else {
-                // Potong quantity jika melebihi stok
                 $quantity = min($quantity, $stock);
             }
 
         } else {
-            // =========================
-            // SIZE DIHAPUS (NULL)
-            // =========================
             $quantity = max(1, $quantity);
         }
 
-        // =========================
-        // UPDATE CART
-        // =========================
         $cart->update([
             'size_id'  => $request->size_id,
             'quantity' => $quantity
         ]);
 
-        // =========================
-        // RESPONSE
-        // =========================
         return response()->json([
             'success'  => true,
             'quantity' => $quantity

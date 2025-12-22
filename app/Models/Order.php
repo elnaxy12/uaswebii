@@ -27,7 +27,6 @@ class Order extends Model
         'tracking_number'
     ];
 
-    // Relasi ke User
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -48,13 +47,11 @@ class Order extends Model
         return $this->belongsTo(Size::class);
     }
 
-    // Relasi ke OrderItem
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
     }
 
-    // Hitung total order secara otomatis (opsional)
     public function calculateTotal()
     {
         return $this->orderItems->sum(fn ($item) => $item->price * $item->quantity);
