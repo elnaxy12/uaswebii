@@ -12,6 +12,7 @@ use App\Http\Controllers\WishlistsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\InvoiceController;
 use App\Models\Product;
 
 // Home page
@@ -166,6 +167,12 @@ Route::middleware(['auth:admin'])->group(function () {
 
     Route::get('/admin/dashboard/invoice', [DashboardController::class, 'invoice'])
         ->name('admin.dashboard.invoice');
+
+    Route::get('/invoice/{order}/download', [InvoiceController::class, 'download'])
+    ->name('invoice.download');
+
+    Route::get('/invoice/{order}/preview', [InvoiceController::class, 'preview'])
+    ->name('invoice.preview');
 });
 
 
