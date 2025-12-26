@@ -123,7 +123,7 @@
 
                             {{-- TOTAL --}}
                             <div class="text-right font-medium flex space-x-2 items-center">
-                                <a href="{{ route('invoice.preview', $order->id) }}" class="px-4 py-2 bg-gray-700 text-white rounded">
+                                <a href="{{ route('invoice.preview', $order->id) }}" class="px-4 py-2 bg-gray-700 hover:bg-white hover:text-gray-700 border focus:bg-white focus:text-gray-700 text-white rounded">
                                     Preview
                                 </a>
                                 <div>Total : ${{ number_format($order->total) }}</div>

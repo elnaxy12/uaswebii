@@ -19,36 +19,126 @@ class DashboardController extends Controller
     {
         $admin = Auth::guard('admin')->user();
         $productCount = Product::count();
-        $totalOrders = Order::count();
+        $totalOrdersToday = Order::whereBetween('created_at', [
+            now()->startOfDay(),
+            now()->endOfDay()
+        ])->count();
+
+        $todayOrders = Order::whereDate('created_at', today())->count();
+        $yesterdayOrders = Order::whereDate('created_at', today()->subDay())->count();
+
+        if ($yesterdayOrders > 0) {
+            $percentageChange = (($todayOrders - $yesterdayOrders) / $yesterdayOrders) * 100;
+        } else {
+            $percentageChange = $todayOrders > 0 ? 100 : 0;
+        }
+
+        $percentageChange = round($percentageChange, 2);
+
         $orderCount = Order::where('status', Order::STATUS_PENDING)->count();
         $totalQuantity = OrderItem::sum('quantity');
         $totalUsers    = User::count();
         $canceledOrders  = Order::where('status', 'canceled')->count();
+        $productStock = DB::table('products')->sum('stock');
+        $sizeStock    = DB::table('product_sizes')->sum('stock');
+        $selisih      = $productStock - $sizeStock;
+
+        $persentase = $productStock > 0
+            ? round(($selisih / $productStock) * 100, 2)
+            : 0;
 
 
-        return view('v_admin.v_dashboard.app', compact('admin', 'orderCount', 'totalQuantity', 'totalUsers', 'canceledOrders', 'productCount', 'totalOrders'));
+        return view('v_admin.v_dashboard.app', compact(
+            'admin',
+            'orderCount',
+            'totalQuantity',
+            'totalUsers',
+            'canceledOrders',
+            'productCount',
+            'selisih',
+            'persentase',
+            'percentageChange',
+            'totalOrdersToday'
+        ));
     }
 
     public function ecommerce()
-    {
-        $admin = Auth::guard('admin')->user();
+{
+    $admin = Auth::guard('admin')->user();
 
-        // Best seller
-        $bestSellers = OrderItem::select('product_id', DB::raw('SUM(quantity) as total_sold'))
-            ->groupBy('product_id')
-            ->orderByDesc('total_sold')
-            ->with('product')
-            ->take(10)
-            ->get();
+    $todayOrders      = Order::whereDate('created_at', Carbon::today())->count();
+    $yesterdayOrders  = Order::whereDate('created_at', Carbon::yesterday())->count();
+    $lastWeekOrders   = Order::whereBetween('created_at', [
+        Carbon::now()->subWeek()->startOfDay(),
+        Carbon::yesterday()->endOfDay()
+    ])->count();
+    $lastMonthOrders  = Order::whereBetween('created_at', [
+        Carbon::now()->subMonth()->startOfDay(),
+        Carbon::yesterday()->endOfDay()
+    ])->count();
+    $last90DaysOrders = Order::whereBetween('created_at', [
+        Carbon::now()->subDays(90)->startOfDay(),
+        Carbon::yesterday()->endOfDay()
+    ])->count();
 
-        // Recent orders
-        $orders = Order::with('items.product')
-            ->latest()
-            ->take(5)
-            ->get();
+    $todayRevenue = OrderItem::whereHas('order', function ($query) {
+        $query->whereDate('created_at', Carbon::today());
+    })->sum(DB::raw('price * quantity'));
 
-        return view('v_admin.v_dashboard.app2', compact('admin', 'bestSellers', 'orders'));
-    }
+    $yesterdayRevenue = OrderItem::whereHas('order', function ($query) {
+        $query->whereDate('created_at', Carbon::yesterday());
+    })->sum(DB::raw('price * quantity'));
+
+    $lastWeekRevenue = OrderItem::whereHas('order', function ($query) {
+        $query->whereBetween('created_at', [
+            Carbon::now()->subWeek()->startOfDay(),
+            Carbon::yesterday()->endOfDay()
+        ]);
+    })->sum(DB::raw('price * quantity'));
+
+    $lastMonthRevenue = OrderItem::whereHas('order', function ($query) {
+        $query->whereBetween('created_at', [
+            Carbon::now()->subMonth()->startOfDay(),
+            Carbon::yesterday()->endOfDay()
+        ]);
+    })->sum(DB::raw('price * quantity'));
+
+    $last90DaysRevenue = OrderItem::whereHas('order', function ($query) {
+        $query->whereBetween('created_at', [
+            Carbon::now()->subDays(90)->startOfDay(),
+            Carbon::yesterday()->endOfDay()
+        ]);
+    })->sum(DB::raw('price * quantity'));
+
+    $bestSellers = OrderItem::select('product_id', DB::raw('SUM(quantity) as total_sold'))
+        ->groupBy('product_id')
+        ->orderByDesc('total_sold')
+        ->with('product')
+        ->take(10)
+        ->get();
+
+    $orders = Order::with('items.product')
+        ->latest()
+        ->take(5)
+        ->get();
+
+    return view('v_admin.v_dashboard.app2', compact(
+        'admin',
+        'todayOrders',
+        'yesterdayOrders',
+        'lastWeekOrders',
+        'lastMonthOrders',
+        'last90DaysOrders',
+        'todayRevenue',
+        'yesterdayRevenue',
+        'lastWeekRevenue',
+        'lastMonthRevenue',
+        'last90DaysRevenue',
+        'bestSellers',
+        'orders'
+    ));
+}
+
 
     public function users()
     {
