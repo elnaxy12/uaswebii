@@ -26,6 +26,7 @@
                         <div class="p-4 flex justify-between border rounded-lg shadow-2xs items-center cursor-pointer bg-gray-50"
                             @click="open = !open">
                             <div>
+                                <p>#{{ $order->id }}</p>
                                 <span class="font-semibold">{{ $order->invoice_number }}</span>
                                 <p class="text-xs text-gray-500">{{ $order->created_at->format('d M Y H:i') }}</p>
                             </div>

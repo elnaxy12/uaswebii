@@ -26,38 +26,27 @@
         <!-- top -->
         <div class="p-5 border-b border-gray-200">
             <h2 class="font-bold text-lg mb-6">Sales History</h2>
+        
+            @forelse($salesHistory as $item)
+                <div class="flex flex-row justify-between mb-3">
+                    <div>
+                        <h4 class="text-gray-600 font-thin text-sm">
+                            {{ $item->product->name ?? '-' }}
+                        </h4>
+                        <p class="text-gray-400 text-xs font-hairline">
+                            {{ $item->created_at->diffForHumans() }}
+                        </p>
+                    </div>
 
-            <div class="flex flex-row justify-between mb-3">
-                <div class="">
-                    <h4 class="text-gray-600 font-thin">Puma Shoes</h4>
-                    <p class="text-gray-400 text-xs font-hairline">30 min ago</p>
+                    <div class="text-sm font-medium text-green-500 truncate" title="{{ number_format($item->price) }}">
+                        + ${{ number_format($item->price * $item->quantity, 2) }}
+                    </div>
                 </div>
-                <div class="text-sm font-medium">
-                    <span class="text-green-400">+</span> $250
-                </div>
-            </div>
-
-            <div class="flex flex-row justify-between mb-3">
-                <div class="">
-                    <h4 class="text-gray-600 font-thin">Google Pixel 4 xl</h4>
-                    <p class="text-gray-400 text-xs font-hairline">1 day ago</p>
-                </div>
-                <div class="text-sm font-medium">
-                    <span class="text-red-400">-</span> $10
-                </div>
-            </div>
-
-            <div class="flex flex-row justify-between">
-                <div class="">
-                    <h4 class="text-gray-600 font-thin">Nike Air Jordan</h4>
-                    <p class="text-gray-400 text-xs font-hairline">2 hour ago</p>
-                </div>
-                <div class="text-sm font-medium">
-                    <span class="text-red-400">-</span> $98
-                </div>
-            </div>
-
+            @empty
+                <p class="text-sm text-gray-400">No sales yet</p>
+            @endforelse
         </div>
+
         <!-- end top -->
 
         <!-- bottom -->

@@ -122,6 +122,14 @@ class DashboardController extends Controller
         ->take(5)
         ->get();
 
+    $salesHistory = OrderItem::with(['product', 'order'])
+        ->whereHas('order', function ($q) {
+            $q->where('status', 'delivered');
+        })
+        ->latest() 
+        ->take(3)
+        ->get();
+
     return view('v_admin.v_dashboard.app2', compact(
         'admin',
         'todayOrders',
@@ -135,7 +143,8 @@ class DashboardController extends Controller
         'lastMonthRevenue',
         'last90DaysRevenue',
         'bestSellers',
-        'orders'
+        'orders',
+        'salesHistory'
     ));
 }
 
