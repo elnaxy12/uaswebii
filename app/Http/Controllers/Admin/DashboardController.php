@@ -27,6 +27,33 @@ class DashboardController extends Controller
         $todayOrders = Order::whereDate('created_at', today())->count();
         $yesterdayOrders = Order::whereDate('created_at', today()->subDay())->count();
 
+        $thisMonthOrders = Order::where('status', 'delivered')
+            ->whereBetween('created_at', [
+                Carbon::now()->startOfMonth(),
+                Carbon::now()->endOfMonth()
+            ])
+            ->count();
+
+
+        $lastMonthOrders = Order::where('status', 'delivered')
+            ->whereBetween('created_at', [
+                Carbon::now()->subMonth()->startOfMonth(),
+                Carbon::now()->subMonth()->endOfMonth()
+            ])
+            ->count();
+
+
+
+        if ($lastMonthOrders == 0 && $thisMonthOrders > 0) {
+            $salesPercentage = 100;
+        } elseif ($lastMonthOrders > 0) {
+            $salesPercentage = (($thisMonthOrders - $lastMonthOrders) / $lastMonthOrders) * 100;
+        } else {
+            $salesPercentage = 0;
+        }
+
+        $salesPercentage = round($salesPercentage, 2);
+
         if ($yesterdayOrders > 0) {
             $percentageChange = (($todayOrders - $yesterdayOrders) / $yesterdayOrders) * 100;
         } else {
@@ -48,6 +75,32 @@ class DashboardController extends Controller
             : 0;
 
 
+        $salesDaily = Order::selectRaw('DATE(created_at) as date, COUNT(*) as total')
+            ->where('status', 'delivered')
+            ->whereBetween('created_at', [
+                Carbon::now()->startOfMonth(),
+                Carbon::now()->endOfMonth()
+            ])
+            ->groupBy('date')
+            ->orderBy('date')
+            ->pluck('total', 'date');
+
+
+
+        $dates = [];
+        $totals = [];
+
+        $start = Carbon::now()->startOfMonth();
+        $end   = Carbon::now()->endOfMonth();
+
+        for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
+            $formatted = $date->format('Y-m-d');
+
+            $dates[]  = $date->format('d');
+            $totals[] = $salesDaily[$formatted] ?? 0;
+        }
+
+
         return view('v_admin.v_dashboard.app', compact(
             'admin',
             'orderCount',
@@ -58,95 +111,133 @@ class DashboardController extends Controller
             'selisih',
             'persentase',
             'percentageChange',
-            'totalOrdersToday'
+            'totalOrdersToday',
+            'thisMonthOrders',
+            'salesPercentage',
+            'dates',
+            'totals'
         ));
+
     }
 
     public function ecommerce()
-{
-    $admin = Auth::guard('admin')->user();
+    {
+        $admin = Auth::guard('admin')->user();
 
-    $todayOrders      = Order::whereDate('created_at', Carbon::today())->count();
-    $yesterdayOrders  = Order::whereDate('created_at', Carbon::yesterday())->count();
-    $lastWeekOrders   = Order::whereBetween('created_at', [
-        Carbon::now()->subWeek()->startOfDay(),
-        Carbon::yesterday()->endOfDay()
-    ])->count();
-    $lastMonthOrders  = Order::whereBetween('created_at', [
-        Carbon::now()->subMonth()->startOfDay(),
-        Carbon::yesterday()->endOfDay()
-    ])->count();
-    $last90DaysOrders = Order::whereBetween('created_at', [
-        Carbon::now()->subDays(90)->startOfDay(),
-        Carbon::yesterday()->endOfDay()
-    ])->count();
-
-    $todayRevenue = OrderItem::whereHas('order', function ($query) {
-        $query->whereDate('created_at', Carbon::today());
-    })->sum(DB::raw('price * quantity'));
-
-    $yesterdayRevenue = OrderItem::whereHas('order', function ($query) {
-        $query->whereDate('created_at', Carbon::yesterday());
-    })->sum(DB::raw('price * quantity'));
-
-    $lastWeekRevenue = OrderItem::whereHas('order', function ($query) {
-        $query->whereBetween('created_at', [
+        $todayOrders      = Order::whereDate('created_at', Carbon::today())->count();
+        $yesterdayOrders  = Order::whereDate('created_at', Carbon::yesterday())->count();
+        $lastWeekOrders   = Order::whereBetween('created_at', [
             Carbon::now()->subWeek()->startOfDay(),
             Carbon::yesterday()->endOfDay()
-        ]);
-    })->sum(DB::raw('price * quantity'));
-
-    $lastMonthRevenue = OrderItem::whereHas('order', function ($query) {
-        $query->whereBetween('created_at', [
+        ])->count();
+        $lastMonthOrders  = Order::whereBetween('created_at', [
             Carbon::now()->subMonth()->startOfDay(),
             Carbon::yesterday()->endOfDay()
-        ]);
-    })->sum(DB::raw('price * quantity'));
-
-    $last90DaysRevenue = OrderItem::whereHas('order', function ($query) {
-        $query->whereBetween('created_at', [
+        ])->count();
+        $last90DaysOrders = Order::whereBetween('created_at', [
             Carbon::now()->subDays(90)->startOfDay(),
             Carbon::yesterday()->endOfDay()
-        ]);
-    })->sum(DB::raw('price * quantity'));
+        ])->count();
 
-    $bestSellers = OrderItem::select('product_id', DB::raw('SUM(quantity) as total_sold'))
-        ->groupBy('product_id')
-        ->orderByDesc('total_sold')
-        ->with('product')
-        ->take(10)
-        ->get();
+        $todayRevenue = OrderItem::whereHas('order', function ($query) {
+            $query->whereDate('created_at', Carbon::today());
+        })->sum(DB::raw('price * quantity'));
 
-    $orders = Order::with('items.product')
-        ->latest()
-        ->take(5)
-        ->get();
+        $yesterdayRevenue = OrderItem::whereHas('order', function ($query) {
+            $query->whereDate('created_at', Carbon::yesterday());
+        })->sum(DB::raw('price * quantity'));
 
-    $salesHistory = OrderItem::with(['product', 'order'])
-        ->whereHas('order', function ($q) {
-            $q->where('status', 'delivered');
-        })
-        ->latest() 
-        ->take(3)
-        ->get();
+        $lastWeekRevenue = OrderItem::whereHas('order', function ($query) {
+            $query->whereBetween('created_at', [
+                Carbon::now()->subWeek()->startOfDay(),
+                Carbon::yesterday()->endOfDay()
+            ]);
+        })->sum(DB::raw('price * quantity'));
 
-    return view('v_admin.v_dashboard.app2', compact(
-        'admin',
-        'todayOrders',
-        'yesterdayOrders',
-        'lastWeekOrders',
-        'lastMonthOrders',
-        'last90DaysOrders',
-        'todayRevenue',
-        'yesterdayRevenue',
-        'lastWeekRevenue',
-        'lastMonthRevenue',
-        'last90DaysRevenue',
-        'bestSellers',
-        'orders',
-        'salesHistory'
-    ));
-}
+        $lastMonthRevenue = OrderItem::whereHas('order', function ($query) {
+            $query->whereBetween('created_at', [
+                Carbon::now()->subMonth()->startOfDay(),
+                Carbon::yesterday()->endOfDay()
+            ]);
+        })->sum(DB::raw('price * quantity'));
+
+        $last90DaysRevenue = OrderItem::whereHas('order', function ($query) {
+            $query->whereBetween('created_at', [
+                Carbon::now()->subDays(90)->startOfDay(),
+                Carbon::yesterday()->endOfDay()
+            ]);
+        })->sum(DB::raw('price * quantity'));
+
+        $bestSellers = OrderItem::select('product_id', DB::raw('SUM(quantity) as total_sold'))
+            ->groupBy('product_id')
+            ->orderByDesc('total_sold')
+            ->with('product')
+            ->take(5)
+            ->get();
+
+        $orders = Order::with('items.product')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        $salesHistory = OrderItem::with(['product', 'order'])
+            ->whereHas('order', function ($q) {
+                $q->where('status', 'delivered');
+            })
+            ->latest()
+            ->take(3)
+            ->get();
+
+        $start = Carbon::now()->startOfMonth();
+        $end = Carbon::now()->endOfMonth();
+
+        $dailyOrders = Order::select(
+            DB::raw('DATE(created_at) as date'),
+            DB::raw('COUNT(*) as total_orders')
+        )
+            ->where('status', 'delivered')
+            ->whereBetween('created_at', [$start, $end])
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        $dailyItems = DB::table('order_items')
+            ->select(
+                DB::raw('DATE(orders.created_at) as date'),
+                DB::raw('SUM(order_items.quantity) as items')
+            )
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->where('orders.status', 'delivered')
+            ->whereBetween('orders.created_at', [$start, $end])
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        $dates = $dailyOrders->pluck('date'); 
+        $orderTotals = $dailyOrders->pluck('total_orders'); 
+        $itemTotals = $dailyItems->pluck('items'); 
+
+
+        return view('v_admin.v_dashboard.app2', compact(
+            'admin',
+            'todayOrders',
+            'yesterdayOrders',
+            'lastWeekOrders',
+            'lastMonthOrders',
+            'last90DaysOrders',
+            'todayRevenue',
+            'yesterdayRevenue',
+            'lastWeekRevenue',
+            'lastMonthRevenue',
+            'last90DaysRevenue',
+            'bestSellers',
+            'dates',
+            'orderTotals',
+            'itemTotals',
+            'orders',
+            'salesHistory'
+        ));
+    }
 
 
     public function users()

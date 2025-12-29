@@ -619,23 +619,28 @@
                 <div class="card-body grid grid-cols-2 gap-6 lg:grid-cols-1">
 
                     <div class="p-8">
-                        <h1 class="h2">5,337</h1>
+                        <h1 class="h2">{{$thisMonthOrders}}</h1>
                         <p class="text-black font-medium">Sales this month</p>
 
-                        <div class="mt-20 mb-2 flex items-center">
-                            <div class="py-1 px-3 rounded bg-green-200 text-green-900 mr-3">
-                                <i class="fa fa-caret-up"></i>
-                            </div>
-                            <p class="text-black"><span class="num-2 text-green-400"></span><span
-                                    class="text-green-400">% more sales</span> in comparison to last month.</p>
-                        </div>
+                        @php
+                            $isUp = $salesPercentage >= 0;
+                        @endphp
 
-                        <div class="flex items-center">
-                            <div class="py-1 px-3 rounded bg-red-200 text-red-900 mr-3">
-                                <i class="fa fa-caret-down"></i>
+                        <div class="mt-20 mb-2 flex items-center">
+                            <div class="py-1 px-3 rounded mr-3
+                                {{ $isUp ? 'bg-green-200 text-green-900' : 'bg-red-200 text-red-900' }}">
+                                <i class="fa {{ $isUp ? 'fa-caret-up' : 'fa-caret-down' }}"></i>
                             </div>
-                            <p class="text-black"><span class="num-2 text-red-400"></span><span class="text-red-400">%
-                                    revenue per sale</span> in comparison to last month.</p>
+
+                            <p class="text-black">
+                                <span class="{{ $isUp ? 'text-green-400' : 'text-red-400' }} font-semibold">
+                                    {{ number_format(abs($salesPercentage), 1) }}%
+                                </span>
+                                <span class="{{ $isUp ? 'text-green-400' : 'text-red-400' }}">
+                                    {{ $isUp ? 'more sales' : 'less sales' }}
+                                </span>
+                                in comparison to last month.
+                            </p>
                         </div>
 
                         <a href="#" class="btn-shadow mt-6">view details</a>
@@ -879,6 +884,53 @@
     <!-- script -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="{{asset('js/scripts.js')}}"></script>
+    <script>
+        const salesDates = @json($dates);
+        const salesTotals = @json($totals);
+    </script>
+    <script>
+        function chartOptions(type, height, data, color, categories) {
+            return {
+                chart: {
+                    type: type,
+                    height: height,
+                    width: "100%",
+                    toolbar: { show: false },
+                },
+                dataLabels: { enabled: false },
+                grid: { show: false },
+                series: [{
+                    name: "Daily Sales",
+                    data: data,
+                }],
+                stroke: {
+                    width: 3,
+                    colors: [color],
+                },
+                fill: {
+                    colors: [color],
+                },
+                xaxis: {
+                    categories: categories,
+                    labels: { show: true },
+                },
+                yaxis: { show: false },
+            };
+        }
+
+        var chart = new ApexCharts(
+            document.querySelector("#sealsOverview"),
+            chartOptions(
+                "bar",
+                300,
+                salesTotals,
+                "#30aba0",
+                salesDates
+            )
+        );
+
+        chart.render();
+    </script>
     <!-- end script -->
 
 </body>

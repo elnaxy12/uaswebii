@@ -7,8 +7,8 @@
         <div class="p-5 flex flex-row flex-wrap justify-between items-center">
             <h2 class="font-bold text-lg">Order Summary</h2>
             <div class="flex flex-row justify-center items-center">
-                <a href="#" class="btn mr-4 text-sm py-2 block">month</a>
-                <a href="#" class="btn-shadow text-sm py-2 block">week</a>
+                <a href="#" id="monthBtn" class="btn-shadow mr-4 text-sm py-2 block">month</a>
+                <a href="#" id="weekBtn" class="btn-shadow text-sm py-2 block">week</a>
             </div>
         </div>
         <!-- end top -->
@@ -26,7 +26,7 @@
         <!-- top -->
         <div class="p-5 border-b border-gray-200">
             <h2 class="font-bold text-lg mb-6">Sales History</h2>
-        
+
             @forelse($salesHistory as $item)
                 <div class="flex flex-row justify-between mb-3">
                     <div>
@@ -65,79 +65,66 @@
 
 </div>
 
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var options = {
-                chart: {
-                    width: '100%',
-                    type: "area",
-                    toolbar: {
-                        show: false,
-                    },
-                },
-                grid: {
-                    show: false,
-                    padding: {
-                        top: 0,
-                        right: 0,
-                        bottom: 0,
-                        left: 0
-                    }
-                },
-                dataLabels: {
-                    enabled: false
-                },
-                legend: {
-                    show: false,
-                },
-                series: [
-                    {
-                        name: "serie1",
-                        data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43]
-                    },
-                    {
-                        name: "serie2",
-                        data: [54, 45, 51, 57, 32, 33, 31, 31, 46, 37, 33]
-                    }
-                ],
-                fill: {
-                    type: "gradient",
-                    gradient: {
-                        shadeIntensity: 1,
-                        opacityFrom: 0.9,
-                        opacityTo: 0.7,
-                        stops: [0, 90, 100]
-                    },
-                    colors: ['#4fd1c5'],
-                },
-                stroke: {
-                    colors: ['#4fd1c5'],
-                    width: 3
-                },
-                yaxis: {
-                    show: false,
-                },
-                xaxis: {
-                    categories: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-                    labels: {
-                        show: false,
-                    },
-                    axisBorder: {
-                        show: false,
-                    },
-                    tooltip: {
-                        enabled: false,
-                    }
-                },
-            };
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const monthData = {
+            orders: @json($orderTotals),
+            items: @json($itemTotals),
+            dates: @json($dates)
+        };
+        const weekData = {
+            orders: @json($weekOrderTotals ?? []),
+            items: @json($weekItemTotals ?? []),
+            dates: @json($weekDates ?? [])
+        };
 
-            var SummaryChart = document.getElementById("SummaryChart");
-
-            if (SummaryChart != null && typeof (SummaryChart) != 'undefined' && typeof ApexCharts !== 'undefined') {
-                var chart = new ApexCharts(SummaryChart, options);
-                chart.render();
-            }
+        var chart = new ApexCharts(document.querySelector("#SummaryChart"), {
+            chart: { type: 'area', height: 300, toolbar: { show: false } },
+            series: [
+                { name: 'Orders', data: monthData.orders },
+                { name: 'Items', data: monthData.items }
+            ],
+            colors: ['#4fd1c5'],
+            xaxis: { categories: monthData.dates, labels: { show: true } },
+            stroke: { width: 3 },
+            fill: { opacity: 0.7 },
+            legend: { position: 'top' },
+            yaxis: { show: true }
         });
-    </script>
-@endpush
+
+        chart.render();
+
+        function updateChart(data) {
+            chart.updateOptions({
+                series: [
+                    { name: 'Orders', data: data.orders },
+                    { name: 'Items', data: data.items }
+                ],
+                xaxis: { categories: data.dates }
+            });
+        }
+
+        function setActiveButton(activeBtn, inactiveBtn) {
+            activeBtn.classList.remove('btn-shadow');
+            activeBtn.classList.add('btn');
+
+            inactiveBtn.classList.remove('btn');
+            inactiveBtn.classList.add('btn-shadow');
+        }
+
+        const monthBtn = document.getElementById('monthBtn');
+        const weekBtn = document.getElementById('weekBtn');
+
+        monthBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            updateChart(monthData);
+            setActiveButton(monthBtn, weekBtn);
+        });
+
+        weekBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            updateChart(weekData);
+            setActiveButton(weekBtn, monthBtn);
+        });
+    });
+</script>
