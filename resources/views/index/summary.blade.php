@@ -52,12 +52,21 @@
         <!-- bottom -->
         <div class="p-5">
             <h2 class="font-bold text-lg mb-2">Sales Progress</h2>
-            <strong class="text-teal-400 font-extrabold text-xl">$82,950.96</strong>
-
-            <div class="bg-gray-300 h-2 rounded-full mt-2 relative">
-                <div class="rounded-full bg-teal-400 h-full w-3/4 shadow-md"></div>
+        
+            <strong class="text-teal-400 font-extrabold text-xl">
+                {{ number_format($totalSold) }} Products Sold
+            </strong>
+        
+            <p class="text-xs text-gray-500 mt-1">
+                Total Sales: ${{ number_format($salesValue, 0, ',', '.') }}
+            </p>
+        
+            <div class="bg-gray-300 h-2 rounded-full mt-2 overflow-hidden">
+                <div class="h-full rounded-full bg-teal-400 transition-all duration-500" style="width: {{ $inventoryProgress }}%">
+                </div>
             </div>
         </div>
+
         <!-- end bottom -->
 
     </div>

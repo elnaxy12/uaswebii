@@ -11,6 +11,9 @@ use App\Models\OrderItem;
 use App\Models\Order;
 use App\Models\User;
 use App\Models\Product;
+
+use App\Models\ProductSize;
+
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -120,103 +123,179 @@ class DashboardController extends Controller
 
     }
 
-    public function ecommerce()
+       public function ecommerce()
     {
         $admin = Auth::guard('admin')->user();
 
-        $todayOrders      = Order::whereDate('created_at', Carbon::today())->count();
-        $yesterdayOrders  = Order::whereDate('created_at', Carbon::yesterday())->count();
-        $lastWeekOrders   = Order::whereBetween('created_at', [
-            Carbon::now()->subWeek()->startOfDay(),
-            Carbon::yesterday()->endOfDay()
-        ])->count();
-        $lastMonthOrders  = Order::whereBetween('created_at', [
-            Carbon::now()->subMonth()->startOfDay(),
-            Carbon::yesterday()->endOfDay()
-        ])->count();
-        $last90DaysOrders = Order::whereBetween('created_at', [
-            Carbon::now()->subDays(90)->startOfDay(),
-            Carbon::yesterday()->endOfDay()
-        ])->count();
+        /*
+        |--------------------------------------------------------------------------
+        | DATE RANGE
+        |--------------------------------------------------------------------------
+        */
+        $today      = Carbon::today();
+        $yesterday  = Carbon::yesterday();
 
-        $todayRevenue = OrderItem::whereHas('order', function ($query) {
-            $query->whereDate('created_at', Carbon::today());
-        })->sum(DB::raw('price * quantity'));
+        $lastWeekStart   = Carbon::now()->subWeek()->startOfDay();
+        $lastMonthStart  = Carbon::now()->subMonth()->startOfDay();
+        $last90DaysStart = Carbon::now()->subDays(90)->startOfDay();
 
-        $yesterdayRevenue = OrderItem::whereHas('order', function ($query) {
-            $query->whereDate('created_at', Carbon::yesterday());
-        })->sum(DB::raw('price * quantity'));
+        /*
+        |--------------------------------------------------------------------------
+        | ORDERS COUNT (DELIVERED ONLY)
+        |--------------------------------------------------------------------------
+        */
+        $todayOrders = Order::where('status', 'delivered')
+            ->whereDate('created_at', $today)
+            ->count();
 
-        $lastWeekRevenue = OrderItem::whereHas('order', function ($query) {
-            $query->whereBetween('created_at', [
-                Carbon::now()->subWeek()->startOfDay(),
-                Carbon::yesterday()->endOfDay()
-            ]);
-        })->sum(DB::raw('price * quantity'));
+        $yesterdayOrders = Order::where('status', 'delivered')
+            ->whereDate('created_at', $yesterday)
+            ->count();
 
-        $lastMonthRevenue = OrderItem::whereHas('order', function ($query) {
-            $query->whereBetween('created_at', [
-                Carbon::now()->subMonth()->startOfDay(),
-                Carbon::yesterday()->endOfDay()
-            ]);
-        })->sum(DB::raw('price * quantity'));
+        $lastWeekOrders = Order::where('status', 'delivered')
+            ->whereBetween('created_at', [$lastWeekStart, $yesterday->endOfDay()])
+            ->count();
 
-        $last90DaysRevenue = OrderItem::whereHas('order', function ($query) {
-            $query->whereBetween('created_at', [
-                Carbon::now()->subDays(90)->startOfDay(),
-                Carbon::yesterday()->endOfDay()
-            ]);
-        })->sum(DB::raw('price * quantity'));
+        $lastMonthOrders = Order::where('status', 'delivered')
+            ->whereBetween('created_at', [$lastMonthStart, $yesterday->endOfDay()])
+            ->count();
 
+        $last90DaysOrders = Order::where('status', 'delivered')
+            ->whereBetween('created_at', [$last90DaysStart, $yesterday->endOfDay()])
+            ->count();
+
+        /*
+        |--------------------------------------------------------------------------
+        | REVENUE (DELIVERED ONLY)
+        |--------------------------------------------------------------------------
+        */
+        $todayRevenue = OrderItem::whereHas('order', fn ($q) =>
+            $q->where('status', 'delivered')
+              ->whereDate('created_at', $today)
+        )->sum(DB::raw('price * quantity'));
+
+        $yesterdayRevenue = OrderItem::whereHas('order', fn ($q) =>
+            $q->where('status', 'delivered')
+              ->whereDate('created_at', $yesterday)
+        )->sum(DB::raw('price * quantity'));
+
+        $lastWeekRevenue = OrderItem::whereHas('order', fn ($q) =>
+            $q->where('status', 'delivered')
+              ->whereBetween('created_at', [$lastWeekStart, $yesterday->endOfDay()])
+        )->sum(DB::raw('price * quantity'));
+
+        $lastMonthRevenue = OrderItem::whereHas('order', fn ($q) =>
+            $q->where('status', 'delivered')
+              ->whereBetween('created_at', [$lastMonthStart, $yesterday->endOfDay()])
+        )->sum(DB::raw('price * quantity'));
+
+        $last90DaysRevenue = OrderItem::whereHas('order', fn ($q) =>
+            $q->where('status', 'delivered')
+              ->whereBetween('created_at', [$last90DaysStart, $yesterday->endOfDay()])
+        )->sum(DB::raw('price * quantity'));
+
+        /*
+        |--------------------------------------------------------------------------
+        | TOTAL SOLD (UNIT) — ORDER ITEMS BASED
+        |--------------------------------------------------------------------------
+        */
+        $totalSold = OrderItem::whereHas('order', fn ($q) =>
+            $q->where('status', 'delivered')
+        )->sum('quantity');
+
+        /*
+        |--------------------------------------------------------------------------
+        | INVENTORY (FOR PROGRESS BAR)
+        |--------------------------------------------------------------------------
+        */
+        $totalInitialStock = Product::sum('stock');
+        $totalRemainingStock = ProductSize::sum('stock');
+
+        $inventoryProgress = $totalInitialStock > 0
+            ? min(100, (($totalInitialStock - $totalRemainingStock) / $totalInitialStock) * 100)
+            : 0;
+
+        /*
+        |--------------------------------------------------------------------------
+        | SALES VALUE (STOCK-BASED)
+        |--------------------------------------------------------------------------
+        */
+        $salesValue = Product::joinSub(
+                ProductSize::select('product_id', DB::raw('SUM(stock) as remaining_stock'))
+                    ->groupBy('product_id'),
+                'ps',
+                'products.id',
+                '=',
+                'ps.product_id'
+            )
+            ->sum(DB::raw('(products.stock - ps.remaining_stock) * products.price'));
+
+        /*
+        |--------------------------------------------------------------------------
+        | BEST SELLERS
+        |--------------------------------------------------------------------------
+        */
         $bestSellers = OrderItem::select('product_id', DB::raw('SUM(quantity) as total_sold'))
+            ->whereHas('order', fn ($q) => $q->where('status', 'delivered'))
             ->groupBy('product_id')
             ->orderByDesc('total_sold')
             ->with('product')
             ->take(5)
             ->get();
 
+        /*
+        |--------------------------------------------------------------------------
+        | RECENT ORDERS
+        |--------------------------------------------------------------------------
+        */
         $orders = Order::with('items.product')
             ->latest()
             ->take(5)
             ->get();
 
+        /*
+        |--------------------------------------------------------------------------
+        | SALES HISTORY
+        |--------------------------------------------------------------------------
+        */
         $salesHistory = OrderItem::with(['product', 'order'])
-            ->whereHas('order', function ($q) {
-                $q->where('status', 'delivered');
-            })
+            ->whereHas('order', fn ($q) => $q->where('status', 'delivered'))
             ->latest()
             ->take(3)
             ->get();
 
+        /*
+        |--------------------------------------------------------------------------
+        | MONTHLY CHART
+        |--------------------------------------------------------------------------
+        */
         $start = Carbon::now()->startOfMonth();
-        $end = Carbon::now()->endOfMonth();
+        $end   = Carbon::now()->endOfMonth();
 
         $dailyOrders = Order::select(
-            DB::raw('DATE(created_at) as date'),
-            DB::raw('COUNT(*) as total_orders')
-        )
+                DB::raw('DATE(created_at) as date'),
+                DB::raw('COUNT(*) as total_orders')
+            )
             ->where('status', 'delivered')
             ->whereBetween('created_at', [$start, $end])
             ->groupBy('date')
             ->orderBy('date')
             ->get();
 
-        $dailyItems = DB::table('order_items')
+        $dailyItems = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
             ->select(
                 DB::raw('DATE(orders.created_at) as date'),
                 DB::raw('SUM(order_items.quantity) as items')
             )
-            ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->where('orders.status', 'delivered')
             ->whereBetween('orders.created_at', [$start, $end])
             ->groupBy('date')
             ->orderBy('date')
             ->get();
 
-        $dates = $dailyOrders->pluck('date'); 
-        $orderTotals = $dailyOrders->pluck('total_orders'); 
-        $itemTotals = $dailyItems->pluck('items'); 
-
+        $dates        = $dailyOrders->pluck('date');
+        $orderTotals  = $dailyOrders->pluck('total_orders');
+        $itemTotals   = $dailyItems->pluck('items');
 
         return view('v_admin.v_dashboard.app2', compact(
             'admin',
@@ -235,7 +314,10 @@ class DashboardController extends Controller
             'orderTotals',
             'itemTotals',
             'orders',
-            'salesHistory'
+            'salesHistory',
+            'totalSold',
+            'salesValue',
+            'inventoryProgress'
         ));
     }
 
