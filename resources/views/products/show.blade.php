@@ -102,19 +102,19 @@ $price = $product->price + ($size->additional_price ?? 0);
                                 <div class="flex flex-wrap gap-2 mb-3" id="sizeSelection">
                                     @foreach($product->sizes as $size)
                                         @php
-        $stock = $size->pivot->stock ?? 0;
-        $isAvailable = $stock > 0;
-        $isFirst = $loop->first;
+                                            $stock = $size->pivot->stock ?? 0;
+                                            $isAvailable = $stock > 0;
+                                            $isFirst = $loop->first;
                                         @endphp
 
                                         <button type="button" class="size-btn px-4 py-3 border rounded-lg text-sm font-medium transition-all duration-200
-                                                                                @if($isAvailable)
-                                                                                    hover:border-black hover:bg-gray-50 cursor-pointer
-                                                                                    {{ $isFirst ? 'bg-black text-white border-black' : 'bg-white text-gray-900 border-gray-300' }}
-                                                                                @else
-                                                                                    opacity-50 cursor-not-allowed bg-gray-100 border-gray-200
-                                                                                @endif" data-size-id="{{ $size->id }}"
-                                            data-additional-price="{{ $size->pivot->additional_price }}"
+                                            @if($isAvailable)
+                                                hover:border-black hover:bg-white cursor-pointer hover:text-black focus:bg-black focus:text-gray-500
+                                                {{ $isFirst ? 'bg-black text-white border-black' : 'bg-white text-gray-900 border-gray-300' }}
+                                            @else
+                                                opacity-50 cursor-not-allowed bg-gray-100 border-gray-200
+                                            @endif" data-size-id="{{ $size->id }}"
+                                               data-additional-price="{{ $size->pivot->additional_price }}"
                                             data-size-code="{{ $size->code }}" data-stock="{{ $stock }}" {{ !$isAvailable ? 'disabled' : '' }}>
                                             <div class="flex flex-col items-center">
                                                 <span class="font-medium">{{ $size->code }}</span>

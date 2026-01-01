@@ -1,6 +1,6 @@
 @include('base2.start')
 
-<title>Adidas Etalase | WOMEN</title>
+<title>WOMEN | Adidas Etalase</title>
 </head>
 
 <body id="overlay" class="fadeIn">
@@ -8,6 +8,17 @@
     <div id="smooth-wrapper">
         <div id="smooth-content">
             <div class="pt-20">
+                <div class="relative">
+                    <img class="h-screen bg-cover bg-center pb-5"
+                        src="https://brand.assets.adidas.com/image/upload/f_auto,q_auto:best,fl_lossy/edi_fw25_whattowearskiing_bnr_d_802a390831.jpg"
+                        alt="">
+                    <div class="absolute bottom-50 left-15 space-y-5">
+                        <h1 class="bg-white font-bold px-2">HOLIDAY GIFTING - BEST OF US</h1>
+                        <p class="bg-white px-2">Ace your gift-giving game with this
+                            <br>seasons best apparel and footwear.
+                        </p>
+                    </div>
+                </div>
                 <div class="main-wrapper">
                     <!--slider-top-women-->
                     <div id="etalase-woman" class="title-top-men">
@@ -277,7 +288,22 @@
                         <div id="progress2"></div>
                     </div>
                 </div>
+                <div class="relative">
+                    <img class="h-screen bg-cover bg-center pt-5"
+                        src="https://brand.assets.adidas.com/image/upload/f_auto,q_auto:best,fl_lossy/if_w_gt_1920,w_1920/6508630_CAM_Onsite_FW_25_YGT_SEA_Games_6_Dec_SEA_Masthead_Banner_ref02_2880_X1280px_desktop_D_78f7a7b8ee.jpg"
+                        alt="">
+                    <div class="absolute bottom-20 left-15 space-y-5">
+                        <h1 class="bg-white font-bold px-2">You Got This</h1>
+                        <p class="bg-white px-2">We all need someone to reassure us
+                        </p>
+                    </div>
+                </div>
             </div>
+            <footer>
+                <div class="footer-content">
+                    <p>`Adidas &copy; 2025 | adidas America, Inc.</p>
+                </div>
+            </footer>
         </div>
     </div>
     <script>
