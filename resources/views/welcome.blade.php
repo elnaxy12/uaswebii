@@ -35,14 +35,14 @@
                 <div id="menuToggle" class="col4">
                     <button id="btnToggle" class="loader-btn"></button>
                 </div>
-                <a href="https://www.adidas.com/us/men" target="_blank" rel="noopener noreferrer">MEN</a>
-                <a href="https://www.adidas.com/us/women" target="_blank" rel="noopener noreferrer">WOMAN</a>
-                <a href="https://www.adidas.com/us/kids" target="_blank" rel="noopener noreferrer">KIDS</a>
-                <a href="https://www.adidas.com/us/back_to_school" target="_blank" rel="noopener noreferrer">BACK TO
-                    SCHOOL</a>
-                <a href="https://www.adidas.com/us/sale" target="_blank" rel="noopener noreferrer">SALE</a>
-                <a href="https://www.adidas.com/us/new_arrivals" target="_blank" rel="noopener noreferrer">NEW &
-                    TRENDING</a>
+                <a href="{{route('men')}}" target="_blank" rel="noopener noreferrer">MEN</a>
+                <a href="{{route('women')}}" target="_blank" rel="noopener noreferrer">WOMAN</a>
+                <a href="{{route('kids')}}" target="_blank" rel="noopener noreferrer">KIDS</a>
+                <p href="https://www.adidas.com/us/back_to_school" target="_blank" rel="noopener noreferrer">BACK TO
+                    SCHOOL</p>
+                <p href="https://www.adidas.com/us/sale" target="_blank" rel="noopener noreferrer">SALE</p>
+                <p href="https://www.adidas.com/us/new_arrivals" target="_blank" rel="noopener noreferrer">NEW &
+                    TRENDING</p>
             </div>
             <div class="col3">
                 <a href="{{ route('user.dashboard') }}" target="_blank" rel="noopener noreferrer">

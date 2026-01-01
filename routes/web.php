@@ -21,6 +21,20 @@ Route::get('/', function () {
     return view('welcome', compact('products'));
 })->name('welcome');
 
+Route::get('/men', function () {
+    $products = \App\Models\Product::all();
+    return view('men', compact('products'));
+})->name('men');
+
+Route::get('/women', function () {
+    $products = \App\Models\Product::all();
+    return view('women', compact('products'));
+})->name('women');
+
+Route::get('/kids', function () {
+    $products = \App\Models\Product::all();
+    return view('kids', compact('products'));
+})->name('kids');
 
 // Auth
 Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
