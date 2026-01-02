@@ -1,6 +1,6 @@
 @include('base2.start')
 
-<title>Adidas Etalase | KIDS</title>
+<title>KIDS | Adidas Etalase</title>
 </head>
 
 <body id="overlay" class="fadeIn">
@@ -8,6 +8,19 @@
     <div id="smooth-wrapper">
         <div id="smooth-content">
             <div class="pt-20">
+                <div class="relative flex">
+                    <img class="h-screen bg-cover bg-center pb-5"
+                        src="https://brand.assets.adidas.com/image/upload/f_auto,q_auto:best,fl_lossy/if_w_gt_800,w_800/global_spw_evergreen_always_on_evergreen_ss25_launch_kids_navigation_card_teaser_4_d_95959c8ae5.jpg"
+                        alt="">
+                    <img class="h-screen bg-cover bg-center pb-5" src="https://brand.assets.adidas.com/image/upload/f_auto,q_auto:best,fl_lossy/if_w_gt_800,w_800/global_spw_evergreen_always_on_evergreen_ss25_launch_kids_navigation_card_teaser_3_d_182bcd2166.jpg" alt="">
+                    <img class="h-screen bg-cover bg-center pb-5" src="https://brand.assets.adidas.com/image/upload/f_auto,q_auto:best,fl_lossy/if_w_gt_800,w_800/global_spw_evergreen_always_on_evergreen_ss25_launch_kids_navigation_card_teaser_6_d_fe64e9738d.jpg" alt="">
+                        <div class="absolute bottom-50 left-15 space-y-5">
+                        <h1 class="bg-white font-bold px-2">HOLIDAY GIFTING - BEST OF US</h1>
+                        <p class="bg-white px-2">Ace your gift-giving game with this
+                            <br>seasons best apparel and footwear.
+                        </p>
+                    </div>
+                </div>
                 <div class="main-wrapper">
                     <!-- slider-top-kids -->
                     <div id="etalase-kids" class="title-top-men">
@@ -23,30 +36,30 @@
                         </button>
                         <div id="slider3" class="etalase-slide">
                             @php
-                                $firstProduct = $products->get(0);
-                                $secondProduct = $products->get(1);
-                                $thirdProduct = $products->get(2);
-                                $fourthProduct = $products->get(3);
-                                $fifthProduct = $products->get(4);
-                                $sixthProduct = $products->get(5);
-                                $seventhProduct = $products->get(6);
-                                $eighthProduct = $products->get(7);
-                                $ninthProduct = $products->get(8);
-                                $tenthProduct = $products->get(9);
-                                $eleventhProduct = $products->get(10);
-                                $twelfthProduct = $products->get(11);
-                                $thirteenthProduct = $products->get(12);
-                                $fourteenthProduct = $products->get(13);
-                                $fifteenthProduct = $products->get(14);
-                                $sixteenthProduct = $products->get(15);
-                                $seventeenthProduct = $products->get(16);
-                                $eighteenthProduct = $products->get(17);
-                                $nineteenthProduct = $products->get(18);
-                                $twentiethProduct = $products->get(19);
-                                $twentyFirstProduct = $products->get(20);
-                                $twentySecondProduct = $products->get(21);
-                                $twentyThirdProduct = $products->get(22);
-                                $twentyFourthProduct = $products->get(23);
+$firstProduct = $products->get(0);
+$secondProduct = $products->get(1);
+$thirdProduct = $products->get(2);
+$fourthProduct = $products->get(3);
+$fifthProduct = $products->get(4);
+$sixthProduct = $products->get(5);
+$seventhProduct = $products->get(6);
+$eighthProduct = $products->get(7);
+$ninthProduct = $products->get(8);
+$tenthProduct = $products->get(9);
+$eleventhProduct = $products->get(10);
+$twelfthProduct = $products->get(11);
+$thirteenthProduct = $products->get(12);
+$fourteenthProduct = $products->get(13);
+$fifteenthProduct = $products->get(14);
+$sixteenthProduct = $products->get(15);
+$seventeenthProduct = $products->get(16);
+$eighteenthProduct = $products->get(17);
+$nineteenthProduct = $products->get(18);
+$twentiethProduct = $products->get(19);
+$twentyFirstProduct = $products->get(20);
+$twentySecondProduct = $products->get(21);
+$twentyThirdProduct = $products->get(22);
+$twentyFourthProduct = $products->get(23);
                             @endphp
                             <a
                                 href="{{ route('product.show', ['id' => $seventeenthProduct->id, 'slug' => $seventeenthProduct->slug]) }}">
@@ -279,6 +292,11 @@
                 </div>
 
             </div>
+            <footer>
+                    <div class="footer-content">
+                        <p>`Adidas &copy; 2025 | adidas America, Inc.</p>
+                    </div>
+            </footer>
         </div>
     </div>
     <script>

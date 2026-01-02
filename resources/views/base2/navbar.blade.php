@@ -11,13 +11,13 @@
             <div id="menuToggle" class="col4">
                 <button id="btnToggle" class="loader-btn"></button>
             </div>
-            <a href="{{route('men')}}" target="_blank" rel="noopener noreferrer">MEN</a>
-            <a href="{{route('women')}}" target="_blank" rel="noopener noreferrer">WOMAN</a>
-            <a href="{{route('kids')}}" target="_blank" rel="noopener noreferrer">KIDS</a>
-            <p href="https://www.adidas.com/us/back_to_school" target="_blank" rel="noopener noreferrer">BACK TO
+            <a href="{{route('men')}}">MEN</a>
+            <a href="{{route('women')}}">WOMAN</a>
+            <a href="{{route('kids')}}">KIDS</a>
+            <p href="https://www.adidas.com/us/back_to_school">BACK TO
                 SCHOOL</p>
-            <p href="https://www.adidas.com/us/sale" target="_blank" rel="noopener noreferrer">SALE</p>
-            <p href="https://www.adidas.com/us/new_arrivals" target="_blank" rel="noopener noreferrer">NEW &
+            <p href="https://www.adidas.com/us/sale">SALE</p>
+            <p href="https://www.adidas.com/us/new_arrivals">NEW &
                 TRENDING</p>
         </div>
         {{-- <div class="col3">

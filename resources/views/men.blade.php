@@ -10,13 +10,14 @@
             <div class="pt-20">
                 <div class="relative">
                     <img class="h-screen bg-cover bg-center pb-5"
-                    src="https://brand.assets.adidas.com/image/upload/f_auto,q_auto:best,fl_lossy/edi_fw25_whattowearskiing_bnr_d_802a390831.jpg"
-                    alt="">
+                        src="https://brand.assets.adidas.com/image/upload/f_auto,q_auto:best,fl_lossy/edi_fw25_whattowearskiing_bnr_d_802a390831.jpg"
+                        alt="">
                     <div class="absolute bottom-50 left-15 space-y-5">
                         <h1 class="bg-white font-bold px-2">HOLIDAY GIFTING - BEST OF US</h1>
-                        <p class="bg-white px-2">Ace your gift-giving game with this 
-                            <br>seasons best apparel and footwear.</p>
-                        </div>
+                        <p class="bg-white px-2">Ace your gift-giving game with this
+                            <br>seasons best apparel and footwear.
+                        </p>
+                    </div>
                 </div>
                 <div class="main-wrapper">
                     <div id="etalase-men" class="title-top-men">
@@ -34,30 +35,30 @@
 
                         <div id="slider" class="etalase-slide no-underline">
                             @php
-$firstProduct = $products->get(0);
-$secondProduct = $products->get(1);
-$thirdProduct = $products->get(2);
-$fourthProduct = $products->get(3);
-$fifthProduct = $products->get(4);
-$sixthProduct = $products->get(5);
-$seventhProduct = $products->get(6);
-$eighthProduct = $products->get(7);
-$ninthProduct = $products->get(8);
-$tenthProduct = $products->get(9);
-$eleventhProduct = $products->get(10);
-$twelfthProduct = $products->get(11);
-$thirteenthProduct = $products->get(12);
-$fourteenthProduct = $products->get(13);
-$fifteenthProduct = $products->get(14);
-$sixteenthProduct = $products->get(15);
-$seventeenthProduct = $products->get(16);
-$eighteenthProduct = $products->get(17);
-$nineteenthProduct = $products->get(18);
-$twentiethProduct = $products->get(19);
-$twentyFirstProduct = $products->get(20);
-$twentySecondProduct = $products->get(21);
-$twentyThirdProduct = $products->get(22);
-$twentyFourthProduct = $products->get(23);
+                                $firstProduct = $products->get(0);
+                                $secondProduct = $products->get(1);
+                                $thirdProduct = $products->get(2);
+                                $fourthProduct = $products->get(3);
+                                $fifthProduct = $products->get(4);
+                                $sixthProduct = $products->get(5);
+                                $seventhProduct = $products->get(6);
+                                $eighthProduct = $products->get(7);
+                                $ninthProduct = $products->get(8);
+                                $tenthProduct = $products->get(9);
+                                $eleventhProduct = $products->get(10);
+                                $twelfthProduct = $products->get(11);
+                                $thirteenthProduct = $products->get(12);
+                                $fourteenthProduct = $products->get(13);
+                                $fifteenthProduct = $products->get(14);
+                                $sixteenthProduct = $products->get(15);
+                                $seventeenthProduct = $products->get(16);
+                                $eighteenthProduct = $products->get(17);
+                                $nineteenthProduct = $products->get(18);
+                                $twentiethProduct = $products->get(19);
+                                $twentyFirstProduct = $products->get(20);
+                                $twentySecondProduct = $products->get(21);
+                                $twentyThirdProduct = $products->get(22);
+                                $twentyFourthProduct = $products->get(23);
                             @endphp
 
                             <a
@@ -289,16 +290,20 @@ $twentyFourthProduct = $products->get(23);
                         <div id="progress"></div>
                     </div>
                 </div>
-                <img class="max-h-screen bg-cover bg-center pt-5" src="https://brand.assets.adidas.com/image/upload/f_auto,q_auto:best,fl_lossy/if_w_gt_1920,w_1920/global_adizero_race_running_ss26_launch_glps_family_banner_hero_1_d_c94edd63e8.jpg" alt="">
-                <div class="absolute bottom-20 left-15 space-y-5">
-                    <h1 class="bg-white font-bold px-2">FASTER. FASTEST. ADIZERO</h1>
-                    <p class="bg-white px-2">Beat your fastest records, from training to competition.</p>
+                <div class="relative">
+                    <img class="w-full bg-cover bg-center pt-5"
+                    src="https://brand.assets.adidas.com/image/upload/f_auto,q_auto:best,fl_lossy/if_w_gt_1920,w_1920/global_adizero_race_running_ss26_launch_glps_family_banner_hero_1_d_c94edd63e8.jpg"
+                    alt="">
+                    <div class="absolute bottom-20 left-15 space-y-5">
+                        <h1 class="bg-white font-bold px-2">FASTER. FASTEST. ADIZERO</h1>
+                        <p class="bg-white px-2">Beat your fastest records, from training to competition.</p>
+                    </div>
                 </div>
             </div>
             <footer>
-                    <div class="footer-content">
-                        <p>`Adidas &copy; 2025 | adidas America, Inc.</p>
-                    </div>
+                <div class="footer-content">
+                    <p>`Adidas &copy; 2025 | adidas America, Inc.</p>
+                </div>
             </footer>
         </div>
     </div>
