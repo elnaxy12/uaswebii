@@ -292,11 +292,18 @@
                 </div>
                 <div class="relative">
                     <img class="w-full bg-cover bg-center pt-5"
-                    src="https://brand.assets.adidas.com/image/upload/f_auto,q_auto:best,fl_lossy/if_w_gt_1920,w_1920/global_adizero_race_running_ss26_launch_glps_family_banner_hero_1_d_c94edd63e8.jpg"
-                    alt="">
+                        src="https://brand.assets.adidas.com/image/upload/f_auto,q_auto:best,fl_lossy/if_w_gt_1920,w_1920/global_adizero_race_running_ss26_launch_glps_family_banner_hero_1_d_c94edd63e8.jpg"
+                        alt="">
                     <div class="absolute bottom-20 left-15 space-y-5">
                         <h1 class="bg-white font-bold px-2">FASTER. FASTEST. ADIZERO</h1>
                         <p class="bg-white px-2">Beat your fastest records, from training to competition.</p>
+                        <a
+                            href="{{ route('product.show', ['id' => $fifthProduct->id, 'slug' => $fifthProduct->slug]) }}">
+                            <button
+                                class="bg-white border py-2 px-5 cursor-pointer focus:bg-black focus:border focus:border-white focus:text-white">
+                                Buy Now
+                            </button>
+                        </a>
                     </div>
                 </div>
             </div>
