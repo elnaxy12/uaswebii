@@ -132,15 +132,26 @@ class CheckoutController extends Controller
 
     public function buyNow(Request $request)
     {
-        session([
-            'order_source' => 'product',
-            'product_id'   => $request->product_id,
-            'size_id'      => $request->size_id,
-            'quantity'     => $request->quantity,
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'size_id'    => 'nullable|exists:sizes,id',
+            'quantity'   => 'required|integer|min:1',
+        ]);
+
+        // Buy Now = hapus cart lama
+        Cart::where('user_id', auth()->id())->delete();
+
+        Cart::create([
+            'user_id'    => auth()->id(),
+            'product_id' => $request->product_id,
+            'size_id'    => $request->size_id,
+            'quantity'   => $request->quantity,
         ]);
 
         return redirect()->route('checkout');
     }
+
+
 
     private function getBuyNowItem()
     {
@@ -170,7 +181,6 @@ class CheckoutController extends Controller
             'additional_price' => $additional_price,
         ]]);
     }
-
 
     private function getItemPrice($item)
     {

@@ -76,11 +76,12 @@ class OrderController extends Controller
             abort(403);
         }
 
-        if ($order->status !== 'waiting_payment') {
+        if (!in_array($order->status, ['waiting_payment', 'pending'])) {
             return back()->with('error', 'Order tidak bisa dibatalkan');
         }
 
         DB::transaction(function () use ($order) {
+            $order->load('items');
 
             foreach ($order->items as $item) {
                 if ($item->size_id) {
@@ -100,6 +101,7 @@ class OrderController extends Controller
 
         return back()->with('success', 'Order dibatalkan & stok dikembalikan');
     }
+
 
     public function show(Order $order)
     {

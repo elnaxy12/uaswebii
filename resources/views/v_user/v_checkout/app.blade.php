@@ -29,7 +29,7 @@
                 </thead>
                 <tbody>
                     @php $total = 0; @endphp
-                    @foreach($cartItems as $item)
+                    @foreach($cartItems as $item)c
                         @php
                             $price = $item->product->price ?? 0;
                             $additional = $item->additional_price ?? 0;
