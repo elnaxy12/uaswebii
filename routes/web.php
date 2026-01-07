@@ -13,6 +13,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\PaymentController;
 use App\Models\Product;
 
 // Home page
@@ -120,6 +121,13 @@ Route::middleware('auth')->group(function () {
     // Update size (AJAX)
     Route::post('/cart/{cart}/update-size', [CartController::class, 'updateSize'])
         ->name('cart.update-size');
+
+    // Halaman konfirmasi pembayaran
+    Route::get('/payment/confirm/{order}', [PaymentController::class, 'confirm'])
+    ->name('payment.confirm');
+
+    Route::post('/payment/confirm/{order}', [PaymentController::class, 'submit'])
+        ->name('payment.submit');
 
 });
 

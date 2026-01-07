@@ -117,27 +117,27 @@ class OrderController extends Controller
     public function sendPaymentEmail($orderId)
     {
         $order = Order::with('user')->findOrFail($orderId);
-
+        
         if (!in_array($order->status, ['pending', 'waiting_payment'])) {
             return back()->with('error', 'Order sudah diproses.');
         }
 
-        $paymentLink = "https://paymentkamu.com/pay/{$order->id}";
+        $paymentLink = route('payment.confirm', $order->id);
 
         Mail::to($order->user->email)
             ->send(new PaymentLinkMail($order, $paymentLink));
 
         if (!$order->payment_expired_at) {
-
             $order->update([
                 'status' => 'waiting_payment',
-                'payment_expired_at' => now()->addSeconds(30),
+                'payment_expired_at' => now()->addMinutes(15),
             ]);
 
             CancelOrderJob::dispatch($order->id)
                 ->delay($order->payment_expired_at);
         }
 
-        return back()->with('success', 'Link pembayaran berhasil dikirim ke email.');
+        return back()->with('success', 'Instruksi pembayaran berhasil dikirim ke email.');
     }
+
 }

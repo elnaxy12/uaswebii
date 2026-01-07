@@ -29,7 +29,7 @@
                 </thead>
                 <tbody>
                     @php $total = 0; @endphp
-                    @foreach($cartItems as $item)c
+                    @foreach($cartItems as $item)
                         @php
                             $price = $item->product->price ?? 0;
                             $additional = $item->additional_price ?? 0;
@@ -92,7 +92,6 @@
 
             <label class="block mb-1 font-semibold">Choose Payment Method:</label>
             <select name="payment_method" class="border px-3 py-2 rounded w-full outline-none" required>
-                <option value="">-- Select --</option>
                 <option value="bank_transfer">Bank Transfer</option>
                 <option value="cod">Cash on Delivery (COD)</option>
                 <option value="ewallet">E-Wallet</option>
