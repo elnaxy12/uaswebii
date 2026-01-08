@@ -112,7 +112,7 @@ Route::middleware('auth')->group(function () {
 
     // Hapus item dengan DELETE method
     Route::delete('/cart/{cart}', [CartController::class, 'destroy'])
-        ->name('cart.destroy'); // ⬅️ INI YANG BENAR
+        ->name('cart.destroy'); 
 
     // Update quantity (AJAX)
     Route::post('/cart/{cart}/update-quantity', [CartController::class, 'updateQuantity'])
