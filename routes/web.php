@@ -182,6 +182,10 @@ Route::middleware(['auth:admin'])->group(function () {
         [DashboardController::class, 'updateOrderStatus']
     )->name('admin.orders.updateStatus');
 
+    Route::put('/admin/orders/{order}/status', [OrderController::class, 'updateStatus'])
+    ->name('admin.order.updateStatus');
+
+
     Route::post(
         '/admin/orders/{order}/send-payment-email',
         [OrderController::class, 'sendPaymentEmail']

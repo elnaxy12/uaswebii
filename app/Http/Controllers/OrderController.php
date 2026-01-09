@@ -21,6 +21,20 @@ class OrderController extends Controller
         return view('index2.order', compact('orders'));
     }
 
+    public function updateStatus(Request $request, Order $order)
+    {
+        $request->validate([
+            'status' => 'required|string'
+        ]);
+
+        $order->update([
+            'status' => $request->status
+        ]);
+
+        return back()->with('success', 'Status order berhasil diperbarui');
+    }
+
+
     public function createFromCart()
     {
         $user = auth()->user();
@@ -117,7 +131,7 @@ class OrderController extends Controller
     public function sendPaymentEmail($orderId)
     {
         $order = Order::with('user')->findOrFail($orderId);
-        
+
         if (!in_array($order->status, ['pending', 'waiting_payment'])) {
             return back()->with('error', 'Order sudah diproses.');
         }

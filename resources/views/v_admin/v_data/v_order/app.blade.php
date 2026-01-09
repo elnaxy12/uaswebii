@@ -15,7 +15,7 @@
 
 <body>
     <!-- strat wrapper -->
-    <div class="flex h-screen">
+    <div class="flex h-screen relative">
         @include('base.sidebar')
         <div class="bg-white rounded-xl w-full">
             <h2 class="text-sm font-bold mb-4 p-5">
@@ -115,10 +115,63 @@
  
                                         @elseif ($order->status === 'waiting_payment')
                                             <span class="text-xs text-gray-400">Waiting Payment</span>
+                                        
+                                        @elseif ($order->status === 'waiting_verification')
+                                            <button  id="verifyBtn" class="bg-orange-600 text-white text-xs px-3 py-2 rounded w-full">Check</button>        
+                                            <div id="showVerify" class="hidden" style="
+                                                position:absolute;
+                                                top:50%;
+                                                left:50%;
+                                                transform:translate(-50%, -50%);
+                                                border:1px solid #e5e7eb;
+                                                border-radius:8px;
+                                                padding:24px;
+                                                flex-direction:column;
+                                                gap:16px;
+                                            ">
+                                                
+                                                        <h3 class="text-lg font-bold text-yellow-700">
+                                                            Menunggu Verifikasi Pembayaran
+                                                        </h3>
+                                                
+                                                        {{-- Informasi Order --}}
+                                                        <div class="text-sm space-y-1">
+                                                            <p><b>Order ID:</b> #{{ $order->id }}</p>
+                                                            <p><b>User:</b> {{ $order->user->name }}</p>
+                                                            <p><b>Total:</b> Rp {{ number_format($order->total, 0, ',', '.') }}</p>
+                                                        </div>
+                                                
+                                                        {{-- Informasi Payment --}}
+                                                        <div class="bg-white p-4 rounded border space-y-2">
+                                                            <p><b>Metode Pembayaran:</b> {{ $order->payment->method ?? '-' }}</p>
+                                                            <p><b>Nama Pengirim:</b> {{ $order->payment->sender_name ?? '-' }}</p>
+                                                            <p><b>Tanggal Bayar:</b> {{ $order->payment->paid_at ?? '-' }}</p>
+                                                
+                                                            @if ($order->payment && $order->payment->proof)
+                                                                <div>
+                                                                    <p class="font-semibold mb-2">Bukti Transfer:</p>
+                                                                    <img src="{{ asset('storage/' . $order->payment->proof) }}"
+                                                                        class="w-64 rounded border">
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                
+                                                        {{-- Form Update Status --}}
+                                                        <form action="{{ route('admin.order.updateStatus', $order->id) }}" method="POST">
+                                                            @csrf
+                                                            @method('PUT')
+                                                
+                                                            <input type="hidden" name="status" value="shipped">
+                                                
+                                                            <button type="submit"
+                                                                class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
+                                                                ✔ Verifikasi & Tandai Delivered
+                                                            </button>
+                                                        </form>
+                                                
+                                                    </div>    
                                         @endif
-
                                     @endif
-
                                 </td>
                             </tr>
                         @empty
@@ -165,6 +218,11 @@
                     function closeShippingModal() {
                         document.getElementById('shippingModal').classList.add('hidden');
                     }
+                </script>
+                <script>
+                    document.getElementById('verifyBtn').addEventListener('click', function () {
+                        document.getElementById('showVerify').classList.remove('hidden');
+                    });
                 </script>
             </div>
         </div>

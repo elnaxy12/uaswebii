@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class PaymentController extends Controller
 {
@@ -24,7 +25,11 @@ class PaymentController extends Controller
                 ->with('error', 'Waktu pembayaran telah habis.');
         }
 
-        return view('payment.confirm', compact('order'));
+
+        return view('payment.confirm', [
+             'order' => $order,
+             'expiredAt' => Carbon::parse($order->payment_expired_at),
+         ]);
     }
 
     /**
@@ -32,14 +37,25 @@ class PaymentController extends Controller
      */
     public function submit(Request $request, Order $order)
     {
+        // Cegah akses kalau status tidak valid
         if ($order->status !== 'waiting_payment') {
             return back()->with('error', 'Status order tidak valid.');
         }
 
-        $request->validate([
-            'sender_name'   => 'required|string|max:100',
-            'payment_proof' => 'required|image|max:2048',
-        ]);
+
+        $maxMB = 5;
+
+        $request->validate(
+            [
+                'payment_proof' => 'required|image|max:' . ($maxMB * 1024),
+            ],
+            [
+                'payment_proof.max' => "Ukuran bukti pembayaran maksimal {$maxMB} MB.",
+                'payment_proof.image' => 'Bukti pembayaran harus berupa gambar.',
+                'payment_proof.required' => 'Bukti pembayaran wajib diupload.',
+            ]
+        );
+
 
         $path = $request->file('payment_proof')
             ->store('payment-proofs', 'public');
@@ -50,7 +66,7 @@ class PaymentController extends Controller
             'status'        => 'waiting_verification',
         ]);
 
-        return redirect()->route('payment.confirm', $order->id)
+        return redirect()->route('v_user.v_order.app', $order->id)
             ->with('success', 'Bukti transfer berhasil dikirim. Menunggu verifikasi.');
     }
 }

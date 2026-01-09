@@ -67,6 +67,11 @@
           class="{{ request('status') == 'waiting_payment' ? 'active-filter' : 'hover:text-teal-600' }} p-1">
           Waiting Payment ({{ $waitingPaymentOrders }})
         </a>
+
+        <a href="{{ route('admin.dashboard.pendingOrder', ['status' => 'waiting_verification']) }}"
+          class="{{ request('status') == 'waiting_verification' ? 'active-filter' : 'hover:text-teal-600' }} p-1">
+          Waiting Verification ({{ $waitingVerificationOrders }})
+        </a>
     
         <a href="{{ route('admin.dashboard.pendingOrder', ['status' => 'shipped']) }}"
           class="{{ request('status') == 'shipped' ? 'active-filter' : 'hover:text-teal-600' }} p-1">

@@ -372,7 +372,7 @@ class DashboardController extends Controller
 
         $orders = Order::with(['user', 'payment'])
             ->when(
-                in_array($status, ['pending', 'shipped', 'waiting_payment', 'delivered', 'canceled']),
+                in_array($status, ['pending', 'shipped', 'waiting_payment', 'waiting_verification', 'delivered', 'canceled']),
                 fn ($q) => $q->where('status', $status)
             )
             ->latest()
@@ -386,6 +386,7 @@ class DashboardController extends Controller
             'totalOrders'     => Order::count(),
             'pendingOrders'   => Order::where('status', 'pending')->count(),
             'waitingPaymentOrders'   => Order::where('status', 'waiting_payment')->count(),
+            'waitingVerificationOrders'   => Order::where('status', 'waiting_verification')->count(),
             'shippedOrders'   => Order::where('status', 'shipped')->count(),
             'deliveredOrders' => Order::where('status', 'delivered')->count(),
             'canceledOrders'  => Order::where('status', 'canceled')->count(),
