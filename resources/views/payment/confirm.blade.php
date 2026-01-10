@@ -58,7 +58,7 @@
                             @csrf
                             <div class="flex-col flex gap-2">
                                 <input class="outline-none border-b" type="text" name="sender_name"
-                                    placeholder="Sender Name" required>
+                                    placeholder="Sender Name" value="{{ old('sender_name') }}" required>
                                 <input class="border py-2 px-3 bg-gray-200 border-gray-500" type="file"
                                     name="payment_proof" required>
                                 @error('payment_proof')
@@ -67,7 +67,7 @@
 
                                 <button
                                     class="border bg-black text-white px-3 py-2 cursor-pointer focus:bg-white focus:text-black"
-                                    type="submit">Kirim Bukti Pembayaran</button>
+                                    type="submit">Send Proof of Payment</button>
                             </div>
                         </form>
                     </div>

@@ -23,7 +23,9 @@ class Order extends Model
         'shipping_service',
         'payment_expired_at',
         'tracking_number',
-        'invoice_number'
+        'invoice_number',
+        'payment_proof',
+        'sender_name'
     ];
 
     public function user()

@@ -42,10 +42,10 @@
                                 <td class="p-3">${{ number_format($order->total, 0, ',', '.') }}</td>
                                 <td class="p-3">
                                     <span class="px-2 py-1 rounded text-xs
-                                                @if($order->status == 'pending') bg-yellow-100 text-yellow-600
-                                                @elseif($order->status == 'shipped') bg-blue-100 text-blue-600
-                                                @elseif($order->status == 'delivered') bg-green-100 text-green-600
-                                                @else bg-red-100 text-red-600 @endif">
+                                                    @if($order->status == 'pending') bg-yellow-100 text-yellow-600
+                                                    @elseif($order->status == 'shipped') bg-blue-100 text-blue-600
+                                                    @elseif($order->status == 'delivered') bg-green-100 text-green-600
+                                                    @else bg-red-100 text-red-600 @endif">
                                         {{ ucfirst($order->status) }}
                                     </span>
                                 </td>
@@ -112,75 +112,97 @@
                                                     Send Payment Email
                                                 </button>
                                             </form>
- 
-                                        @elseif ($order->status === 'waiting_payment')
-                                            <span class="text-xs text-gray-400">Waiting Payment</span>
-                                        
-                                        @elseif ($order->status === 'waiting_verification')
-                                            <button  id="verifyBtn" class="bg-orange-600 text-white text-xs px-3 py-2 rounded w-full">Check</button>        
-                                            <div id="showVerify" class="hidden" style="
-                                                position:absolute;
-                                                top:50%;
-                                                left:50%;
-                                                transform:translate(-50%, -50%);
-                                                border:1px solid #e5e7eb;
-                                                border-radius:8px;
-                                                padding:24px;
-                                                flex-direction:column;
-                                                gap:16px;
-                                            ">
-                                                
-                                                        <h3 class="text-lg font-bold text-yellow-700">
-                                                            Menunggu Verifikasi Pembayaran
-                                                        </h3>
-                                                
-                                                        {{-- Informasi Order --}}
-                                                        <div class="text-sm space-y-1">
-                                                            <p><b>Order ID:</b> #{{ $order->id }}</p>
-                                                            <p><b>User:</b> {{ $order->user->name }}</p>
-                                                            <p><b>Total:</b> Rp {{ number_format($order->total, 0, ',', '.') }}</p>
-                                                        </div>
-                                                
-                                                        {{-- Informasi Payment --}}
-                                                        <div class="bg-white p-4 rounded border space-y-2">
-                                                            <p><b>Metode Pembayaran:</b> {{ $order->payment->method ?? '-' }}</p>
-                                                            <p><b>Nama Pengirim:</b> {{ $order->payment->sender_name ?? '-' }}</p>
-                                                            <p><b>Tanggal Bayar:</b> {{ $order->payment->paid_at ?? '-' }}</p>
-                                                
-                                                            @if ($order->payment && $order->payment->proof)
-                                                                <div>
-                                                                    <p class="font-semibold mb-2">Bukti Transfer:</p>
-                                                                    <img src="{{ asset('storage/' . $order->payment->proof) }}"
-                                                                        class="w-64 rounded border">
-                                                                </div>
-                                                            @endif
-                                                        </div>
-                                                
-                                                        {{-- Form Update Status --}}
-                                                        <form action="{{ route('admin.order.updateStatus', $order->id) }}" method="POST">
-                                                            @csrf
-                                                            @method('PUT')
-                                                
-                                                            <input type="hidden" name="status" value="shipped">
-                                                
-                                                            <button type="submit"
-                                                                class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
-                                                                ✔ Verifikasi & Tandai Delivered
-                                                            </button>
-                                                        </form>
-                                                
-                                                    </div>    
+
+                                            @elseif ($order->status === 'waiting_payment')
+                                                <span class="text-xs text-gray-400">Waiting Payment</span>
+
+                                            @elseif ($order->status === 'waiting_verification')
+                                                <button data-id="{{ $order->id }}"
+                                                    class="verifyOpen bg-orange-600 text-white text-xs px-3 py-2 rounded w-full">Check</button>
+                                            @endif
                                         @endif
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="p-4 text-center text-gray-500">No orders yet</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                                            </td>
+                                        </tr>
+                                        @empty
+                                        <tr>
+                                            <td colspan="6" class="p-4 text-center text-gray-500">No orders yet</td>
+                                        </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+
+                @foreach ($orders as $order) 
+                <div id="verifyShow-{{ $order->id }}" class="hidden bg-white flex flex-col space-y-2" style="
+                                position:absolute;
+                                top:50%;
+                                left:50%;
+                                transform:translate(-50%, -50%);
+                                border:1px solid #e5e7eb;
+                                border-radius:8px;
+                                padding:24px;
+                                gap:16px;
+                            ">
+
+                    <button class="verifyClose text-md bg-red-500 rounded px-3 py-1 absolute" 
+                    style="right: 1rem; top: 1rem;" data-id="{{ $order->id }}">
+                        X
+                    </button>
+
+                    <h3 class="text-lg">
+                        Tab Payment Verification
+                    </h3>
+
+                    {{-- Informasi Order --}}
+                    <div class="grid grid-cols-3 text-xs space-y-2 text-left px-2">
+                        <p><b>Order ID</b></p>
+                        <p>:</p>
+                        <p>#{{ $order->id }}</p>
+                        <p><b>User</b></p>
+                        <p>:</p>
+                        <p>{{ $order->user->username }}</p>
+                        <p><b>Total</b></p>
+                        <p>:</p>
+                        <p>{{ number_format($order->total, 0, ',', '.') }}</p>
+                        <p><b>Payment Method</b></p>
+                        <p>:</p> 
+                        <p>{{ $order->payment->payment_method ?? '-' }}</p>
+                        <p><b>Sender Name</b></p>
+                        <p>:</p>
+                        <p>{{ $order->sender_name ?? '-' }}</p>
+                        <p><b>Payment Date</b></p>
+                        <p>:</p>
+                        <p> {{ $order->payment?->created_at?->format('d M Y, H:i') ?? '-' }}</p>
+                    </div>
+
+                    {{-- Informasi Payment --}}
+                    <div class="bg-white p-4 flex justify-center">
+                        @if ($order->payment_proof)
+                            <a style="width: 16rem;" href="{{ asset('storage/' . $order->payment_proof) }}" target="_blank">
+                                <img
+                                    src="{{ asset('storage/' . $order->payment_proof) }}"
+                                    class="hover:scale-105 transition"
+                                >
+                            </a>
+                        @else
+                            <p class="text-gray-500">Belum ada bukti pembayaran</p>
+                        @endif
+                    </div>
+
+                    {{-- Form Update Status --}}
+                    <form action="{{ route('admin.order.updateStatus', $order->id) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+
+                        <input type="hidden" name="status" value="shipped">
+
+                        <button type="submit"
+                            class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
+                            ✔ Paid
+                        </button>
+                    </form>
+
+                </div>
+                @endforeach
 
                 <div id="shippingModal" class="fixed inset-0 bg-black bg-opacity-50 hidden">
                     <div class="bg-white p-4 rounded w-96 mx-auto mt-20">
@@ -193,13 +215,13 @@
                                 class="w-full mb-2 border p-2 outline-none">
                             <input name="tracking_number" placeholder="No Resi" required
                                 class="w-full mb-2 border p-2 outline-none">
-                            <input type="date" name="shipped_at" required
-                                class="w-full mb-2 border p-2 outline-none">
+                            <input type="date" name="shipped_at" required class="w-full mb-2 border p-2 outline-none">
                             <input type="date" name="estimated_arrival" required
                                 class="w-full mb-2 border p-2 outline-none">
 
                             <div class="flex justify-between">
-                                <button class="text-sm py-1 px-2" type="button" onclick="closeShippingModal()">Cancel</button>
+                                <button class="text-sm py-1 px-2" type="button"
+                                    onclick="closeShippingModal()">Cancel</button>
                                 <button class="bg-purple-600 text-white px-3 py-1 rounded text-sm">
                                     Confirm Shipped
                                 </button>
@@ -220,8 +242,18 @@
                     }
                 </script>
                 <script>
-                    document.getElementById('verifyBtn').addEventListener('click', function () {
-                        document.getElementById('showVerify').classList.remove('hidden');
+                    document.querySelectorAll('.verifyOpen').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const id = btn.dataset.id;
+                            document.getElementById('verifyShow-' + id).classList.remove('hidden');
+                        });
+                    });
+
+                    document.querySelectorAll('.verifyClose').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const id = btn.dataset.id;
+                            document.getElementById('verifyShow-' + id).classList.add('hidden');
+                        });
                     });
                 </script>
             </div>
