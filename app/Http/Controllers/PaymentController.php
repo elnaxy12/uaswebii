@@ -69,4 +69,15 @@ class PaymentController extends Controller
         return redirect()->route('v_user.v_order.app', $order->id)
             ->with('success', 'Bukti transfer berhasil dikirim. Menunggu verifikasi.');
     }
+
+
+    public function qrcode(Order $order)
+    {
+        if (!$order->payment || $order->payment->payment_method !== 'ewallet') {
+            abort(404);
+        }
+
+        return view('payment.qrcode', compact('order'));
+    }
+
 }

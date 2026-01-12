@@ -112,7 +112,7 @@ Route::middleware('auth')->group(function () {
 
     // Hapus item dengan DELETE method
     Route::delete('/cart/{cart}', [CartController::class, 'destroy'])
-        ->name('cart.destroy'); 
+        ->name('cart.destroy');
 
     // Update quantity (AJAX)
     Route::post('/cart/{cart}/update-quantity', [CartController::class, 'updateQuantity'])
@@ -129,6 +129,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/payment/confirm/{order}', [PaymentController::class, 'submit'])
         ->name('payment.submit');
 
+    Route::get('/payment/qrcode/{order}', [PaymentController::class, 'qrcode'])
+        ->name('payment.qrcode');
 });
 
 

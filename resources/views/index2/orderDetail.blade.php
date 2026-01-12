@@ -64,7 +64,19 @@
                 @if(!empty($order->payment))
                     <div class="grid grid-cols-[140px_1fr] gap-2">
                         <span class="font-semibold">Payment</span>
-                        <span>: {{ ucfirst($order->payment->payment_method) }}</span>
+                        <span>
+                            : {{ ucfirst($order->payment->payment_method) }}
+
+                            @if (
+                                $order->status !== 'cancelled' &&
+                                $order->payment->payment_method === 'ewallet'
+                            )
+                                <a href="{{ route('payment.qrcode', $order->id) }}"
+                                class="hover:text-gray-600! ml-1">
+                                    (Pay)
+                                </a>
+                            @endif
+                        </span>
                     </div>
                 @endif
 

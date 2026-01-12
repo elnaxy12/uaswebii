@@ -477,4 +477,10 @@ class DashboardController extends Controller
 
         return view('v_admin.v_data.v_invoice.app', compact('orders', 'admin'));
     }
+
+    public function try()
+    {   
+        $admin = Auth::guard('admin')->user();
+        return view('payment.qrcode', compact('admin'));
+    }
 }

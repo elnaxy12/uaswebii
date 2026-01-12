@@ -15,44 +15,55 @@ use Illuminate\Support\Facades\DB;
 class CheckoutController extends Controller
 {
     public function index()
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        $cartItems = Cart::with(['product', 'size'])
-            ->where('user_id', $user->id)
-            ->get();
+    // Ambil cart normal
+    $cartItems = Cart::with(['product', 'size'])
+        ->where('user_id', $user->id)
+        ->get();
 
-        foreach ($cartItems as $item) {
-            $item->additional_price = 0;
+    // Jika buy now
+    if (session('order_source') === 'product') {
+        $cartItems = $this->getBuyNowItem();
+    }
 
-            if ($item->product_id && $item->size_id) {
-                $pivot = DB::table('product_sizes')
-                    ->where('product_id', $item->product_id)
-                    ->where('size_id', $item->size_id)
-                    ->first();
+    // ❌ STOP jika kosong
+    if ($cartItems->isEmpty()) {
+        return redirect()
+            ->route('beranda')
+            ->with('error', 'Keranjang kosong, silakan pilih produk terlebih dahulu.');
+    }
 
-                if ($pivot) {
-                    $item->additional_price = $pivot->additional_price;
-                }
+    // Hitung additional price
+    foreach ($cartItems as $item) {
+        $item->additional_price = 0;
+
+        if ($item->product_id && $item->size_id) {
+            $pivot = DB::table('product_sizes')
+                ->where('product_id', $item->product_id)
+                ->where('size_id', $item->size_id)
+                ->first();
+
+            if ($pivot) {
+                $item->additional_price = $pivot->additional_price;
             }
         }
-
-        if (session('order_source') === 'product') {
-            $cartItems = $this->getBuyNowItem();
-        }
-
-        return view('v_user.v_checkout.app', compact('cartItems'));
     }
+
+    return view('v_user.v_checkout.app', compact('cartItems'));
+}
+
 
     public function processCheckout(Request $request)
     {
         $request->validate([
-            'first_name'      => 'required|string',
-            'last_name'       => 'required|string',
-            'email'           => 'required|email',
-            'phone'           => 'required|string',
-            'address'         => 'required|string',
-            'payment_method'  => 'required|string',
+            'first_name'     => 'required|string',
+            'last_name'      => 'required|string',
+            'email'          => 'required|email',
+            'phone'          => 'required|string',
+            'address'        => 'required|string',
+            'payment_method' => 'required|string',
         ]);
 
         $user = Auth::user();
@@ -66,8 +77,8 @@ class CheckoutController extends Controller
         }
 
         DB::beginTransaction();
-        try {
 
+        try {
             $total = 0;
             foreach ($cartItems as $item) {
                 $price = $this->getItemPrice($item);
@@ -87,7 +98,6 @@ class CheckoutController extends Controller
             ]);
 
             foreach ($cartItems as $item) {
-
                 $price = $this->getItemPrice($item);
 
                 OrderItem::create([
@@ -121,6 +131,10 @@ class CheckoutController extends Controller
             session()->forget(['order_source', 'product_id', 'size_id', 'quantity']);
 
             DB::commit();
+            
+            if ($request->payment_method === 'ewallet') {
+                return redirect()->route('payment.qrcode', $order->id);
+            }
 
             return redirect()->route('user.order', $order->id);
 
@@ -129,6 +143,7 @@ class CheckoutController extends Controller
             return back()->with('error', $e->getMessage());
         }
     }
+
 
     public function buyNow(Request $request)
     {
