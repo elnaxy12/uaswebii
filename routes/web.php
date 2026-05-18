@@ -14,6 +14,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\RajaOngkirController;
 use App\Models\Product;
 
 // Home page
@@ -207,3 +208,7 @@ Route::middleware(['auth:admin'])->group(function () {
 // Products
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/product/{id}/{slug}', [ProductController::class, 'show'])->name('product.show');
+
+// RajaOngkir API routes
+Route::get('/api/provinces', [RajaOngkirController::class, 'getProvinces']);
+Route::get('/api/cities/{provinceId}', [RajaOngkirController::class, 'getCities']);

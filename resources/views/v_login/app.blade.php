@@ -45,7 +45,7 @@
                             <div>
                                 <label>
                                     <input
-                                        class="md:w-xs w-[14rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
+                                        class="md:w-xs w-[14rem] md:text-sm text-xs p-2 text-white border-white/30 placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
                                         type="email" placeholder="Email" name="email" value="{{ old('email') }}"
                                         required>
                                 </label>
@@ -59,7 +59,7 @@
                             <div>
                                 <label>
                                     <input
-                                        class="md:w-xs w-[14rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
+                                        class="md:w-xs w-[14rem] md:text-sm text-xs p-2 text-white border-white/30 placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
                                         type="password" placeholder="Password" name="password" required>
                                 </label>
 

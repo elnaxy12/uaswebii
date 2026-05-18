@@ -136,30 +136,30 @@
 
                     <div id="slider" class="etalase-slide no-underline">
                         @php
-                            $firstProduct = $products->get(0);
-                            $secondProduct = $products->get(1);
-                            $thirdProduct = $products->get(2);
-                            $fourthProduct = $products->get(3);
-                            $fifthProduct = $products->get(4);
-                            $sixthProduct = $products->get(5);
-                            $seventhProduct = $products->get(6);
-                            $eighthProduct = $products->get(7);
-                            $ninthProduct = $products->get(8);
-                            $tenthProduct = $products->get(9);
-                            $eleventhProduct = $products->get(10);
-                            $twelfthProduct = $products->get(11);
-                            $thirteenthProduct = $products->get(12);
-                            $fourteenthProduct = $products->get(13);
-                            $fifteenthProduct = $products->get(14);
-                            $sixteenthProduct = $products->get(15);
-                            $seventeenthProduct = $products->get(16);
-                            $eighteenthProduct = $products->get(17);
-                            $nineteenthProduct = $products->get(18);
-                            $twentiethProduct = $products->get(19);
-                            $twentyFirstProduct = $products->get(20);
-                            $twentySecondProduct = $products->get(21);
-                            $twentyThirdProduct = $products->get(22);
-                            $twentyFourthProduct = $products->get(23);
+$firstProduct = $products->get(0);
+$secondProduct = $products->get(1);
+$thirdProduct = $products->get(2);
+$fourthProduct = $products->get(3);
+$fifthProduct = $products->get(4);
+$sixthProduct = $products->get(5);
+$seventhProduct = $products->get(6);
+$eighthProduct = $products->get(7);
+$ninthProduct = $products->get(8);
+$tenthProduct = $products->get(9);
+$eleventhProduct = $products->get(10);
+$twelfthProduct = $products->get(11);
+$thirteenthProduct = $products->get(12);
+$fourteenthProduct = $products->get(13);
+$fifteenthProduct = $products->get(14);
+$sixteenthProduct = $products->get(15);
+$seventeenthProduct = $products->get(16);
+$eighteenthProduct = $products->get(17);
+$nineteenthProduct = $products->get(18);
+$twentiethProduct = $products->get(19);
+$twentyFirstProduct = $products->get(20);
+$twentySecondProduct = $products->get(21);
+$twentyThirdProduct = $products->get(22);
+$twentyFourthProduct = $products->get(23);
                         @endphp
 
                         <a

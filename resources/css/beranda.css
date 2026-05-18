@@ -564,7 +564,7 @@ footer .footer-content p {
     }
 
     .full-banner {
-        padding-top: 9rem;
+        padding-top: 1px;
     }
 
     .full-banner .banner {
@@ -626,7 +626,7 @@ footer .footer-content p {
     }
 
     .main-wrapper .container-banner {
-        align-items: end;
+        align-items: center;
         justify-content: center;
         background-position: center;
         background-size: contain;
@@ -635,7 +635,7 @@ footer .footer-content p {
     }
 
     .main-wrapper .container-banner h1 {
-        font-size: 12px;
+        font-size: 18px;
     }
 
     .full-navbar .col2 .col2 .col4 {

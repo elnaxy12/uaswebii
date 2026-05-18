@@ -21,7 +21,7 @@
         <div class="relative w-full h-screen">
             <div class="absolute" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
                 <div
-                    class="border md:w-md w-2xs md:h-[550px] h-fit border-white/40 backdrop-blur-3xl bg-inherit rounded-2xl overflow-y-auto dark-scrollbar ">
+                    class="border md:w-md w-2xs md:h-[550px] h-[400px] border-white/40 backdrop-blur-3xl bg-inherit rounded-2xl overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                     {{-- head form --}}
                     <div class="flex items-center justify-center md:h-[200px] h-[150px]">
                         <h2 class="text-white font-sans font-semibold md:text-4xl text-3xl select-none cursor-default">
@@ -43,13 +43,13 @@
                             <div class="flex gap-2">
                                 <label>
                                     <input
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
+                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white border-white/30 placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
                                         type="text" name="first_name" placeholder="First Name"
                                         value="{{ old('first_name') }}" required>
                                 </label>
                                 <label>
                                     <input
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
+                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white border-white/30 placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
                                         type="text" name="last_name" placeholder="Last Name"
                                         value="{{ old('last_name') }}" required>
                                 </label>
@@ -59,13 +59,13 @@
                             <div class="flex gap-2">
                                 <label>
                                     <input
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
+                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white border-white/30 placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
                                         type="email" name="email" placeholder="Email" value="{{ old('email') }}"
                                         required>
                                 </label>
                                 <label>
                                     <input
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
+                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white border-white/30 placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
                                         type="text" name="username" placeholder="Username" value="{{ old('username') }}"
                                         required>
                                 </label>
@@ -75,27 +75,47 @@
                             <div class="flex gap-2">
                                 <label>
                                     <input
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
+                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white border-white/30 placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
                                         type="password" name="password" placeholder="Create Password" required>
                                 </label>
                                 <label>
                                     <input
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
+                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white border-white/30 placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
                                         type="password" name="password_confirmation" placeholder="Repeat Password"
                                         required>
                                 </label>
                             </div>
 
-                            {{-- address & phone (optional) --}}
+                            {{-- province & city --}}
+                            <div class="flex gap-2">
+                                <label>
+                                    <select name="province_id" id="province_select"
+                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white/50 bg-transparent focus:outline-none border-b border-white/30 focus:text-white cursor-pointer">
+                                        <option value="" disabled selected class="bg-gray-900 text-white/50">Province
+                                        </option>
+                                    </select>
+                                    <input type="hidden" name="province_name" id="province_name">
+                                </label>
+                                <label>
+                                    <select name="city_id" id="city_select"
+                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white/50 bg-transparent focus:outline-none border-b border-white/30 focus:text-white cursor-pointer">
+                                        <option value="" disabled selected class="bg-gray-900 text-white/50">City
+                                        </option>
+                                    </select>
+                                    <input type="hidden" name="city_name" id="city_name">
+                                </label>
+                            </div>
+
+                            {{-- address & phone --}}
                             <div class="flex gap-2">
                                 <label>
                                     <input
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
+                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white border-white/30 placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
                                         type="text" name="address" placeholder="Address" value="{{ old('address') }}">
                                 </label>
                                 <label>
                                     <input
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
+                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white border-white/30 placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
                                         type="text" name="phone" placeholder="Phone" value="{{ old('phone') }}">
                                 </label>
                             </div>
@@ -124,7 +144,49 @@
             </a>
         </div>
     </div>
+    <script>
+        // Load provinsi
+        fetch('/api/provinces')
+            .then(res => res.json())
+            .then(data => {
+                const select = document.getElementById('province_select');
+                data.data.forEach(province => {
+                    const option = document.createElement('option');
+                    option.value = province.id;
+                    option.textContent = province.name;
+                    option.className = 'text-black bg-white';
+                    select.appendChild(option);
+                });
+            });
 
+        const citySelect = document.getElementById('city_select'); // ← tambah ini di luar
+
+        // Load kota saat provinsi dipilih
+        document.getElementById('province_select').addEventListener('change', function () {
+            const provinceId = this.value;
+            const provinceName = this.options[this.selectedIndex].textContent;
+            document.getElementById('province_name').value = provinceName;
+
+            citySelect.innerHTML = '<option value="" disabled selected>City</option>';
+
+            fetch(`/api/cities/${provinceId}`)
+                .then(res => res.json())
+                .then(data => {
+                    data.data.forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city.id;
+                        option.textContent = city.name;
+                        option.className = 'text-black bg-white';
+                        citySelect.appendChild(option);
+                    });
+                });
+        });
+
+        citySelect.addEventListener('change', function () {
+            const cityName = this.options[this.selectedIndex].textContent;
+            document.getElementById('city_name').value = cityName;
+        });
+    </script>
     <script src="{{ asset('js/aurora.js') }}"></script>
 </body>
 

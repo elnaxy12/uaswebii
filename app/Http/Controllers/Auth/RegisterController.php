@@ -26,13 +26,15 @@ class RegisterController extends Controller
     {
         // Validasi input
         $validator = Validator::make($request->all(), [
-            'first_name' => 'required|string|max:50',
-            'last_name'  => 'required|string|max:50',
-            'email'      => 'required|email|unique:users,email',
-            'username'   => 'required|unique:users,username|min:3|max:30|alpha_dash',
-            'password'   => 'required|min:6|confirmed',
-            'address'    => 'nullable|string|max:255',
-            'phone'      => 'nullable|string|max:20',
+            'first_name'  => 'required|string|max:50',
+            'last_name'   => 'required|string|max:50',
+            'email'       => 'required|email|unique:users,email',
+            'username'    => 'required|unique:users,username|min:3|max:30|alpha_dash',
+            'password'    => 'required|min:6|confirmed',
+            'address'     => 'nullable|string|max:255',
+            'phone'       => 'nullable|string|max:20',
+            'province_id' => 'nullable|string',
+            'city_id'     => 'nullable|string',
         ]);
 
         // Jika validasi gagal
@@ -44,20 +46,24 @@ class RegisterController extends Controller
 
         // Simpan user baru
         $user = User::create([
-            'first_name' => $request->first_name,
-            'last_name'  => $request->last_name,
-            'email'      => $request->email,
-            'username'   => $request->username,
-            'password'   => Hash::make($request->password),
-            'address'    => $request->address,
-            'phone'      => $request->phone,
+            'first_name'    => $request->first_name,
+            'last_name'     => $request->last_name,
+            'email'         => $request->email,
+            'username'      => $request->username,
+            'password'      => Hash::make($request->password),
+            'address'       => $request->address,
+            'phone'         => $request->phone,
+            'province_id'   => $request->province_id,
+            'province_name' => $request->province_name,
+            'city_id'       => $request->city_id,
+            'city_name'     => $request->city_name,
         ]);
 
         // Login otomatis setelah register
         Auth::login($user);
 
         // Redirect ke dashboard
-        return redirect('/login')->with('success', 'Registrasi berhasil!');
+        return redirect()->route('login')->with('success', 'Registrasi berhasil!');
     }
 
     /**
