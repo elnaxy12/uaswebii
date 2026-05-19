@@ -152,7 +152,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/checkout/qris', [CheckoutController::class, 'createQris'])->name('checkout.qris');
 
-
+    Route::post('/checkout/bca', [CheckoutController::class, 'createBcaVa'])->name('checkout.bca');
 });
 
 Route::post('/midtrans/notification', [CheckoutController::class, 'handleNotification'])->name('midtrans.notification');

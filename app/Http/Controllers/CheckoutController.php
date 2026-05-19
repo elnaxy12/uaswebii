@@ -204,7 +204,8 @@ class CheckoutController extends Controller
         $fraudStatus    = $notification->fraud_status;
 
         // Ambil order_id asli (karena kita pakai prefix QRIS-{id}-{time})
-        $realOrderId = explode('-', $orderId)[1] ?? $orderId;
+        $parts = explode('-', $orderId);
+        $realOrderId = (count($parts) >= 2) ? $parts[1] : $orderId;
 
         $order = Order::find($realOrderId);
 
@@ -273,6 +274,44 @@ public function createQris(Request $request)
     return response()->json([
         'qr_url'   => $qrUrl,
         'order_id' => $order->id,
+    ]);
+}
+
+public function createBcaVa(Request $request)
+{
+    \Midtrans\Config::$serverKey = config('midtrans.server_key');
+    \Midtrans\Config::$isProduction = config('midtrans.is_production');
+    \Midtrans\Config::$isSanitized = true;
+    \Midtrans\Config::$is3ds = true;
+
+    $order = Order::findOrFail($request->order_id);
+
+    $params = [
+        'payment_type' => 'bank_transfer',
+        'transaction_details' => [
+            'order_id'     => 'BCA-' . $order->id . '-' . time(),
+            'gross_amount' => (int) $order->total,
+        ],
+        'bank_transfer' => [
+            'bank' => 'bca'
+        ],
+        'customer_details' => [
+            'first_name' => $order->first_name,
+            'last_name'  => $order->last_name,
+            'email'      => $order->email,
+            'phone'      => $order->phone,
+        ],
+    ];
+
+    $response = \Midtrans\CoreApi::charge($params);
+
+    $vaNumber = $response->va_numbers[0]->va_number ?? null;
+
+    return response()->json([
+        'va_number' => $vaNumber,
+        'bank'      => 'BCA',
+        'order_id'  => $order->id,
+        'total'     => $order->total,
     ]);
 }
 
