@@ -150,8 +150,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/buy-now/cancel', [CheckoutController::class, 'cancelBuyNow'])->name('buy.now.cancel');
 
+    Route::post('/checkout/qris', [CheckoutController::class, 'createQris'])->name('checkout.qris');
+
+
 });
 
+Route::post('/midtrans/notification', [CheckoutController::class, 'handleNotification'])->name('midtrans.notification');
 
 // Admin routes
 Route::middleware(['auth:admin'])->group(function () {

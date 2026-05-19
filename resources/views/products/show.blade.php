@@ -73,10 +73,8 @@
 $price = $product->price + ($size->additional_price ?? 0);
                             @endphp
                             <p id="productPrice" class="text-3xl md:text-4xl font-bold text-gray-900">
-                                ${{ number_format($product->price + ($product->sizes->first()->pivot->additional_price ?? 0), 2) }}
+                                Rp{{ number_format($product->price + ($product->sizes->first()->pivot->additional_price ?? 0), 2, ',', '.') }}
                             </p>
-
-
                             <div class="flex items-center space-x-4 mt-2">
                                 <p class="text-gray-600">
                                     <i class="fas fa-box mr-1"></i>
@@ -102,9 +100,9 @@ $price = $product->price + ($size->additional_price ?? 0);
                                 <div class="flex flex-wrap gap-2 mb-3" id="sizeSelection">
                                     @foreach($product->sizes as $size)
                                         @php
-                                            $stock = $size->pivot->stock ?? 0;
-                                            $isAvailable = $stock > 0;
-                                            $isFirst = $loop->first;
+        $stock = $size->pivot->stock ?? 0;
+        $isAvailable = $stock > 0;
+        $isFirst = $loop->first;
                                         @endphp
 
                                         <button type="button" class="size-btn px-4 py-3 border rounded-lg text-sm font-medium transition-all duration-200
@@ -249,16 +247,16 @@ $price = $product->price + ($size->additional_price ?? 0);
                                                                 <strong class="text-gray-700 text-sm font-medium block mb-1">Available Sizes:</strong>
                                                                 <div class="flex flex-wrap gap-2 mt-2">
                                         @php
-                                            $maxStock = $product->sizes
-                                                ->pluck('pivot.stock')
-                                                ->max();
+    $maxStock = $product->sizes
+        ->pluck('pivot.stock')
+        ->max();
                                         @endphp
                                         @foreach($product->sizes as $size)
                                             @if(($size->pivot->stock ?? 0) > 0)
                                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm
                                                     {{ $size->pivot->stock == $maxStock
-                                                        ? 'bg-green-100 text-green-800'
-                                                        : 'bg-gray-100 text-gray-700' }}">
+                ? 'bg-green-100 text-green-800'
+                : 'bg-gray-100 text-gray-700' }}">
                                                     {{ $size->code }}
                                                     <span class="ml-1 text-xs">({{ $size->pivot->stock }})</span>
                                                 </span>
@@ -335,7 +333,10 @@ $price = $product->price + ($size->additional_price ?? 0);
             btn.addEventListener('click', function () {
                 const additionalPrice = parseFloat(this.dataset.additionalPrice) || 0;
                 const priceElement = document.querySelector('#productPrice'); // beri id di <p> harga
-                priceElement.textContent = '$' + (basePrice + additionalPrice).toFixed(2);
+                priceElement.textContent = 'Rp' + (basePrice + additionalPrice).toLocaleString('id-ID', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
             });
         });
 

@@ -15,7 +15,6 @@ class Order extends Model
     protected $table = 'orders';
 
     public const STATUS_PENDING = 'pending';
-
     protected $fillable = [
         'user_id',
         'status',
@@ -25,7 +24,15 @@ class Order extends Model
         'tracking_number',
         'invoice_number',
         'payment_proof',
-        'sender_name'
+        'sender_name',
+        'shipping_courier',
+        'shipping_cost',
+        'first_name',   
+        'last_name',    
+        'email',        
+        'phone',        
+        'address',      
+        'payment_method',
     ];
 
     public function user()

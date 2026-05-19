@@ -11,59 +11,63 @@ use App\Models\Size;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Midtrans\Config;
+use Midtrans\Snap;
 
 class CheckoutController extends Controller
 {
+    public function __construct()
+    {
+        Config::$serverKey    = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized  = true;
+        Config::$is3ds        = true;
+    }
+
     public function index()
-{
-    $user = Auth::user();
+    {
+        $user = Auth::user();
 
-    // Ambil cart normal
-    $cartItems = Cart::with(['product', 'size'])
-        ->where('user_id', $user->id)
-        ->get();
+        $cartItems = Cart::with(['product', 'size'])
+            ->where('user_id', $user->id)
+            ->get();
 
-    // Jika buy now
-    if (session('order_source') === 'product') {
-        $cartItems = $this->getBuyNowItem();
-    }
+        if (session('order_source') === 'product') {
+            $cartItems = $this->getBuyNowItem();
+        }
 
-    // ❌ STOP jika kosong
-    if ($cartItems->isEmpty()) {
-        return redirect()
-            ->route('beranda')
-            ->with('error', 'Keranjang kosong, silakan pilih produk terlebih dahulu.');
-    }
+        if ($cartItems->isEmpty()) {
+            return redirect()
+                ->route('beranda')
+                ->with('error', 'Keranjang kosong, silakan pilih produk terlebih dahulu.');
+        }
 
-    // Hitung additional price
-    foreach ($cartItems as $item) {
-        $item->additional_price = 0;
+        foreach ($cartItems as $item) {
+            $item->additional_price = 0;
 
-        if ($item->product_id && $item->size_id) {
-            $pivot = DB::table('product_sizes')
-                ->where('product_id', $item->product_id)
-                ->where('size_id', $item->size_id)
-                ->first();
+            if ($item->product_id && $item->size_id) {
+                $pivot = DB::table('product_sizes')
+                    ->where('product_id', $item->product_id)
+                    ->where('size_id', $item->size_id)
+                    ->first();
 
-            if ($pivot) {
-                $item->additional_price = $pivot->additional_price;
+                if ($pivot) {
+                    $item->additional_price = $pivot->additional_price;
+                }
             }
         }
+
+        return view('v_user.v_checkout.app', compact('cartItems'));
     }
-
-    return view('v_user.v_checkout.app', compact('cartItems'));
-}
-
 
     public function processCheckout(Request $request)
     {
         $request->validate([
-            'first_name'     => 'required|string',
-            'last_name'      => 'required|string',
-            'email'          => 'required|email',
-            'phone'          => 'required|string',
-            'address'        => 'required|string',
-            'payment_method' => 'required|string',
+            'first_name' => 'required|string',
+            'last_name'  => 'required|string',
+            'email'      => 'required|email',
+            'phone'      => 'required|string',
+            'address'    => 'required|string',
         ]);
 
         $user = Auth::user();
@@ -85,16 +89,23 @@ class CheckoutController extends Controller
                 $total += $price * $item->quantity;
             }
 
+            // Tambah ongkir ke total
+            $shippingCost = (int) $request->shipping_cost ?? 0;
+            $total += $shippingCost;
+
             $order = Order::create([
-                'user_id'        => $user->id,
-                'total'          => $total,
-                'status'         => 'pending',
-                'first_name'     => $request->first_name,
-                'last_name'      => $request->last_name,
-                'email'          => $request->email,
-                'phone'          => $request->phone,
-                'address'        => $request->address,
-                'payment_method' => $request->payment_method,
+                'user_id'          => $user->id,
+                'total'            => $total,
+                'status'           => 'pending',
+                'first_name'       => $request->first_name,
+                'last_name'        => $request->last_name,
+                'email'            => $request->email,
+                'phone'            => $request->phone,
+                'address'          => $request->address,
+                'payment_method'   => 'midtrans',
+                'shipping_courier' => $request->shipping_courier,
+                'shipping_service' => $request->shipping_service,
+                'shipping_cost'    => $shippingCost,
             ]);
 
             foreach ($cartItems as $item) {
@@ -119,7 +130,7 @@ class CheckoutController extends Controller
 
             Payment::create([
                 'order_id'       => $order->id,
-                'payment_method' => $request->payment_method,
+                'payment_method' => 'midtrans',
                 'payment_amount' => $total,
                 'payment_status' => 'pending',
             ]);
@@ -130,20 +141,89 @@ class CheckoutController extends Controller
 
             session()->forget(['order_source', 'product_id', 'size_id', 'quantity']);
 
-            DB::commit();
-            
-            if ($request->payment_method === 'ewallet') {
-                return redirect()->route('payment.qrcode', $order->id);
+            // Build item details untuk Midtrans
+            $itemDetails = [];
+            foreach ($cartItems as $item) {
+                $price = $this->getItemPrice($item);
+                $itemDetails[] = [
+                    'id'       => $item->product->id,
+                    'price'    => (int) $price,
+                    'quantity' => $item->quantity,
+                    'name'     => substr($item->product->name, 0, 50),
+                ];
             }
 
-            return redirect()->route('user.order', $order->id);
+            // Tambah ongkir sebagai item
+            if ($shippingCost > 0) {
+                $itemDetails[] = [
+                    'id'       => 'SHIPPING',
+                    'price'    => $shippingCost,
+                    'quantity' => 1,
+                    'name'     => 'Ongkos Kirim ' . ($request->shipping_courier ?? ''),
+                ];
+            }
+
+            $params = [
+                'transaction_details' => [
+                    'order_id'      => $order->id,
+                    'gross_amount'  => (int) $total,
+                ],
+                'customer_details' => [
+                    'first_name' => $request->first_name,
+                    'last_name'  => $request->last_name,
+                    'email'      => $request->email,
+                    'phone'      => $request->phone,
+                ],
+                'item_details' => $itemDetails,
+            ];
+
+            $snapToken = Snap::getSnapToken($params);
+
+            DB::commit();
+
+            return response()->json([
+                'snap_token' => $snapToken,
+                'order_id'   => $order->id,
+            ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
+    public function handleNotification(Request $request)
+    {
+        \Midtrans\Config::$serverKey = config('midtrans.server_key');
+        \Midtrans\Config::$isProduction = config('midtrans.is_production');
+
+        $notification = new \Midtrans\Notification();
+
+        $orderId        = $notification->order_id;
+        $transactionStatus = $notification->transaction_status;
+        $fraudStatus    = $notification->fraud_status;
+
+        // Ambil order_id asli (karena kita pakai prefix QRIS-{id}-{time})
+        $realOrderId = explode('-', $orderId)[1] ?? $orderId;
+
+        $order = Order::find($realOrderId);
+
+        if (!$order) return response()->json(['message' => 'Order not found'], 404);
+
+        if ($transactionStatus == 'capture') {
+            if ($fraudStatus == 'accept') {
+                $order->update(['status' => 'paid']);
+            }
+        } elseif ($transactionStatus == 'settlement') {
+            $order->update(['status' => 'paid']);
+        } elseif ($transactionStatus == 'pending') {
+            $order->update(['status' => 'pending']);
+        } elseif (in_array($transactionStatus, ['deny', 'expire', 'cancel'])) {
+            $order->update(['status' => 'cancelled']);
+        }
+
+        return response()->json(['message' => 'OK']);
+    }
 
     public function buyNow(Request $request)
     {
@@ -166,7 +246,35 @@ class CheckoutController extends Controller
         return redirect()->route('checkout');
     }
 
+public function createQris(Request $request)
+{
+    \Midtrans\Config::$serverKey = config('midtrans.server_key');
+    \Midtrans\Config::$isProduction = config('midtrans.is_production');
+    \Midtrans\Config::$isSanitized = true;
+    \Midtrans\Config::$is3ds = true;
 
+    $order = Order::findOrFail($request->order_id);
+
+    $params = [
+        'payment_type' => 'qris',
+        'transaction_details' => [
+            'order_id'     => 'QRIS-' . $order->id . '-' . time(),
+            'gross_amount' => (int) $order->total,
+        ],
+        'qris' => [
+            'acquirer' => 'gopay'
+        ]
+    ];
+
+    $response = \Midtrans\CoreApi::charge($params);
+
+    $qrUrl = $response->actions[0]->url ?? null;
+
+    return response()->json([
+        'qr_url'   => $qrUrl,
+        'order_id' => $order->id,
+    ]);
+}
 
     private function getBuyNowItem()
     {
