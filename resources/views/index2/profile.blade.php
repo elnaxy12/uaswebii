@@ -3,7 +3,8 @@
     <div class="flex flex-col gap-2">
         <h1 class="font-semibold select-none">Account Information</h1>
         <div class="grid w-xs grid-cols-[100px_10px_1fr] gap-y-2 text-sm">
-            <p class="font-semibold">Name</p>
+
+            <p class="font-semibold">Username</p>
             <p>:</p>
             <p>{{ $user->username }}</p>
 
@@ -15,9 +16,18 @@
             <p>:</p>
             <p>{{ $user->phone }}</p>
 
+            <p class="font-semibold">Province</p>
+            <p>:</p>
+            <p>{{ $user->province_name }}</p>
+
+            <p class="font-semibold">City</p>
+            <p>:</p>
+            <p>{{ $user->city_name }}</p>
+
             <p class="font-semibold">Address</p>
             <p>:</p>
             <p>{{ $user->address }}</p>
+
         </div>
     </div>
     <div class="flex justify-end md:w-xl p-2">
@@ -28,57 +38,61 @@
     </div>
 </div>
 
-<div id="myDiv" class="fixed inset-0 z-50 overflow-auto select-none hidden">
-    <div class="flex justify-center items-center h-screen p-4">
-        <div class="bg-white w-2xl h-auto border py-5 px-5 relative">
-            <button id="hideBtn" class="absolute top-5 right-5 cursor-pointer focus:border" title="Close">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                    class="lucide lucide-x-icon lucide-x">
-                    <path d="M18 6 6 18" />
-                    <path d="m6 6 12 12" />
-                </svg>
-            </button>
-            <form action="{{ route('user.updateProfile') }}" method="POST" class="space-y-4">
-                @csrf
-                @method('PUT')
+<script>
+    const savedProvinceId = "{{ old('province_id', $user->province_id) }}";
+    const savedCityId = "{{ old('city_id', $user->city_id) }}";
 
-                <!-- Nama -->
-                <div>
-                    <label class="block font-semibold mb-1">Name</label>
-                    <input type="text" name="username" value="{{ old('username', $user->username) }}"
-                        class="w-full p-2 border-b focus:outline-none text-sm" required>
-                </div>
+    const citySelect = document.getElementById('city_select');
 
-                <!-- Email -->
-                <div>
-                    <label class="block font-semibold mb-1">E-mail</label>
-                    <input type="email" name="email" value="{{ old('email', $user->email) }}"
-                        class="w-full p-2 border-b focus:outline-none text-sm" required>
-                </div>
+    fetch('/api/provinces')
+        .then(res => res.json())
+        .then(data => {
+            const select = document.getElementById('province_select');
+            data.data.forEach(province => {
+                const option = document.createElement('option');
+                option.value = province.id;
+                option.textContent = province.name;
+                option.className = 'text-black bg-white';
+                select.appendChild(option);
+            });
 
-                <!-- No HP -->
-                <div>
-                    <label class="block font-semibold mb-1">No HP</label>
-                    <input type="text" name="phone" value="{{ old('phone', $user->phone) }}"
-                        class="w-full p-2 border-b focus:outline-none text-sm">
-                </div>
+            if (savedProvinceId) {
+                select.value = savedProvinceId;
+                document.getElementById('province_name').value = select.options[select.selectedIndex]?.textContent || '';
+                loadCities(savedProvinceId, savedCityId);
+            }
+        });
 
-                <!-- Alamat -->
-                <div>
-                    <label class="block font-semibold mb-1">Address</label>
-                    <textarea name="address" class="w-full p-2 border focus:outline-none text-xs"
-                        rows="3">{{ old('address', $user->address) }}</textarea>
-                </div>
+    function loadCities(provinceId, preselectCityId = null) {
+        citySelect.innerHTML = '<option value="" disabled selected>City</option>';
 
-                <button type="submit"
-                    class="bg-black text-white px-4 py-2 cursor-pointer focus:bg-white focus:text-black focus:border-black border-white border-1">
-                    Update Profil
-                </button>
-            </form>
-        </div>
-    </div>
-</div>
+        fetch(`/api/cities/${provinceId}`)
+            .then(res => res.json())
+            .then(data => {
+                data.data.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city.id;
+                    option.textContent = city.name;
+                    option.className = 'text-black bg-white';
+                    citySelect.appendChild(option);
+                });
+
+                if (preselectCityId) {
+                    citySelect.value = preselectCityId;
+                    document.getElementById('city_name').value = citySelect.options[citySelect.selectedIndex]?.textContent || '';
+                }
+            });
+    }
+
+    document.getElementById('province_select').addEventListener('change', function () {
+        document.getElementById('province_name').value = this.options[this.selectedIndex].textContent;
+        loadCities(this.value);
+    });
+
+    citySelect.addEventListener('change', function () {
+        document.getElementById('city_name').value = this.options[this.selectedIndex].textContent;
+    });
+</script>
 
 <script>
     const showBtn = document.getElementById('showBtn');

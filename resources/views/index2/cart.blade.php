@@ -1,7 +1,7 @@
 @extends('v_user.v_cart.app')
 
 @section('content')
-        <div class="md:pt-[14rem] pt-4 pl-5 flex flex-col gap-2 md:w-5xl w-full">
+        <div class="md:pt-[14rem] pt-4 pl-5 flex flex-col gap-2 md:w-5xl w-full justify-center items-center md:items-start md:justify-start">
             <h2 class="text-2xl font-semibold mb-4">Shopping Cart</h2>
 
 
