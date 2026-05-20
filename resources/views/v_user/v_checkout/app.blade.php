@@ -173,7 +173,7 @@
 
                     <input type="hidden" name="payment_method" id="selectedPayment">
 
-                    <button type="button" id="payBtn"
+                    <button type="button" id="payBtn" disabled
                         class="inline-block border bg-black text-white px-6 py-2 rounded hover:bg-white focus:bg-white focus:text-black focus:border-black hover:border-black hover:text-black cursor-pointer text-sm">
                         Confirm & Pay
                     </button>
@@ -228,6 +228,8 @@
             </div>
         </div>
     </div>
+
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-50 space-y-2"></div>
 
     <script>
         const cityId = "{{ auth()->user()->city_id }}";
@@ -294,6 +296,11 @@
                             const grandTotal = productTotal + cost;
                             document.getElementById('grandTotal').textContent = 'Rp' + grandTotal.toLocaleString('id-ID');
                             document.getElementById('grandTotalSection').classList.remove('hidden');
+
+                            const payBtn = document.getElementById('payBtn');
+                            payBtn.disabled = false;
+                            payBtn.className = 'inline-block border bg-black text-white px-6 py-2 rounded hover:bg-white focus:bg-white focus:text-black focus:border-black hover:border-black hover:text-black cursor-pointer text-sm';
+                            showToast('Ongkir dipilih: Rp' + cost.toLocaleString('id-ID'), 'success');
                         });
 
                         resultDiv.appendChild(btn);
@@ -359,6 +366,7 @@
                                         document.getElementById('qrisImage').src = qris.qr_url;
                                         document.getElementById('qrisDownload').href = qris.qr_url;
                                         document.getElementById('qrisSection').classList.remove('hidden');
+                                        showToast('QR Code siap, silakan scan!', 'success');
                                         document.getElementById('qrisSection').scrollIntoView({ behavior: 'smooth' });
 
                                         window._qrisOrderId = qris.order_id;
@@ -377,10 +385,10 @@
 
                                         window._qrisTimer = timer;
                                     } else {
-                                        alert(qris.error ?? 'Gagal mendapatkan QR code.');
+                                        showToast(qris.error ?? 'Gagal mendapatkan QR code.', 'error');
                                     }
                                 })
-                                .catch(() => alert('Gagal membuat QRIS.'));
+                                .catch(() => showToast('Gagal membuat QRIS.', 'error'));
 
                         } else if (paymentMethod === 'bca') {
                             fetch('{{ route("checkout.bca") }}', {
@@ -398,22 +406,22 @@
                                         document.getElementById('bcaVaNumber').textContent = bca.va_number;
                                         document.getElementById('bcaTotal').textContent = 'Rp' + bca.total.toLocaleString('id-ID');
                                         document.getElementById('bcaSection').classList.remove('hidden');
+                                        showToast('Nomor VA BCA berhasil dibuat!', 'success');
                                         document.getElementById('bcaSection').scrollIntoView({ behavior: 'smooth' });
                                         window._bcaOrderId = bca.order_id;
                                     } else {
-                                        alert(bca.error ?? 'Gagal mendapatkan nomor VA.');
+                                        showToast(bca.error ?? 'Gagal mendapatkan nomor VA.', 'error');
                                     }
                                 })
-                                .catch(() => alert('Gagal membuat BCA VA.'));
-
+                                .catch(() => showToast('Gagal membuat BCA VA.', 'error'));
                         } else {
-                            alert('Pembayaran ' + paymentMethod.toUpperCase() + ' akan segera diproses.');
+                            showToast('Pembayaran ' + paymentMethod.toUpperCase() + ' akan segera diproses.', 'info');
                         }
                     } else {
-                        alert(data.error ?? 'Terjadi kesalahan.');
+                        showToast(data.error ?? 'Terjadi kesalahan.', 'error');
                     }
                 })
-                .catch(() => alert('Gagal menghubungi server.'));
+                .catch(() => showToast('Gagal menghubungi server.', 'error'));
         }); // ✅ tutup payBtn di sini
     </script>
 
@@ -421,13 +429,42 @@
         data-client-key="{{ config('midtrans.client_key') }}"></script>
 
     <script>
+        function showToast(message, type = 'success') {
+            const colors = {
+                success: 'bg-black text-white',
+                error: 'bg-red-600 text-white',
+                info: 'bg-gray-700 text-white',
+            };
+
+            const toast = document.createElement('div');
+            toast.className = `${colors[type]} px-5 py-3 border shadow-lg text-sm flex items-center gap-3 transition-all duration-300 opacity-0 translate-y-2`;
+            toast.innerHTML = `
+        <span>${message}</span>
+        <button onclick="this.parentElement.remove()" class="ml-auto text-white opacity-70 hover:opacity-100 cursor-pointer">✕</button>
+    `;
+
+            document.getElementById('toastContainer').appendChild(toast);
+
+            // Animasi masuk
+            requestAnimationFrame(() => {
+                toast.classList.remove('opacity-0', 'translate-y-2');
+                toast.classList.add('opacity-100', 'translate-y-0');
+            });
+
+            // Auto remove setelah 4 detik
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
         function checkQrisStatus() {
             window.location.href = '/order/' + window._qrisOrderId;
         }
 
         function copyVa() {
             const va = document.getElementById('bcaVaNumber').textContent;
-            navigator.clipboard.writeText(va).then(() => alert('Nomor VA berhasil disalin!'));
+            navigator.clipboard.writeText(va).then(() => showToast('Nomor VA berhasil disalin!', 'success'));
         }
 
         function checkBcaStatus() {

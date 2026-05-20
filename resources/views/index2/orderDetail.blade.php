@@ -68,9 +68,9 @@
                             : {{ ucfirst($order->payment->payment_method) }}
 
                             @if (
-                                $order->status !== 'cancelled' &&
-                                $order->payment->payment_method === 'ewallet'
-                            )
+        $order->status !== 'cancelled' &&
+        $order->payment->payment_method === 'ewallet'
+    )
                                 <a href="{{ route('payment.qrcode', $order->id) }}"
                                 class="hover:text-gray-600! ml-1">
                                     (Pay)
@@ -164,11 +164,18 @@
         <!-- Actions -->
         <div class="flex flex-col md:flex-row gap-2 py-5 justify-end">
             @if($order->status === 'pending')
+                {{-- Tombol Bayar --}}
+                <a href="{{ route('checkout.repay', $order->id) }}"
+                    class="bg-black text-white! text-sm px-6 py-2 border border-black hover:bg-white hover:text-black! text-center cursor-pointer">
+                    Bayar Sekarang
+                </a>
+
+                {{-- Tombol Cancel --}}
                 <form action="{{ route('order.cancel', $order->id) }}" method="POST">
                     @csrf
                     @method('DELETE')
                     <button type="submit"
-                        class="bg-black text-white text-sm px-6 py-2 border-white border-1 hover:bg-red-100 hover:text-red-500 hover:border-black focus:bg-red-100 focus:text-red-500 focus:border-black cursor-pointer">
+                        class="bg-black text-white text-sm px-6 py-2 border-white border-1 hover:bg-red-100 hover:text-red-500 hover:border-black cursor-pointer">
                         Cancel Order
                     </button>
                 </form>

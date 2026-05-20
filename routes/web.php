@@ -150,6 +150,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/buy-now/cancel', [CheckoutController::class, 'cancelBuyNow'])->name('buy.now.cancel');
 
+    
+Route::get('/order/{id}/repay', [CheckoutController::class, 'repay'])->name('checkout.repay');
+
+
     Route::post('/checkout/qris', [CheckoutController::class, 'createQris'])->name('checkout.qris');
 
     Route::post('/checkout/bca', [CheckoutController::class, 'createBcaVa'])->name('checkout.bca');

@@ -33,6 +33,8 @@ class Order extends Model
         'phone',        
         'address',      
         'payment_method',
+        'stock_decremented',
+        'last_payment_method',
     ];
 
     public function user()

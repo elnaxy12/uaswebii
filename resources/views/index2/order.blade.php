@@ -1,7 +1,7 @@
 @extends('v_user.v_order.app')
 
 @section('content-order')
-    <div class="md:pt-[14rem] md:w-5xl w-lg pt-4 px-5 w-full">
+    <div class="md:pt-[14rem] md:w-5xl pt-4 px-5 w-full">
 
         @if(session('success'))
             <div class="bg-green-100 text-green-800 p-3 rounded mb-4">
@@ -14,7 +14,7 @@
         @else
             <h1 class="text-2xl font-bold mb-6">Your Orders</h1>
             <div class="overflow-x-auto">
-                <table class="md:w-full">
+                <table class="md:w-full min-w-[600px]">
                     <thead>
                         <tr class="bg-black text-white text-xs">
                             <th class="p-2">Order ID</th>

@@ -89,57 +89,62 @@ class CheckoutController extends Controller
                 $total += $price * $item->quantity;
             }
 
-            // Tambah ongkir ke total
             $shippingCost = (int) $request->shipping_cost ?? 0;
             $total += $shippingCost;
 
-            $order = Order::create([
-                'user_id'          => $user->id,
-                'total'            => $total,
-                'status'           => 'pending',
-                'first_name'       => $request->first_name,
-                'last_name'        => $request->last_name,
-                'email'            => $request->email,
-                'phone'            => $request->phone,
-                'address'          => $request->address,
-                'payment_method'   => 'midtrans',
-                'shipping_courier' => $request->shipping_courier,
-                'shipping_service' => $request->shipping_service,
-                'shipping_cost'    => $shippingCost,
-            ]);
+            // ✅ Cek order pending yang masih aktif (< 30 menit)
+            $existingPending = Order::where('user_id', $user->id)
+                ->where('status', 'pending')
+                ->latest()
+                ->first();
 
-            foreach ($cartItems as $item) {
-                $price = $this->getItemPrice($item);
-
-                OrderItem::create([
-                    'order_id'   => $order->id,
-                    'product_id' => $item->product->id,
-                    'size_id'    => $item->size_id,
-                    'quantity'   => $item->quantity,
-                    'price'      => $price,
-                    'subtotal'   => $price * $item->quantity,
+            if ($existingPending && $existingPending->created_at->diffInMinutes(now()) < 30) {
+                // Pakai order lama, update totalnya saja
+                $order = $existingPending;
+                $order->update(['total' => $total, 'shipping_cost' => $shippingCost]);
+            } else {
+                // Buat order baru
+                $order = Order::create([
+                    'user_id'          => $user->id,
+                    'total'            => $total,
+                    'status'           => 'pending',
+                    'first_name'       => $request->first_name,
+                    'last_name'        => $request->last_name,
+                    'email'            => $request->email,
+                    'phone'            => $request->phone,
+                    'address'          => $request->address,
+                    'payment_method'   => 'midtrans',
+                    'shipping_courier' => $request->shipping_courier,
+                    'shipping_service' => $request->shipping_service,
+                    'shipping_cost'    => $shippingCost,
+                    'last_payment_method' => $request->payment_method,
                 ]);
 
-                if ($item->size_id) {
-                    DB::table('product_sizes')
-                        ->where('product_id', $item->product->id)
-                        ->where('size_id', $item->size_id)
-                        ->decrement('stock', $item->quantity);
+                foreach ($cartItems as $item) {
+                    $price = $this->getItemPrice($item);
+
+                    OrderItem::create([
+                        'order_id'   => $order->id,
+                        'product_id' => $item->product->id,
+                        'size_id'    => $item->size_id,
+                        'quantity'   => $item->quantity,
+                        'price'      => $price,
+                    ]);
                 }
+
+                Payment::create([
+                    'order_id'       => $order->id,
+                    'payment_method' => 'midtrans',
+                    'payment_amount' => $total,
+                    'payment_status' => 'pending',
+                ]);
+
+                if (session('order_source') !== 'product') {
+                    Cart::where('user_id', $user->id)->delete();
+                }
+
+                session()->forget(['order_source', 'product_id', 'size_id', 'quantity']);
             }
-
-            Payment::create([
-                'order_id'       => $order->id,
-                'payment_method' => 'midtrans',
-                'payment_amount' => $total,
-                'payment_status' => 'pending',
-            ]);
-
-            if (session('order_source') !== 'product') {
-                Cart::where('user_id', $user->id)->delete();
-            }
-
-            session()->forget(['order_source', 'product_id', 'size_id', 'quantity']);
 
             // Build item details untuk Midtrans
             $itemDetails = [];
@@ -153,7 +158,6 @@ class CheckoutController extends Controller
                 ];
             }
 
-            // Tambah ongkir sebagai item
             if ($shippingCost > 0) {
                 $itemDetails[] = [
                     'id'       => 'SHIPPING',
@@ -165,8 +169,8 @@ class CheckoutController extends Controller
 
             $params = [
                 'transaction_details' => [
-                    'order_id'      => $order->id,
-                    'gross_amount'  => (int) $total,
+                    'order_id'     => $order->id . '-' . time(), // ✅ hindari duplicate di Midtrans
+                    'gross_amount' => (int) $total,
                 ],
                 'customer_details' => [
                     'first_name' => $request->first_name,
@@ -207,16 +211,18 @@ class CheckoutController extends Controller
         $parts = explode('-', $orderId);
         $realOrderId = (count($parts) >= 2) ? $parts[1] : $orderId;
 
-        $order = Order::find($realOrderId);
+        $order = Order::with('orderItems')->find($realOrderId);
 
         if (!$order) return response()->json(['message' => 'Order not found'], 404);
 
         if ($transactionStatus == 'capture') {
-            if ($fraudStatus == 'accept') {
-                $order->update(['status' => 'paid']);
-            }
+        if ($fraudStatus == 'accept') {
+            $order->update(['status' => 'paid']);
+            $this->decrementStock($order); // ✅ kurangi stok
+        }
         } elseif ($transactionStatus == 'settlement') {
             $order->update(['status' => 'paid']);
+            $this->decrementStock($order); // ✅ kurangi stok
         } elseif ($transactionStatus == 'pending') {
             $order->update(['status' => 'pending']);
         } elseif (in_array($transactionStatus, ['deny', 'expire', 'cancel'])) {
@@ -247,73 +253,112 @@ class CheckoutController extends Controller
         return redirect()->route('checkout');
     }
 
-public function createQris(Request $request)
-{
-    \Midtrans\Config::$serverKey = config('midtrans.server_key');
-    \Midtrans\Config::$isProduction = config('midtrans.is_production');
-    \Midtrans\Config::$isSanitized = true;
-    \Midtrans\Config::$is3ds = true;
+    public function createQris(Request $request)
+    {
+        \Midtrans\Config::$serverKey = config('midtrans.server_key');
+        \Midtrans\Config::$isProduction = config('midtrans.is_production');
+        \Midtrans\Config::$isSanitized = true;
+        \Midtrans\Config::$is3ds = true;
 
-    $order = Order::findOrFail($request->order_id);
+        $order = Order::findOrFail($request->order_id);
 
-    $params = [
-        'payment_type' => 'qris',
-        'transaction_details' => [
-            'order_id'     => 'QRIS-' . $order->id . '-' . time(),
-            'gross_amount' => (int) $order->total,
-        ],
-        'qris' => [
-            'acquirer' => 'gopay'
-        ]
-    ];
+        $params = [
+            'payment_type' => 'qris',
+            'transaction_details' => [
+                'order_id'     => 'QRIS-' . $order->id . '-' . time(),
+                'gross_amount' => (int) $order->total,
+            ],
+            'qris' => [
+                'acquirer' => 'gopay'
+            ]
+        ];
 
-    $response = \Midtrans\CoreApi::charge($params);
+        $response = \Midtrans\CoreApi::charge($params);
 
-    $qrUrl = $response->actions[0]->url ?? null;
+        $qrUrl = $response->actions[0]->url ?? null;
 
-    return response()->json([
-        'qr_url'   => $qrUrl,
-        'order_id' => $order->id,
-    ]);
-}
+        return response()->json([
+            'qr_url'   => $qrUrl,
+            'order_id' => $order->id,
+        ]);
+    }
 
-public function createBcaVa(Request $request)
-{
-    \Midtrans\Config::$serverKey = config('midtrans.server_key');
-    \Midtrans\Config::$isProduction = config('midtrans.is_production');
-    \Midtrans\Config::$isSanitized = true;
-    \Midtrans\Config::$is3ds = true;
+    public function createBcaVa(Request $request)
+    {
+        \Midtrans\Config::$serverKey = config('midtrans.server_key');
+        \Midtrans\Config::$isProduction = config('midtrans.is_production');
+        \Midtrans\Config::$isSanitized = true;
+        \Midtrans\Config::$is3ds = true;
 
-    $order = Order::findOrFail($request->order_id);
+        $order = Order::findOrFail($request->order_id);
 
-    $params = [
-        'payment_type' => 'bank_transfer',
-        'transaction_details' => [
-            'order_id'     => 'BCA-' . $order->id . '-' . time(),
-            'gross_amount' => (int) $order->total,
-        ],
-        'bank_transfer' => [
-            'bank' => 'bca'
-        ],
-        'customer_details' => [
-            'first_name' => $order->first_name,
-            'last_name'  => $order->last_name,
-            'email'      => $order->email,
-            'phone'      => $order->phone,
-        ],
-    ];
+        $params = [
+            'payment_type' => 'bank_transfer',
+            'transaction_details' => [
+                'order_id'     => 'BCA-' . $order->id . '-' . time(),
+                'gross_amount' => (int) $order->total,
+            ],
+            'bank_transfer' => [
+                'bank' => 'bca'
+            ],
+            'customer_details' => [
+                'first_name' => $order->first_name,
+                'last_name'  => $order->last_name,
+                'email'      => $order->email,
+                'phone'      => $order->phone,
+            ],
+        ];
 
-    $response = \Midtrans\CoreApi::charge($params);
+        $response = \Midtrans\CoreApi::charge($params);
 
-    $vaNumber = $response->va_numbers[0]->va_number ?? null;
+        $vaNumber = $response->va_numbers[0]->va_number ?? null;
 
-    return response()->json([
-        'va_number' => $vaNumber,
-        'bank'      => 'BCA',
-        'order_id'  => $order->id,
-        'total'     => $order->total,
-    ]);
-}
+        return response()->json([
+            'va_number' => $vaNumber,
+            'bank'      => 'BCA',
+            'order_id'  => $order->id,
+            'total'     => $order->total,
+        ]);
+    }
+
+    public function cancelBuyNow()
+    {
+        session()->forget(['order_source', 'product_id', 'size_id', 'quantity']);
+        return redirect()->back();
+    }
+
+    public function repay($orderId)
+    {
+        $order = Order::with('orderItems.product', 'orderItems.size')->findOrFail($orderId);
+
+        // Pastikan order milik user yang login
+        if ($order->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // Pastikan masih pending
+        if ($order->status !== 'pending') {
+            return redirect()->route('user.order')->with('error', 'Order ini sudah tidak bisa dibayar.');
+        }
+
+        // Generate snap token baru
+        $params = [
+            'transaction_details' => [
+                'order_id'     => $order->id . '-' . time(), // hindari duplicate order_id
+                'gross_amount' => (int) $order->total,
+            ],
+            'customer_details' => [
+                'first_name' => $order->first_name,
+                'last_name'  => $order->last_name,
+                'email'      => $order->email,
+                'phone'      => $order->phone,
+            ],
+        ];
+
+        $snapToken = Snap::getSnapToken($params);
+
+        return view('v_user.v_order.repay', compact('order', 'snapToken'));
+    }
 
     private function getBuyNowItem()
     {
@@ -360,9 +405,20 @@ public function createBcaVa(Request $request)
         return $base + $additional_price;
     }
 
-    public function cancelBuyNow()
+    private function decrementStock(Order $order)
     {
-        session()->forget(['order_source', 'product_id', 'size_id', 'quantity']);
-        return redirect()->back();
+        // Cegah double decrement kalau notif datang 2x
+        if ($order->stock_decremented) return;
+
+        foreach ($order->orderItems as $item) {
+            if ($item->size_id) {
+                DB::table('product_sizes')
+                    ->where('product_id', $item->product_id)
+                    ->where('size_id', $item->size_id)
+                    ->decrement('stock', $item->quantity);
+            }
+        }
+
+        $order->update(['stock_decremented' => true]);
     }
 }
