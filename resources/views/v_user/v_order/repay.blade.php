@@ -1,5 +1,70 @@
 @include('base2.start')
 <title>Bayar Ulang Order #{{ $order->id }}</title>
+
+<style>
+    #payLoadingOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(255, 255, 255, 0.85);
+        z-index: 9999;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+    }
+
+    #payLoadingOverlay.active {
+        display: flex;
+    }
+
+    .loader {
+        width: 100px;
+        aspect-ratio: 1;
+        padding: 10px;
+        box-sizing: border-box;
+        display: grid;
+        background: #fff;
+        filter: blur(5px) contrast(10) hue-rotate(300deg);
+        mix-blend-mode: darken;
+    }
+
+    .loader:before,
+    .loader:after {
+        content: "";
+        grid-area: 1/1;
+        width: 40px;
+        height: 40px;
+        background: black;
+        animation: l7 2s infinite;
+    }
+
+    .loader:after {
+        animation-delay: -1s;
+    }
+
+    @keyframes l7 {
+        0% {
+            transform: translate(0, 0)
+        }
+
+        25% {
+            transform: translate(100%, 0)
+        }
+
+        50% {
+            transform: translate(100%, 100%)
+        }
+
+        75% {
+            transform: translate(0, 100%)
+        }
+
+        100% {
+            transform: translate(0, 0)
+        }
+    }
+</style>
 </head>
 
 <body>
@@ -102,6 +167,11 @@
 
     <div id="toastContainer" class="fixed bottom-6 right-6 z-50 space-y-2"></div>
 
+    <div id="payLoadingOverlay">
+        <div class="loader"></div>
+        <p style="font-size: 14px; color: #333; margin: 0;">Memuat pembayaran...</p>
+    </div>
+
     <script src="https://app.sandbox.midtrans.com/snap/snap.js"
         data-client-key="{{ config('midtrans.client_key') }}"></script>
 
@@ -111,6 +181,10 @@
         const snapToken = '{{ $snapToken }}';
 
         document.getElementById('payRepayBtn').addEventListener('click', function () {
+
+            // ✅ show loader
+            document.getElementById('payLoadingOverlay').classList.add('active');
+
             if (paymentMethod === 'qris') {
                 fetch('{{ route("checkout.qris") }}', {
                     method: 'POST',
@@ -122,6 +196,8 @@
                 })
                     .then(res => res.json())
                     .then(qris => {
+                        document.getElementById('payLoadingOverlay').classList.remove('active'); // ✅
+
                         if (qris.qr_url) {
                             document.getElementById('qrisImage').src = qris.qr_url;
                             document.getElementById('qrisSection').classList.remove('hidden');
@@ -140,8 +216,10 @@
                             showToast(qris.error ?? 'Gagal mendapatkan QR.', 'error');
                         }
                     })
-                    .catch(() => showToast('Gagal membuat QRIS.', 'error'));
-
+                    .catch(() => {
+                        document.getElementById('payLoadingOverlay').classList.remove('active'); // ✅
+                        showToast('Gagal membuat QRIS.', 'error');
+                    });
             } else if (paymentMethod === 'bca') {
                 fetch('{{ route("checkout.bca") }}', {
                     method: 'POST',
@@ -153,6 +231,7 @@
                 })
                     .then(res => res.json())
                     .then(bca => {
+                        document.getElementById('payLoadingOverlay').classList.remove('active'); // ✅
                         if (bca.va_number) {
                             document.getElementById('bcaVaNumber').textContent = bca.va_number;
                             document.getElementById('bcaTotal').textContent = 'Rp' + bca.total.toLocaleString('id-ID');
@@ -163,15 +242,22 @@
                             showToast(bca.error ?? 'Gagal mendapatkan VA.', 'error');
                         }
                     })
-                    .catch(() => showToast('Gagal membuat BCA VA.', 'error'));
-
+                    .catch(() => {
+                        document.getElementById('payLoadingOverlay').classList.remove('active'); // ✅
+                        showToast('Gagal membuat BCA VA.', 'error');
+                    });
             } else {
                 // fallback: Snap popup untuk mandiri, alfamart, indomaret, dll
                 snap.pay(snapToken, {
                     onSuccess: () => window.location.href = '/order/' + orderId,
                     onPending: () => window.location.href = '/order/' + orderId,
-                    onError: () => showToast('Pembayaran gagal.', 'error'),
-                    onClose: () => { }
+                    onError: () => {
+                        document.getElementById('payLoadingOverlay').classList.remove('active');
+                        showToast('Pembayaran gagal.', 'error');
+                    },
+                    onClose: () => {
+                        document.getElementById('payLoadingOverlay').classList.remove('active'); // ✅ hide saat popup ditutup
+                    }
                 });
             }
         });

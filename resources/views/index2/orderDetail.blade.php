@@ -43,7 +43,7 @@
         </div> --}}
 
         <!-- Order & Payment Details -->
-        <div class="bg-gray-100 p-4 rounded-lg">
+        <div class="bg-gray-100 p-4">
             <h2 class="text-xl font-semibold mb-4">Order #{{ $order->id }}</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                 <div class="grid grid-cols-[140px_1fr] gap-2">
@@ -58,7 +58,7 @@
 
                 <div class="grid grid-cols-[140px_1fr] gap-2">
                     <span class="font-semibold">Total Price</span>
-                    <span>: ${{ number_format($order->total, 2) }}</span>
+                    <span>: Rp{{ number_format($order->total, 2, ',', '.') }}</span>
                 </div>
 
                 @if(!empty($order->payment))
@@ -68,11 +68,10 @@
                             : {{ ucfirst($order->payment->payment_method) }}
 
                             @if (
-        $order->status !== 'cancelled' &&
-        $order->payment->payment_method === 'ewallet'
-    )
-                                <a href="{{ route('payment.qrcode', $order->id) }}"
-                                class="hover:text-gray-600! ml-1">
+                                    $order->status !== 'cancelled' &&
+                                    $order->payment->payment_method === 'ewallet'
+                                )
+                                <a href="{{ route('payment.qrcode', $order->id) }}" class="hover:text-gray-600! ml-1">
                                     (Pay)
                                 </a>
                             @endif
@@ -94,71 +93,101 @@
         </div>
 
         <!-- Order Items -->
-        <div class="overflow-x-auto bg-white p-4 rounded-lg shadow space-y-6">
-            <table class="w-full min-w-[500px] border-collapse">
-                <thead class="bg-black text-white text-sm">
-                    <tr>
-                        <th class="p-2 text-left">Product</th>
-                        <th class="p-2 text-left">Price</th>
-                        <th class="p-2 text-left">Quantity</th>
-                        <th class="p-2 text-left">Subtotal</th>
-                    </tr>
-                </thead>
+        <div class="bg-white p-4 space-y-6">
 
-                <tbody class="text-sm">
-                    @foreach($order->items as $item)
-                        <tr class="border-b border-gray-200">
-                            <td class="p-2 flex items-center gap-2">
-                                @if($item->product && $item->product->image)
-                                    <img src="{{ $item->product->image }}" alt="{{ $item->product->name }}"
-                                        class="w-50 h-50 object-cover">
-                                @endif
-                                {{ $item->product->name }}
-                                <span class="text-xs text-gray-500">
-                                    ({{ $item->size->code ?? '-' }})
-                                </span>
-                            </td>
-                            <td class="p-2">${{ number_format($item->price, 2) }}</td>
-                            <td class="p-2">{{ $item->quantity }}</td>
-                            <td class="p-2">${{ number_format($item->price * $item->quantity, 2) }}</td>
+            {{-- Tabel produk tetap pakai scroll di mobile --}}
+            <div class="overflow-x-auto">
+                <table class="w-full min-w-[500px] border-collapse">
+                    <thead class="bg-black text-white text-sm">
+                        <tr>
+                            <th class="p-2 text-left">Product</th>
+                            <th class="p-2 text-left">Price</th>
+                            <th class="p-2 text-left">Quantity</th>
+                            <th class="p-2 text-left">Subtotal</th>
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody class="text-sm">
+                        @foreach($order->items as $item)
+                            <tr class="border-b border-gray-200">
+                                <td class="p-2 flex items-center gap-2">
+                                    @if($item->product && $item->product->image)
+                                        <img src="{{ $item->product->image }}" alt="{{ $item->product->name }}"
+                                            class="w-12 h-12 object-cover">
+                                    @endif
+                                    {{ $item->product->name }}
+                                    <span class="text-xs text-gray-500">({{ $item->size->code ?? '-' }})</span>
+                                </td>
+                                <td class="p-2">Rp{{ number_format($item->price, 2, ',', '.') }}</td>
+                                <td class="p-2">{{ $item->quantity }}</td>
+                                <td class="p-2">Rp{{ number_format($item->price * $item->quantity, 2, ',', '.') }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
-            <table class="w-full min-w-[500px] border-collapse">
-                <thead class="bg-black text-white text-sm">
-                    <tr>
-                        <th class="p-2 text-left">First Name</th>
-                        <th class="p-2 text-left">Last Name</th>
-                        <th class="p-2 text-left">Email</th>
-                        <th class="p-2 text-left">Phone</th>
-                        <th class="p-2 text-left">Address</th>
-                    </tr>
-                </thead>
-                <tbody class="text-sm">
-                    <tr class="border-b border-gray-200 text-xs">
-                        <td class="p-2">
-                            <input type="text" value="{{ auth()->user()->first_name }}"
-                                class="px-3 py-2 w-full outline-none" readonly>
-                        </td>
-                        <td class="p-2"><input type="text" value="{{ auth()->user()->last_name }}"
-                                class="px-3 py-2 w-full outline-none" readonly>
-                        </td>
-                        <td class="p-2"><input type="email" value="{{ auth()->user()->email }}"
-                                class="px-3 py-2 w-full outline-none" readonly>
-                        </td>
-                        <td class="p-2"><input type="text" value="{{ auth()->user()->phone }}"
-                                class="px-3 py-2 w-full outline-none" readonly>
-                        </td>
-                        <td class="p-2">
-                            <div class="px-3 py-2 w-full h-20 overflow-auto items-center flex">
-                                {{ auth()->user()->address }}
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            {{-- Customer Info — card di mobile, tabel di desktop --}}
+            <div>
+                <h3 class="text-sm font-semibold mb-3">Customer Information</h3>
+
+                {{-- Desktop --}}
+                <div class="hidden md:block overflow-x-auto">
+                    <table class="w-full min-w-[500px] border-collapse">
+                        <thead class="bg-black text-white text-sm">
+                            <tr>
+                                <th class="p-2 text-left">First Name</th>
+                                <th class="p-2 text-left">Last Name</th>
+                                <th class="p-2 text-left">Email</th>
+                                <th class="p-2 text-left">Phone</th>
+                                <th class="p-2 text-left">Address</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm">
+                            <tr class="border-b border-gray-200 text-xs">
+                                <td class="p-2"><input type="text" value="{{ auth()->user()->first_name }}"
+                                        class="px-3 py-2 w-full outline-none" readonly></td>
+                                <td class="p-2"><input type="text" value="{{ auth()->user()->last_name }}"
+                                        class="px-3 py-2 w-full outline-none" readonly></td>
+                                <td class="p-2"><input type="email" value="{{ auth()->user()->email }}"
+                                        class="px-3 py-2 w-full outline-none" readonly></td>
+                                <td class="p-2"><input type="text" value="{{ auth()->user()->phone }}"
+                                        class="px-3 py-2 w-full outline-none" readonly></td>
+                                <td class="p-2">
+                                    <div class="px-3 py-2 w-full h-20 overflow-auto flex items-center">
+                                        {{ auth()->user()->province_name }}, {{ auth()->user()->city_name }},
+                                        {{ auth()->user()->address }}
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                {{-- Mobile --}}
+                <div class="md:hidden border p-4 text-sm space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">First Name</span>
+                        <span class="font-medium">{{ auth()->user()->first_name }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">Last Name</span>
+                        <span class="font-medium">{{ auth()->user()->last_name }}</span>
+                    </div>
+                    <div class="flex justify-between gap-4">
+                        <span class="text-gray-500 shrink-0">Email</span>
+                        <span class="font-medium text-right break-all">{{ auth()->user()->email }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">Phone</span>
+                        <span class="font-medium">{{ auth()->user()->phone }}</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <span class="text-gray-500">Address</span>
+                        <span class="font-medium">{{ auth()->user()->province_name }}, {{ auth()->user()->city_name }},
+                            {{ auth()->user()->address }}</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Actions -->
@@ -175,7 +204,7 @@
                     @csrf
                     @method('DELETE')
                     <button type="submit"
-                        class="bg-black text-white text-sm px-6 py-2 border-white border-1 hover:bg-red-100 hover:text-red-500 hover:border-black cursor-pointer">
+                        class="bg-black text-white text-sm w-full py-2 border-white border-1 hover:bg-red-100 hover:text-red-500 hover:border-black cursor-pointer">
                         Cancel Order
                     </button>
                 </form>
