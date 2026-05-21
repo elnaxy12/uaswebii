@@ -15,137 +15,145 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body>
+<body class="overflow-hidden">
     <div class="w-full bg-[#020617]">
-        <canvas id="aurora"></canvas>
-        <div class="relative w-full h-screen">
-            <div class="absolute" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-                <div
-                    class="border md:w-md w-2xs md:h-[550px] h-[400px] border-white/40 backdrop-blur-3xl bg-inherit rounded-2xl overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                    {{-- head form --}}
-                    <div class="flex items-center justify-center md:h-[200px] h-[150px]">
-                        <h2 class="text-white font-sans font-semibold md:text-4xl text-3xl select-none cursor-default">
-                            Register</h2>
-                    </div>
+        <canvas id="aurora" class="fixed inset-0 w-full h-full"></canvas>
 
-                    <form action="{{ route('register') }}" method="POST">
-                        @csrf
-                        <div class="flex flex-col gap-5 items-center">
-                            @if ($errors->any())
-                                <div class="bg-red-500/10 border border-red-500 text-red-500 text-xs p-3 m-3 rounded-md">
-                                    <ul class="list-disc list-inside">
-                                        @foreach ($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif {{-- first name & last name --}}
-                            <div class="flex gap-2">
-                                <label>
-                                    <input
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white border-white/30 placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
-                                        type="text" name="first_name" placeholder="First Name"
-                                        value="{{ old('first_name') }}" required>
-                                </label>
-                                <label>
-                                    <input
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white border-white/30 placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
-                                        type="text" name="last_name" placeholder="Last Name"
-                                        value="{{ old('last_name') }}" required>
-                                </label>
+        {{-- Card Register --}}
+        <div class="relative z-10 flex items-center justify-center min-h-screen px-4">
+            <div
+                class="border w-full max-w-sm md:max-w-md border-white/40 backdrop-blur-3xl bg-transparent rounded-2xl">
+
+                {{-- Head --}}
+                <div class="flex items-center justify-center py-10 md:py-14">
+                    <h2 class="text-white font-sans font-semibold text-3xl md:text-4xl select-none cursor-default">
+                        Register
+                    </h2>
+                </div>
+
+                <form action="{{ route('register') }}" method="POST">
+                    @csrf
+                    <div class="flex flex-col gap-5 items-center pb-8 px-6">
+
+                        {{-- Errors --}}
+                        @if ($errors->any())
+                            <div
+                                class="bg-red-500/10 border border-red-500/50 text-red-400 text-xs p-3 rounded-md w-full max-w-xs">
+                                <ul class="list-disc list-inside space-y-1">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
                             </div>
+                        @endif
 
-                            {{-- email & username --}}
-                            <div class="flex gap-2">
-                                <label>
-                                    <input
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white border-white/30 placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
-                                        type="email" name="email" placeholder="Email" value="{{ old('email') }}"
-                                        required>
-                                </label>
-                                <label>
-                                    <input
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white border-white/30 placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
-                                        type="text" name="username" placeholder="Username" value="{{ old('username') }}"
-                                        required>
-                                </label>
+                        {{-- First & Last Name --}}
+                        <div class="flex gap-3 w-full max-w-xs">
+                            <div class="flex-1">
+                                <input
+                                    class="w-full text-sm p-2 text-white bg-transparent border-b border-white/30 placeholder-white/50 focus:outline-none focus:border-white/70 transition-colors"
+                                    type="text" name="first_name" placeholder="First Name"
+                                    value="{{ old('first_name') }}" required>
                             </div>
-
-                            {{-- password --}}
-                            <div class="flex gap-2">
-                                <label>
-                                    <input
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white border-white/30 placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
-                                        type="password" name="password" placeholder="Create Password" required>
-                                </label>
-                                <label>
-                                    <input
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white border-white/30 placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
-                                        type="password" name="password_confirmation" placeholder="Repeat Password"
-                                        required>
-                                </label>
-                            </div>
-
-                            {{-- province & city --}}
-                            <div class="flex gap-2">
-                                <label>
-                                    <select name="province_id" id="province_select"
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white/50 bg-transparent focus:outline-none border-b border-white/30 focus:text-white cursor-pointer">
-                                        <option value="" disabled selected class="bg-gray-900 text-white/50">Province
-                                        </option>
-                                    </select>
-                                    <input type="hidden" name="province_name" id="province_name">
-                                </label>
-                                <label>
-                                    <select name="city_id" id="city_select"
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white/50 bg-transparent focus:outline-none border-b border-white/30 focus:text-white cursor-pointer">
-                                        <option value="" disabled selected class="bg-gray-900 text-white/50">City
-                                        </option>
-                                    </select>
-                                    <input type="hidden" name="city_name" id="city_name">
-                                </label>
-                            </div>
-
-                            {{-- address & phone --}}
-                            <div class="flex gap-2">
-                                <label>
-                                    <input
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white border-white/30 placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
-                                        type="text" name="address" placeholder="Address" value="{{ old('address') }}">
-                                </label>
-                                <label>
-                                    <input
-                                        class="md:w-[10rem] w-[7rem] md:text-sm text-xs p-2 text-white border-white/30 placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
-                                        type="text" name="phone" placeholder="Phone" value="{{ old('phone') }}">
-                                </label>
-                            </div>
-
-                            {{-- button register --}}
-                            <div>
-                                <button type="submit"
-                                    class="bg-white md:w-3xs w-[10rem] md:p-2 p-[4px] rounded-2xl md:mt-5 cursor-pointer hover:bg-gray-200 transition duration-200">
-                                    Register
-                                </button>
-                            </div>
-
-                            {{-- have account --}}
-                            <div class="mb-2">
-                                <a class="text-white text-xs hover:text-blue-900" href="/login">Have an Account?</a>
+                            <div class="flex-1">
+                                <input
+                                    class="w-full text-sm p-2 text-white bg-transparent border-b border-white/30 placeholder-white/50 focus:outline-none focus:border-white/70 transition-colors"
+                                    type="text" name="last_name" placeholder="Last Name" value="{{ old('last_name') }}"
+                                    required>
                             </div>
                         </div>
-                    </form>
-                </div>
+
+                        {{-- Email & Username --}}
+                        <div class="flex gap-3 w-full max-w-xs">
+                            <div class="flex-1">
+                                <input
+                                    class="w-full text-sm p-2 text-white bg-transparent border-b border-white/30 placeholder-white/50 focus:outline-none focus:border-white/70 transition-colors"
+                                    type="email" name="email" placeholder="Email" value="{{ old('email') }}" required>
+                            </div>
+                            <div class="flex-1">
+                                <input
+                                    class="w-full text-sm p-2 text-white bg-transparent border-b border-white/30 placeholder-white/50 focus:outline-none focus:border-white/70 transition-colors"
+                                    type="text" name="username" placeholder="Username" value="{{ old('username') }}"
+                                    required>
+                            </div>
+                        </div>
+
+                        {{-- Password --}}
+                        <div class="flex gap-3 w-full max-w-xs">
+                            <div class="flex-1">
+                                <input
+                                    class="w-full text-sm p-2 text-white bg-transparent border-b border-white/30 placeholder-white/50 focus:outline-none focus:border-white/70 transition-colors"
+                                    type="password" name="password" placeholder="Password" required>
+                            </div>
+                            <div class="flex-1">
+                                <input
+                                    class="w-full text-sm p-2 text-white bg-transparent border-b border-white/30 placeholder-white/50 focus:outline-none focus:border-white/70 transition-colors"
+                                    type="password" name="password_confirmation" placeholder="Confirm" required>
+                            </div>
+                        </div>
+
+                        {{-- Province & City --}}
+                        <div class="flex gap-3 w-full max-w-xs">
+                            <div class="flex-1">
+                                <select name="province_id" id="province_select"
+                                    class="w-full text-sm p-2 text-white/50 bg-transparent border-b border-white/30 focus:outline-none focus:text-white cursor-pointer transition-colors">
+                                    <option value="" disabled selected class="bg-gray-900">Province</option>
+                                </select>
+                                <input type="hidden" name="province_name" id="province_name">
+                            </div>
+                            <div class="flex-1 relative">
+                                <select name="city_id" id="city_select"
+                                    class="w-full text-sm p-2 text-white/50 bg-transparent border-b border-white/30 focus:outline-none focus:text-white cursor-pointer transition-colors disabled:opacity-40 appearance-none">
+                                    <option value="" disabled selected class="bg-gray-900">City</option>
+                                </select>
+
+                                <!-- Spinner -->
+                                <div id="city_loading" class="hidden absolute right-2 top-1/2 -translate-y-1/2">
+                                    <div
+                                        class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Address & Phone --}}
+                        <div class="flex gap-3 w-full max-w-xs">
+                            <div class="flex-1">
+                                <input
+                                    class="w-full text-sm p-2 text-white bg-transparent border-b border-white/30 placeholder-white/50 focus:outline-none focus:border-white/70 transition-colors"
+                                    type="text" name="address" placeholder="Address" value="{{ old('address') }}">
+                            </div>
+                            <div class="flex-1">
+                                <input
+                                    class="w-full text-sm p-2 text-white bg-transparent border-b border-white/30 placeholder-white/50 focus:outline-none focus:border-white/70 transition-colors"
+                                    type="text" name="phone" placeholder="Phone" value="{{ old('phone') }}">
+                            </div>
+                        </div>
+
+                        {{-- Button Register --}}
+                        <button type="submit"
+                            class="w-full max-w-xs bg-white text-black font-medium py-2 px-4 rounded-2xl mt-2 cursor-pointer hover:bg-white/90 transition-colors">
+                            Register
+                        </button>
+
+                        {{-- Have account --}}
+                        <a class="text-white text-xs hover:text-blue-300 transition-colors mb-2" href="/login">Have an
+                            Account?</a>
+                    </div>
+                </form>
             </div>
         </div>
 
-        <div class="fixed top-3 left-3 bg-white px-2 py-2">
+        {{-- Logo --}}
+        <div class="fixed top-3 left-3 z-30 bg-white px-2 py-2">
             <a href="{{ route('welcome') }}">
-                <img src="https://news.adidas.com/dist/images/adidas-news-web.svg" width="100px" alt="Logo Adidas">
+                <img src="https://news.adidas.com/dist/images/adidas-news-web.svg" width="90" alt="Logo Adidas">
             </a>
         </div>
     </div>
+
+    {{-- Scripts tetap sama --}}
     <script>
-        // Load provinsi
         fetch('/api/provinces')
             .then(res => res.json())
             .then(data => {
@@ -159,32 +167,56 @@
                 });
             });
 
-        const citySelect = document.getElementById('city_select'); // ← tambah ini di luar
+        const citySelect = document.getElementById('city_select');
+        const cityLoading = document.getElementById('city_loading');
 
-        // Load kota saat provinsi dipilih
-        document.getElementById('province_select').addEventListener('change', function () {
-            const provinceId = this.value;
-            const provinceName = this.options[this.selectedIndex].textContent;
-            document.getElementById('province_name').value = provinceName;
 
-            citySelect.innerHTML = '<option value="" disabled selected>City</option>';
+    document.getElementById('province_select').addEventListener('change', function () {
 
-            fetch(`/api/cities/${provinceId}`)
-                .then(res => res.json())
-                .then(data => {
-                    data.data.forEach(city => {
-                        const option = document.createElement('option');
-                        option.value = city.id;
-                        option.textContent = city.name;
-                        option.className = 'text-black bg-white';
-                        citySelect.appendChild(option);
-                    });
+        const provinceId = this.value;
+
+        document.getElementById('province_name').value =
+            this.options[this.selectedIndex].textContent;
+
+        citySelect.innerHTML =
+            '<option value="" disabled selected class="bg-gray-900">City</option>';
+
+        citySelect.disabled = true;
+
+        // hide arrow pas loading
+        citySelect.classList.add('appearance-none');
+
+        cityLoading.classList.remove('hidden');
+
+        fetch(`/api/cities/${provinceId}`)
+            .then(res => res.json())
+            .then(data => {
+
+                citySelect.innerHTML =
+                    '<option value="" disabled selected class="bg-gray-900">City</option>';
+
+                data.data.forEach(city => {
+
+                    const option = document.createElement('option');
+
+                    option.value = city.id;
+                    option.textContent = city.name;
+                    option.className = 'text-black bg-white';
+
+                    citySelect.appendChild(option);
                 });
-        });
+
+                // munculin arrow lagi
+                citySelect.classList.remove('appearance-none');
+
+                citySelect.disabled = false;
+
+                cityLoading.classList.add('hidden');
+            });
+    });
 
         citySelect.addEventListener('change', function () {
-            const cityName = this.options[this.selectedIndex].textContent;
-            document.getElementById('city_name').value = cityName;
+            document.getElementById('city_name').value = this.options[this.selectedIndex].textContent;
         });
     </script>
     <script src="{{ asset('js/aurora.js') }}"></script>

@@ -15,136 +15,117 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body>
-    <div class="w-full bg-[#020617]">
-        <canvas id="aurora"></canvas>
-        <div class="relative w-full h-screen">
-            <div class="absolute" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-                <div
-                    class="border md:w-md w-2xs md:h-[500px] h-fit border-white/40 backdrop-blur-3xl bg-inherit rounded-2xl">
-                    {{-- head form --}}
-                    <div class="flex items-center justify-center md:h-[200px] h-[150px]">
-                        <h2 class="text-white font-sans font-semibold md:text-4xl text-3xl select-none cursor-default">
-                            Login</h2>
-                    </div>
+<body class="overflow-hidden">
+    <div class="w-full bg-[#020617] min-h-screen">
+        <canvas id="aurora" class="fixed inset-0 w-full h-full"></canvas>
 
-                    <form action="{{ route('login.post') }}" method="POST">
-                        @csrf
+        {{-- Card Login --}}
+        <div class="relative z-10 flex items-center justify-center min-h-screen pb-[70px] md:pb-[60px] px-4">
+            <div class="border w-full max-w-sm md:max-w-md border-white/40 backdrop-blur-3xl bg-transparent rounded-2xl">
 
-                        <div class="flex flex-col gap-5 items-center">
+                {{-- Head form --}}
+                <div class="flex items-center justify-center py-10 md:py-14">
+                    <h2 class="text-white font-sans font-semibold text-3xl md:text-4xl select-none cursor-default">
+                        Login
+                    </h2>
+                </div>
 
-                            {{-- Menampilkan error login --}}
-                            @if(session('error'))
-                                <div
-                                    class="text-red-400 text-xs text-center md:w-xs w-[14rem] absolute translate-y-[-35px]">
-                                    {{ session('error') }}
-                                </div>
-                            @endif
+                <form action="{{ route('login.post') }}" method="POST">
+                    @csrf
+                    <div class="flex flex-col gap-5 items-center pb-8 px-6">
 
-                            {{-- email --}}
-                            <div>
-                                <label>
-                                    <input
-                                        class="md:w-xs w-[14rem] md:text-sm text-xs p-2 text-white border-white/30 placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
-                                        type="email" placeholder="Email" name="email" value="{{ old('email') }}"
-                                        required>
-                                </label>
-
-                                @error('email')
-                                    <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
-                                @enderror
+                        {{-- Error login --}}
+                        @if(session('error'))
+                            <div class="text-red-400 text-xs text-center w-full -mt-3">
+                                {{ session('error') }}
                             </div>
+                        @endif
 
-                            {{-- password --}}
-                            <div>
-                                <label>
-                                    <input
-                                        class="md:w-xs w-[14rem] md:text-sm text-xs p-2 text-white border-white/30 placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
-                                        type="password" placeholder="Password" name="password" required>
-                                </label>
-
-                                @error('password')
-                                    <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            {{-- remember me --}}
-                            <div class="flex md:justify-start md:w-xs w-[14rem]">
-                                <label for="check" class="flex gap-1 cursor-pointer">
-                                    <input id="check" class="scale-75 cursor-pointer" type="checkbox" name="remember"
-                                        value="1">
-                                    <span class="text-white text-xs select-none font-thin m-auto h-full">
-                                        Remember me
-                                    </span>
-                                </label>
-
-                                @error('remember')
-                                    <p
-                                        class="text-red-400 md:text-xs text-[10px] mt-1 absolute md:translate-y-4 translate-y-3">
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
-
-                            {{-- button login --}}
-                            <div>
-                                <button
-                                    class="bg-white md:w-3xs w-[10rem] md:p-2 p-[4px] rounded-2xl md:mt-5 cursor-pointer">
-                                    Login
-                                </button>
-                            </div>
-
-                            {{-- forgot password --}}
-                            <div class="mb-2">
-                                <a class="text-white text-xs hover:text-blue-900"
-                                    href="{{ route('password.request') }}">
-                                    Forgot Password?
-                                </a>
-                            </div>
+                        {{-- Email --}}
+                        <div class="w-full max-w-xs">
+                            <input
+                                class="w-full text-sm p-2 text-white bg-transparent border-b border-white/30 placeholder-white/50 focus:outline-none focus:border-white/70 transition-colors"
+                                type="email" placeholder="Email" name="email"
+                                value="{{ old('email') }}" required>
+                            @error('email')
+                                <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
-                    </form>
-                </div>
-            </div>
 
-            <div class="parent fixed flex items-center bottom-0 left-0 w-full bg-white md:h-[60px] h-[70px] pt-2">
-                <div class="container mx-auto md:p-0 p-[10px] flex justify-between">
-                    <div>
-                        <p class="md:text-xs text-[12px] text-blue-900">Welcome to our platform!</p>
-                        <p class="md:text-sm text-[12px]">Sign up to unlock all features and enjoy a personalized
-                            experience.</p>
-                    </div>
-                    <div class="flex flex-col md:gap-2 gap-1">
-                        <a class="text-xs  hover:text-blue-900" href="/register">Create an acount</a>
+                        {{-- Password --}}
+                        <div class="w-full max-w-xs">
+                            <input
+                                class="w-full text-sm p-2 text-white bg-transparent border-b border-white/30 placeholder-white/50 focus:outline-none focus:border-white/70 transition-colors"
+                                type="password" placeholder="Password" name="password" required>
+                            @error('password')
+                                <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Remember me --}}
+                        <div class="flex justify-start w-full max-w-xs">
+                            <label for="check" class="flex gap-2 cursor-pointer items-center">
+                                <input id="check" class="cursor-pointer" type="checkbox" name="remember" value="1">
+                                <span class="text-white text-xs select-none font-thin">Remember me</span>
+                            </label>
+                        </div>
+
+                        {{-- Button login --}}
                         <button type="submit"
-                            class="close-btn hidden md:inline border m-1 p-1 text-xs cursor-pointer hover:bg-black hover:text-white hover:border-black transition-[background-color] duration-200">Close
-                            Tab</button>
-                    </div>
-                </div>
-            </div>
+                            class="w-full max-w-xs bg-white text-black font-medium py-2 px-4 rounded-2xl mt-2 cursor-pointer hover:bg-white/90 transition-colors">
+                            Login
+                        </button>
 
-            <div class="fixed top-3 left-3 bg-white px-2 py-2">
-                <a href="{{ route('welcome') }}">
-                    <img src="https://news.adidas.com/dist/images/adidas-news-web.svg" width="100px" alt="Logo Adidas">
-                </a>
+                        {{-- Forgot password --}}
+                        <a class="text-white text-xs hover:text-blue-300 transition-colors"
+                            href="{{ route('password.request') }}">
+                            Forgot Password?
+                        </a>
+                    </div>
+                </form>
             </div>
         </div>
+
+        {{-- Bottom Bar --}}
+        <div class="parent fixed bottom-0 left-0 w-full bg-white z-20 h-[70px] md:h-[60px]">
+            <div class="container mx-auto h-full px-4 md:px-6 flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                    <p class="text-xs text-blue-900 truncate">Welcome to our platform!</p>
+                    <p class="text-xs md:text-sm text-gray-700 truncate">
+                        Sign up to unlock all features.
+                    </p>
+                </div>
+                <div class="flex flex-col items-center gap-2 flex-shrink-0">
+                    <a class="text-xs whitespace-nowrap hover:text-blue-900 transition-colors"
+                        href="/register">Create an account</a>
+                    <button type="button"
+                        class="close-btn hidden md:inline border px-3 py-1 text-xs cursor-pointer hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        Close Tab
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {{-- Logo --}}
+        <div class="fixed top-3 left-3 z-30 bg-white px-2 py-2">
+            <a href="{{ route('welcome') }}">
+                <img src="https://news.adidas.com/dist/images/adidas-news-web.svg"
+                    width="90" alt="Logo Adidas">
+            </a>
+        </div>
     </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const closeButtons = document.querySelectorAll('.close-btn');
-
-            closeButtons.forEach(btn => {
+            document.querySelectorAll('.close-btn').forEach(btn => {
                 btn.addEventListener('click', function () {
-                    const parent = btn.closest('.parent'); // cari parent terdekat
-                    if (parent) {
-                        parent.style.display = 'none'; // sembunyikan
-                    }
+                    btn.closest('.parent')?.style && (btn.closest('.parent').style.display = 'none');
                 });
             });
         });
     </script>
 
-    <script src="{{asset('js/aurora.js')}}"></script>
+    <script src="{{ asset('js/aurora.js') }}"></script>
 </body>
 
 </html>

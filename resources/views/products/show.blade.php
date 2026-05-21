@@ -38,7 +38,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
                     <!-- Product Image Section -->
                     <div class="bg-white p-4 md:p-6">
-                        <div id="backToTop" class="mb-4 overflow-hidden relative">
+                        <div id="backToTop" class="mb-4 overflow-hidden relative max-h-[350px] sm:max-h-none">
                             <img src="{{ $product->image }}" alt="{{ $product->name }}"
                                 class="w-full h-auto object-cover transition-transform ease-out duration-100 cursor-all-scroll"
                                 id="zoomImg">
@@ -58,7 +58,9 @@
                     <div class="bg-white p-4 md:p-6 rounded-lg shadow-sm">
                         <!-- Product Title & Badge -->
                         <div class="mb-4">
-                            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{{ $product->name }}</h1>
+                            <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                                {{ $product->name }}
+                            </h1>
                             @if($product->badge)
                                 <span
                                     class="inline-block bg-black text-white px-3 py-1 rounded-full text-xs md:text-sm font-medium">
@@ -72,7 +74,7 @@
                             @php
 $price = $product->price + ($size->additional_price ?? 0);
                             @endphp
-                            <p id="productPrice" class="text-3xl md:text-4xl font-bold text-gray-900">
+                            <p id="productPrice" class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
                                 Rp{{ number_format($product->price + ($product->sizes->first()->pivot->additional_price ?? 0), 2, ',', '.') }}
                             </p>
                             <div class="flex items-center space-x-4 mt-2">
@@ -112,7 +114,7 @@ $price = $product->price + ($size->additional_price ?? 0);
                                             @else
                                                 opacity-50 cursor-not-allowed bg-gray-100 border-gray-200
                                             @endif" data-size-id="{{ $size->id }}"
-                                               data-additional-price="{{ $size->pivot->additional_price }}"
+                                            data-additional-price="{{ $size->pivot->additional_price }}"
                                             data-size-code="{{ $size->code }}" data-stock="{{ $stock }}" {{ !$isAvailable ? 'disabled' : '' }}>
                                             <div class="flex flex-col items-center">
                                                 <span class="font-medium">{{ $size->code }}</span>
@@ -154,7 +156,7 @@ $price = $product->price + ($size->additional_price ?? 0);
                         <!-- Quantity Selector -->
                         <div class="mb-6">
                             <h3 class="text-lg font-semibold text-gray-900 mb-3">Quantity</h3>
-                            <div class="flex items-center space-x-4 max-w-xs">
+                            <div class="flex items-center space-x-3 max-w-xs flex-wrap gap-y-2">
                                 <button id="decreaseQty"
                                     class="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center 
                                                hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition" disabled>
@@ -178,7 +180,7 @@ $price = $product->price + ($size->additional_price ?? 0);
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="flex flex-col sm:flex-row gap-4 mb-8">
+                        <div class="flex flex-col sm:flex-row gap-3 mb-8">
                             <form action="{{ route('cart.store') }}" method="POST" id="addToCartForm">
                                 @csrf
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -186,7 +188,7 @@ $price = $product->price + ($size->additional_price ?? 0);
                                 <input type="hidden" name="quantity" id="selectedQuantity" value="1">
 
                                 <button type="submit" id="addToCartBtn"
-                                    class="bg-black text-white hover:bg-gray-800 font-semibold py-3 px-6 rounded-lg h-full
+                                    class="w-full sm:w-auto bg-black text-white hover:bg-gray-800 font-semibold py-3 px-6 rounded-lg h-full
                                            transition duration-200 flex items-center justify-center gap-2 opacity-50 cursor-not-allowed" disabled>
                                     <i class="fas fa-shopping-cart"></i>
                                     Add to Cart
@@ -200,7 +202,7 @@ $price = $product->price + ($size->additional_price ?? 0);
                                 <input type="hidden" name="product_id" value="{{ $product->id }}">
 
                                 <button id="buyNowBtn" disabled
-                                    class="flex-1 border-2 border-black text-black hover:bg-black hover:text-white
+                                    class="w-full sm:w-auto flex-1 border-2 border-black text-black hover:bg-black hover:text-white
                                     font-semibold py-3 px-6 rounded-lg transition duration-200
                                     flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" type="submit">
                                     Buy Now
@@ -210,11 +212,10 @@ $price = $product->price + ($size->additional_price ?? 0);
                     </div>
                 </div>
 
-                <div class="h-screen">
-                    <!-- Product Details -->
+                <div class="mt-8"> <!-- Product Details -->
                     <div class="border-t border-gray-200 pt-6">
                         <h4 class="text-xl font-semibold text-gray-900 mb-4 pt-4">Product Details</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 [&>div]:min-w-0">
                             @if($product->description)
                                 <div class="col-span-2">
                                     <strong class="text-gray-700 text-sm font-medium block mb-1">Description:</strong>
@@ -243,9 +244,9 @@ $price = $product->price + ($size->additional_price ?? 0);
                             </div>
 
                             @if($product->sizes && $product->sizes->count() > 0)
-                                                            <div class="col-span-2">
-                                                                <strong class="text-gray-700 text-sm font-medium block mb-1">Available Sizes:</strong>
-                                                                <div class="flex flex-wrap gap-2 mt-2">
+                                <div class="col-span-2">
+                                    <strong class="text-gray-700 text-sm font-medium block mb-1">Available Sizes:</strong>
+                                    <div class="flex flex-wrap gap-2 mt-2">
                                         @php
     $maxStock = $product->sizes
         ->pluck('pivot.stock')
@@ -253,8 +254,7 @@ $price = $product->price + ($size->additional_price ?? 0);
                                         @endphp
                                         @foreach($product->sizes as $size)
                                             @if(($size->pivot->stock ?? 0) > 0)
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm
-                                                    {{ $size->pivot->stock == $maxStock
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm                                                                                                                                                                    {{ $size->pivot->stock == $maxStock
                 ? 'bg-green-100 text-green-800'
                 : 'bg-gray-100 text-gray-700' }}">
                                                     {{ $size->code }}
@@ -499,40 +499,38 @@ $price = $product->price + ($size->additional_price ?? 0);
     </script>
 
     <script>
-        const img = document.getElementById('zoomImg');
-        const container = img.parentElement;
-        const modal = document.getElementById('modal');
-        const closeModal = document.getElementById('modalImg');
+        document.addEventListener('DOMContentLoaded', function () {
+            const img = document.getElementById('zoomImg');
+            const container = img?.parentElement;
+            const modal = document.getElementById('modal');
+            const closeModal = document.getElementById('modalImg');
+            const navbar = document.getElementById('navbar'); // sesuaikan id navbar kamu
 
-        // Zoom mengikuti cursor (reverse)
-        container.addEventListener('mousemove', (e) => {
-            const rect = container.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width - 0.5;
-            const y = (e.clientY - rect.top) / rect.height - 0.5;
+            if (!img || !container || !modal) return;
 
-            const scale = 2;
-            const moveX = -x * 250;
-            const moveY = -y * 250;
+            container.addEventListener('mousemove', (e) => {
+                const rect = container.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+                img.style.transform = `scale(2) translate(${-x * 250}px, ${-y * 250}px)`;
+            });
 
-            img.style.transform = `scale(${scale}) translate(${moveX}px, ${moveY}px)`;
+            container.addEventListener('mouseleave', () => {
+                img.style.transform = 'scale(1) translate(0, 0)';
+            });
+
+            img.addEventListener('click', () => {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                navbar?.classList.add('hidden'); // pakai ?. agar tidak crash kalau null
+            });
+
+            closeModal?.addEventListener('click', () => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                navbar?.classList.remove('hidden');
+            });
         });
-
-        container.addEventListener('mouseleave', () => {
-            img.style.transform = 'scale(1) translate(0, 0)';
-        });
-
-        // Klik untuk buka modal
-        img.addEventListener('click', () => {
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-            navbar.classList.add('hidden');
-
-        });
-
-        closeModal.addEventListener('click', () => {
-            modal.classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        })
     </script>
 
     <style>
@@ -560,6 +558,13 @@ $price = $product->price + ($size->additional_price ?? 0);
         /* Hover effects for images */
         img:hover {
             opacity: 0.95;
+        }
+
+        @media (max-width: 640px) {
+            .size-btn {
+                min-width: 64px;
+                padding: 10px 8px;
+            }
         }
     </style>
 </body>
