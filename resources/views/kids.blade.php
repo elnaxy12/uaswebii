@@ -7,21 +7,26 @@
     @include('base2.navbar')
     <div id="smooth-wrapper">
         <div id="smooth-content">
-            <div class="pt-20">
-                <div class="relative flex">
-                    <img class="h-screen bg-cover bg-center pb-5"
+            <div class="md:pt-20">
+                <div class="relative flex flex-col sm:flex-row">
+                    <img class="w-full sm:w-auto h-64 sm:h-screen object-cover object-top pb-0 sm:pb-5"
                         src="https://brand.assets.adidas.com/image/upload/f_auto,q_auto:best,fl_lossy/if_w_gt_800,w_800/global_spw_evergreen_always_on_evergreen_ss25_launch_kids_navigation_card_teaser_4_d_95959c8ae5.jpg"
                         alt="">
-                    <img class="h-screen bg-cover bg-center pb-5" src="https://brand.assets.adidas.com/image/upload/f_auto,q_auto:best,fl_lossy/if_w_gt_800,w_800/global_spw_evergreen_always_on_evergreen_ss25_launch_kids_navigation_card_teaser_3_d_182bcd2166.jpg" alt="">
-                    <img class="h-screen bg-cover bg-center pb-5" src="https://brand.assets.adidas.com/image/upload/f_auto,q_auto:best,fl_lossy/if_w_gt_800,w_800/global_spw_evergreen_always_on_evergreen_ss25_launch_kids_navigation_card_teaser_6_d_fe64e9738d.jpg" alt="">
-                        <div class="absolute bottom-50 left-15 space-y-5">
-                        <h1 class="bg-white font-bold px-2">HOLIDAY GIFTING - BEST OF US</h1>
-                        <p class="bg-white px-2">Ace your gift-giving game with this
+                    <img class="w-full sm:w-auto h-64 sm:h-screen object-cover object-top pb-0 sm:pb-5"
+                        src="https://brand.assets.adidas.com/image/upload/f_auto,q_auto:best,fl_lossy/if_w_gt_800,w_800/global_spw_evergreen_always_on_evergreen_ss25_launch_kids_navigation_card_teaser_3_d_182bcd2166.jpg"
+                        alt="">
+                    <img class="w-full sm:w-auto h-64 sm:h-screen object-cover object-top pb-0 sm:pb-5"
+                        src="https://brand.assets.adidas.com/image/upload/f_auto,q_auto:best,fl_lossy/if_w_gt_800,w_800/global_spw_evergreen_always_on_evergreen_ss25_launch_kids_navigation_card_teaser_6_d_fe64e9738d.jpg"
+                        alt="">
+                    <div class="absolute bottom-8 left-4 sm:bottom-50 sm:left-15 space-y-2 sm:space-y-5 max-w-[80%]">
+                        <h1 class="bg-white font-bold px-2 text-sm sm:text-base">HOLIDAY GIFTING - BEST OF US</h1>
+                        <p class="bg-white px-2 text-xs sm:text-base hidden sm:block">Ace your gift-giving game with
+                            this
                             <br>seasons best apparel and footwear.
                         </p>
                     </div>
                 </div>
-                <div class="main-wrapper">
+                <div class="main-wrapper md:h-screen h-[70vh] h flex flex-col justify-center">
                     <!-- slider-top-kids -->
                     <div id="etalase-kids" class="title-top-men">
                         <p>KID'S SHOES AND CLOTHES</p>
@@ -36,30 +41,30 @@
                         </button>
                         <div id="slider3" class="etalase-slide">
                             @php
-$firstProduct = $products->get(0);
-$secondProduct = $products->get(1);
-$thirdProduct = $products->get(2);
-$fourthProduct = $products->get(3);
-$fifthProduct = $products->get(4);
-$sixthProduct = $products->get(5);
-$seventhProduct = $products->get(6);
-$eighthProduct = $products->get(7);
-$ninthProduct = $products->get(8);
-$tenthProduct = $products->get(9);
-$eleventhProduct = $products->get(10);
-$twelfthProduct = $products->get(11);
-$thirteenthProduct = $products->get(12);
-$fourteenthProduct = $products->get(13);
-$fifteenthProduct = $products->get(14);
-$sixteenthProduct = $products->get(15);
-$seventeenthProduct = $products->get(16);
-$eighteenthProduct = $products->get(17);
-$nineteenthProduct = $products->get(18);
-$twentiethProduct = $products->get(19);
-$twentyFirstProduct = $products->get(20);
-$twentySecondProduct = $products->get(21);
-$twentyThirdProduct = $products->get(22);
-$twentyFourthProduct = $products->get(23);
+                                $firstProduct = $products->get(0);
+                                $secondProduct = $products->get(1);
+                                $thirdProduct = $products->get(2);
+                                $fourthProduct = $products->get(3);
+                                $fifthProduct = $products->get(4);
+                                $sixthProduct = $products->get(5);
+                                $seventhProduct = $products->get(6);
+                                $eighthProduct = $products->get(7);
+                                $ninthProduct = $products->get(8);
+                                $tenthProduct = $products->get(9);
+                                $eleventhProduct = $products->get(10);
+                                $twelfthProduct = $products->get(11);
+                                $thirteenthProduct = $products->get(12);
+                                $fourteenthProduct = $products->get(13);
+                                $fifteenthProduct = $products->get(14);
+                                $sixteenthProduct = $products->get(15);
+                                $seventeenthProduct = $products->get(16);
+                                $eighteenthProduct = $products->get(17);
+                                $nineteenthProduct = $products->get(18);
+                                $twentiethProduct = $products->get(19);
+                                $twentyFirstProduct = $products->get(20);
+                                $twentySecondProduct = $products->get(21);
+                                $twentyThirdProduct = $products->get(22);
+                                $twentyFourthProduct = $products->get(23);
                             @endphp
                             <a
                                 href="{{ route('product.show', ['id' => $seventeenthProduct->id, 'slug' => $seventeenthProduct->slug]) }}">
@@ -83,7 +88,7 @@ $twentyFourthProduct = $products->get(23);
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/9fb258a11a25407ab06b52eed1cca37b_9366/Samba_OG_Shoes_Kids_White_IE3675_00_plp_standard.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$80</p>
+                                    <p class="price">Rp1.370.142,00</p>
                                     <p class="title-product">SAMBA OG SHOES KIDS</p>
                                     <p class="badge-product">ORIGINALS</p>
                                 </div>
@@ -110,7 +115,7 @@ $twentyFourthProduct = $products->get(23);
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/2c1a1838d62e4b23b8dddc26793bd47f_9366/Samba_OG_Shoes_Kids_White_JQ2843_00_plp_standard.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$56</p>
+                                    <p class="price">Rp959.100,00</p>
                                     <p class="title-product">SAMBA OG SHOES KIDS</p>
                                     <p class="badge-product">ORIGINALS</p>
                                 </div>
@@ -137,7 +142,7 @@ $twentyFourthProduct = $products->get(23);
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/e7e49fce7e54448da09a2983c4fa43d0_9366/Samba_OG_Comfort_Closure_Elastic_Lace_Shoes_Kids_White_JQ3190_00_plp_standard.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$39</p>
+                                    <p class="price">Rp667.944,00</p>
                                     <p class="title-product">SAMBA OG COMFORT CLOSURE ELASTIC LACE SHOES KIDS</p>
                                     <p class="badge-product">ORIGINALS</p>
                                 </div>
@@ -164,7 +169,7 @@ $twentyFourthProduct = $products->get(23);
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/80690c33e4d348c58dae6b01ad83e760_9366/Defender_5_Small_Duffel_Bag_Black_JJ7410_00_plp_standard.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$28</p>
+                                    <p class="price">Rp479.550,00</p>
                                     <p class="title-product">DEFENDER 5 SMALL DUFFEL BAG</p>
                                     <p class="badge-product">SPORTSWEAR</p>
                                 </div>
@@ -191,7 +196,7 @@ $twentyFourthProduct = $products->get(23);
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/27b6e3345f9a4d59a5357e0a4b8a6aa6_9366/Al_Nassr_FC_25-26_Home_Jersey_Kids_Yellow_JN7981_000_plp_model.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$75</p>
+                                    <p class="price">Rp1.284.509,00</p>
                                     <p class="title-product">AL NASR FC 25/26 HOME JERSEY KIDS</p>
                                     <p class="badge-product">PERFORMANCE</p>
                                 </div>
@@ -218,7 +223,7 @@ $twentyFourthProduct = $products->get(23);
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/fc50a8f55f56430897757b1d9e2e3231_9366/Argentina_26_Home_Messi_Kids_Jersey_White_KA8115_000_plp_model.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$110</p>
+                                    <p class="price">Rp1.883.946,00</p>
                                     <p class="title-product">ARGENTINA 26 HOME MESSI KIDS JERSEY</p>
                                     <p class="badge-product">PERFORMANCE</p>
                                 </div>
@@ -245,7 +250,7 @@ $twentyFourthProduct = $products->get(23);
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/09518a69e074496ca06e33bf071d4386_9366/Inter_Miami_CF_25-26_Messi_Away_Jersey_Kids_Black_JI6820_000_plp_model.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$66</p>
+                                    <p class="price">Rp1.130.367,00</p>
                                     <p class="title-product">INTER MIAMI CF 25/26 MESSI AWAY JERSEY KIDS</p>
                                     <p class="badge-product">PERFORMANCE</p>
                                 </div>
@@ -272,7 +277,7 @@ $twentyFourthProduct = $products->get(23);
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/4229e87f23044869a5218fbc64c4fd71_9366/FIFA_World_Cup_26tm_Trionda_Pro_Ball_White_JD8021_HM1.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$170</p>
+                                    <p class="price">Rp2.911.553,00</p>
                                     <p class="title-product">FIFA WORLD CUP 26™ TRIONDA PRO BALL</p>
                                     <p class="badge-product">PERFORMANCE</p>
                                 </div>
@@ -293,9 +298,9 @@ $twentyFourthProduct = $products->get(23);
 
             </div>
             <footer>
-                    <div class="footer-content">
-                        <p>`Adidas &copy; 2025 | adidas America, Inc.</p>
-                    </div>
+                <div class="footer-content">
+                    <p class="my-3">`Adidas &copy; 2025 | adidas America, Inc.</p>
+                </div>
             </footer>
         </div>
     </div>

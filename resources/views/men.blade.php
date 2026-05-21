@@ -7,14 +7,15 @@
     @include('base2.navbar')
     <div id="smooth-wrapper">
         <div id="smooth-content">
-            <div class="pt-20">
+            <div class="md:pt-20">
                 <div class="relative">
-                    <img class="h-screen bg-cover bg-center pb-5"
+                    <img class="w-full bg-cover bg-center pb-5"
                         src="https://brand.assets.adidas.com/image/upload/f_auto,q_auto:best,fl_lossy/edi_fw25_whattowearskiing_bnr_d_802a390831.jpg"
                         alt="">
-                    <div class="absolute bottom-50 left-15 space-y-5">
-                        <h1 class="bg-white font-bold px-2">HOLIDAY GIFTING - BEST OF US</h1>
-                        <p class="bg-white px-2">Ace your gift-giving game with this
+                    <div class="absolute bottom-8 left-4 sm:bottom-50 sm:left-15 space-y-2 sm:space-y-5 max-w-[80%]">
+                        <h1 class="bg-white font-bold px-2 text-sm sm:text-base">HOLIDAY GIFTING - BEST OF US</h1>
+                        <p class="bg-white px-2 text-xs sm:text-base hidden sm:block">Ace your gift-giving game with
+                            this
                             <br>seasons best apparel and footwear.
                         </p>
                     </div>
@@ -83,7 +84,7 @@
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/606f418a01a14c419ac35e7c84a5e2d2_9366/Samba_OG_Shoes_Brown_JR0891_00_plp_standard.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$100</p>
+                                    <p class="price">Rp1.712.678,00</p>
                                     <p class="title-product">SAMBA OG SHOES</p>
                                     <p class="badge-product">MEN'S ORIGINALS</p>
                                 </div>
@@ -110,7 +111,7 @@
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/9da93feaffd84fa5baf15e0b9727687a_9366/Swift_Run_1.0_Shoes_Grey_JR6898_00_plp_standard.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$60</p>
+                                    <p class="price">Rp.1.027.607,00</p>
                                     <p class="title-product">SWIFT RUN 1.0 SHOES</p>
                                     <p class="badge-product">MEN'S SPORTSWEAR</p>
                                 </div>
@@ -137,7 +138,7 @@
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/e694f6e9261b48d6b255ca8a1388d3d5_9366/ULTRABOOST_1.0_SHOES_White_JR1987_HM1.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$135</p>
+                                    <p class="price">Rp2.312.116,00</p>
                                     <p class="title-product">ULTRABOOST 1.0 SHOES</p>
                                     <p class="badge-product">MEN'S SPORTSWEAR</p>
                                 </div>
@@ -164,7 +165,7 @@
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/911ec048adc4471f938af50867c2ad85_9366/Gazelle_Indoor_Shoes_Red_JI2063_00_plp_standard.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$120</p>
+                                    <p class="price">Rp2.055.214,00</p>
                                     <p class="title-product">GAZELLA INDOOR SHOES</p>
                                     <p class="badge-product">MEN'S ORIGINALS</p>
                                 </div>
@@ -191,7 +192,7 @@
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/ed03f2b031b04884a8481cec1ccca4e2_9366/Adizero_EVO_SL_Shoes_Black_JP7149_00_plp_standard.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$150</p>
+                                    <p class="price">Rp2.569.018,00</p>
                                     <p class="title-product">ADIZERO EVO SL SHOES</p>
                                     <p class="badge-product">PERFORMANCE</p>
                                 </div>
@@ -218,7 +219,7 @@
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/ee99b4b9bde74f30a933a8bf011911ae_9366/Samba_OG_Shoes_Black_B75807_00_plp_standard.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$100</p>
+                                    <p class="price">Rp1.712.678,00</p>
                                     <p class="title-product">SAMBA OG SHOES</p>
                                     <p class="badge-product">MEN'S ORIGINALS</p>
                                 </div>
@@ -245,7 +246,7 @@
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/f0ca2dd8bdb84a2ab11faacb8802c4dc_9366/Ultraboost_1.0_Shoes_White_HQ4202_HM1.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$135</p>
+                                    <p class="price">Rp2.312.116,00</p>
                                     <p class="title-product">ULTRABOOST 1.0 SHOES</p>
                                     <p class="badge-product">MEN'S SPORTSWEAR</p>
                                 </div>
@@ -272,7 +273,7 @@
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/507b9464089e4c818536b4613435aebf_9366/Samba_OG_Shoes_Blue_ID2056_00_plp_standard.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$100</p>
+                                    <p class="price">Rp1.712.678,00</p>
                                     <p class="title-product">SAMBA OG SHOES</p>
                                     <p class="badge-product">MEN'S ORIGINALS</p>
                                 </div>
@@ -294,13 +295,15 @@
                     <img class="w-full bg-cover bg-center pt-5"
                         src="https://brand.assets.adidas.com/image/upload/f_auto,q_auto:best,fl_lossy/if_w_gt_1920,w_1920/global_adizero_race_running_ss26_launch_glps_family_banner_hero_1_d_c94edd63e8.jpg"
                         alt="">
-                    <div class="absolute bottom-20 left-15 space-y-5">
-                        <h1 class="bg-white font-bold px-2">FASTER. FASTEST. ADIZERO</h1>
-                        <p class="bg-white px-2">Beat your fastest records, from training to competition.</p>
+                    <div class="absolute bottom-8 left-4 sm:bottom-20 sm:left-15 space-y-2 sm:space-y-5 max-w-[80%]">
+                        <h1 class="bg-white font-bold px-2 text-sm sm:text-base">FASTER. FASTEST. ADIZERO</h1>
+                        <p class="bg-white px-2 text-xs sm:text-base hidden sm:block">Beat your fastest records, from
+                            training to
+                            competition.</p>
                         <a
                             href="{{ route('product.show', ['id' => $fifthProduct->id, 'slug' => $fifthProduct->slug]) }}">
                             <button
-                                class="bg-white border py-2 px-5 cursor-pointer focus:bg-black focus:border focus:border-white focus:text-white">
+                                class="bg-white border py-1 px-3 sm:py-2 sm:px-5 text-sm sm:text-base cursor-pointer focus:bg-black focus:border focus:border-white focus:text-white">
                                 Buy Now
                             </button>
                         </a>
@@ -309,7 +312,7 @@
             </div>
             <footer>
                 <div class="footer-content">
-                    <p>`Adidas &copy; 2025 | adidas America, Inc.</p>
+                    <p class="my-3">`Adidas &copy; 2025 | adidas America, Inc.</p>
                 </div>
             </footer>
         </div>

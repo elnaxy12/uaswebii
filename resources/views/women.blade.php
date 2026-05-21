@@ -7,14 +7,15 @@
     @include('base2.navbar')
     <div id="smooth-wrapper">
         <div id="smooth-content">
-            <div class="pt-20">
+            <div class="md:pt-20">
                 <div class="relative">
-                    <img class="h-screen bg-cover bg-center pb-5"
+                    <img class="w-full bg-cover bg-center pb-5"
                         src="https://brand.assets.adidas.com/image/upload/f_auto,q_auto:best,fl_lossy/edi_fw25_whattowearskiing_bnr_d_802a390831.jpg"
                         alt="">
-                    <div class="absolute bottom-50 left-15 space-y-5">
-                        <h1 class="bg-white font-bold px-2">HOLIDAY GIFTING - BEST OF US</h1>
-                        <p class="bg-white px-2">Ace your gift-giving game with this
+                    <div class="absolute bottom-8 left-4 sm:bottom-50 sm:left-15 space-y-2 sm:space-y-5 max-w-[80%]">
+                        <h1 class="bg-white font-bold px-2 text-sm sm:text-base">HOLIDAY GIFTING - BEST OF US</h1>
+                        <p class="bg-white px-2 text-xs sm:text-base hidden sm:block">Ace your gift-giving game with
+                            this
                             <br>seasons best apparel and footwear.
                         </p>
                     </div>
@@ -81,7 +82,7 @@
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/49d73d8eaccb48ee89ee3feb82ce098c_9366/Samba_OG_shoes_Black_JI2734_00_plp_standard.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$110</p>
+                                    <p class="price">Rp1.883.946,00</p>
                                     <p class="title-product">SAMBA OG SHOES</p>
                                     <p class="badge-product">WOMEN'S ORIGINALS</p>
                                 </div>
@@ -108,7 +109,7 @@
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/6fb12406f5684eeea66762a868b73731_9366/SL_72_OG_Shoes_Brown_JI0189_00_plp_standard.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$110</p>
+                                    <p class="price">Rp1.883.946,00</p>
                                     <p class="title-product">SL 72 OG SHOES</p>
                                     <p class="badge-product">WOMEN'S ORIGINALS</p>
                                 </div>
@@ -135,7 +136,7 @@
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/24ec18f0e35e491d8be5b38c9f09c11b_9366/SL_72_OG_Shoes_Brown_JS3981_00_plp_standard.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$100</p>
+                                    <p class="price">Rp1.712.768,00</p>
                                     <p class="title-product">SL 72 OG SHOES</p>
                                     <p class="badge-product">WOMEN'S ORIGINALS</p>
                                 </div>
@@ -162,7 +163,7 @@
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/ad3d6d029e414c1ba24603629de60f5e_9366/Cow_Print_Samba_Long_Tongue_Shoes_White_JS3931_00_plp_standard.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$130</p>
+                                    <p class="price">Rp2.226.482,00</p>
                                     <p class="title-product">COW PRINT SAMBA LONG TONGUE SHOES</p>
                                     <p class="badge-product">WOMEN'S ORIGINALS</p>
                                 </div>
@@ -189,7 +190,7 @@
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/3f97a71da3ae4cb98250122966491184_9366/Samba_OG_Shoes_White_IG9030_00_plp_standard.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$100</p>
+                                    <p class="price">Rp1.712.678,00</p>
                                     <p class="title-product">SAMBA OG SHOES</p>
                                     <p class="badge-product">WOMEN'S ORIGINALS</p>
                                 </div>
@@ -216,7 +217,7 @@
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/1f525b85b19a4eda86742e0f46413bcf_9366/Samba_Long_Tongue_Shoes_White_JR5998_00_plp_standard.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$120</p>
+                                    <p class="price">Rp2.055.214,00</p>
                                     <p class="title-product">SAMBA LONG TONGUE SHOES</p>
                                     <p class="badge-product">WOMEN'S ORIGINALS</p>
                                 </div>
@@ -243,7 +244,7 @@
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/89282cea6ef8495caff848b041a0a3ce_9366/Samba_OG_Shoes_Black_IE5836_00_plp_standard.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$100</p>
+                                    <p class="price">Rp1.712.678,00</p>
                                     <p class="title-product">SAMBA OG SHOES</p>
                                     <p class="badge-product">WOMEN'S ORIGINALS</p>
                                 </div>
@@ -270,7 +271,7 @@
                                         <img src="https://assets.adidas.com/images/w_600,f_auto,q_auto/b668a22ed8ee475e87beafeeedb96657_9366/Samba_OG_Shoes_Silver_JR0035_00_plp_standard.jpg"
                                             alt="" />
                                     </div>
-                                    <p class="price">$100</p>
+                                    <p class="price">Rp1.712.678,00</p>
                                     <p class="title-product">SAMBA OG SHOES</p>
                                     <p class="badge-product">WOMEN'S ORIGINALS</p>
                                 </div>
@@ -289,19 +290,19 @@
                     </div>
                 </div>
                 <div class="relative">
-                    <img class="h-screen bg-cover bg-center pt-5"
+                    <img class="w-full bg-cover bg-center pt-5"
                         src="https://brand.assets.adidas.com/image/upload/f_auto,q_auto:best,fl_lossy/if_w_gt_1920,w_1920/6508630_CAM_Onsite_FW_25_YGT_SEA_Games_6_Dec_SEA_Masthead_Banner_ref02_2880_X1280px_desktop_D_78f7a7b8ee.jpg"
                         alt="">
-                    <div class="absolute bottom-20 left-15 space-y-5">
-                        <h1 class="bg-white font-bold px-2">You Got This</h1>
-                        <p class="bg-white px-2">We all need someone to reassure us
+                    <div class="absolute bottom-8 left-4 sm:bottom-20 sm:left-15 space-y-2 sm:space-y-5 max-w-[80%]">
+                        <h1 class="bg-white font-bold px-2 text-sm sm:text-base">You Got This</h1>
+                        <p class="bg-white px-2 text-xs sm:text-base hidden sm:block">We all need someone to reassure us
                         </p>
                     </div>
                 </div>
             </div>
             <footer>
                 <div class="footer-content">
-                    <p>`Adidas &copy; 2025 | adidas America, Inc.</p>
+                    <p class="my-3">`Adidas &copy; 2025 | adidas America, Inc.</p>
                 </div>
             </footer>
         </div>
