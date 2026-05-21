@@ -145,13 +145,79 @@
                     <div class="bg-gray-50 rounded p-4 mb-4">
                         <p class="text-sm text-gray-500 mb-1">Nomor Virtual Account</p>
                         <p class="text-2xl font-bold tracking-widest" id="bcaVaNumber">-</p>
-                        <button type="button" onclick="copyVa()"
+                        <button type="button" onclick="copyText('bcaVaNumber')"
                             class="mt-2 text-xs border px-3 py-1 rounded hover:bg-gray-100 cursor-pointer">
                             Salin Nomor
                         </button>
                     </div>
                     <div class="text-sm text-gray-500">
                         <p>Total: <span id="bcaTotal" class="font-semibold text-black"></span></p>
+                    </div>
+                    <button type="button" onclick="window.location.href='/order/{{ $order->id }}'"
+                        class="mt-4 bg-black text-white px-4 py-2 text-sm rounded cursor-pointer">
+                        Cek Status Pembayaran
+                    </button>
+                </div>
+
+                {{-- Mandiri Section --}}
+                <div id="mandiriSection" class="hidden mt-6 border rounded p-6">
+                    <h2 class="text-xl font-bold mb-2">Mandiri Bill Payment</h2>
+                    <div class="bg-gray-50 rounded p-4 mb-4 space-y-3">
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1">Biller Code</p>
+                            <p class="text-2xl font-bold tracking-widest" id="mandiriBillerCode">-</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1">Bill Key</p>
+                            <p class="text-2xl font-bold tracking-widest" id="mandiriBillKey">-</p>
+                            <button type="button" onclick="copyText('mandiriBillKey')"
+                                class="mt-2 text-xs border px-3 py-1 rounded hover:bg-gray-100 cursor-pointer">
+                                Salin Bill Key
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-500">
+                        <p>Total: <span id="mandiriTotal" class="font-semibold text-black"></span></p>
+                    </div>
+                    <button type="button" onclick="window.location.href='/order/{{ $order->id }}'"
+                        class="mt-4 bg-black text-white px-4 py-2 text-sm rounded cursor-pointer">
+                        Cek Status Pembayaran
+                    </button>
+                </div>
+
+                {{-- Alfamart Section --}}
+                <div id="alfamartSection" class="hidden mt-6 border rounded p-6">
+                    <h2 class="text-xl font-bold mb-2">Bayar di Alfamart</h2>
+                    <div class="bg-gray-50 rounded p-4 mb-4">
+                        <p class="text-sm text-gray-500 mb-1">Kode Pembayaran</p>
+                        <p class="text-2xl font-bold tracking-widest" id="alfamartCode">-</p>
+                        <button type="button" onclick="copyText('alfamartCode')"
+                            class="mt-2 text-xs border px-3 py-1 rounded hover:bg-gray-100 cursor-pointer">
+                            Salin Kode
+                        </button>
+                    </div>
+                    <div class="text-sm text-gray-500">
+                        <p>Total: <span id="alfamartTotal" class="font-semibold text-black"></span></p>
+                    </div>
+                    <button type="button" onclick="window.location.href='/order/{{ $order->id }}'"
+                        class="mt-4 bg-black text-white px-4 py-2 text-sm rounded cursor-pointer">
+                        Cek Status Pembayaran
+                    </button>
+                </div>
+
+                {{-- Indomaret Section --}}
+                <div id="indomaretSection" class="hidden mt-6 border rounded p-6">
+                    <h2 class="text-xl font-bold mb-2">Bayar di Indomaret</h2>
+                    <div class="bg-gray-50 rounded p-4 mb-4">
+                        <p class="text-sm text-gray-500 mb-1">Kode Pembayaran</p>
+                        <p class="text-2xl font-bold tracking-widest" id="indomaretCode">-</p>
+                        <button type="button" onclick="copyText('indomaretCode')"
+                            class="mt-2 text-xs border px-3 py-1 rounded hover:bg-gray-100 cursor-pointer">
+                            Salin Kode
+                        </button>
+                    </div>
+                    <div class="text-sm text-gray-500">
+                        <p>Total: <span id="indomaretTotal" class="font-semibold text-black"></span></p>
                     </div>
                     <button type="button" onclick="window.location.href='/order/{{ $order->id }}'"
                         class="mt-4 bg-black text-white px-4 py-2 text-sm rounded cursor-pointer">
@@ -234,7 +300,7 @@
                         document.getElementById('payLoadingOverlay').classList.remove('active'); // ✅
                         if (bca.va_number) {
                             document.getElementById('bcaVaNumber').textContent = bca.va_number;
-                            document.getElementById('bcaTotal').textContent = 'Rp' + bca.total.toLocaleString('id-ID');
+                            document.getElementById('bcaTotal').textContent = 'Rp' + parseInt(bca.total).toLocaleString('id-ID');
                             document.getElementById('bcaSection').classList.remove('hidden');
                             document.getElementById('bcaSection').scrollIntoView({ behavior: 'smooth' });
                             showToast('Nomor VA BCA berhasil dibuat!', 'success');
@@ -245,6 +311,88 @@
                     .catch(() => {
                         document.getElementById('payLoadingOverlay').classList.remove('active'); // ✅
                         showToast('Gagal membuat BCA VA.', 'error');
+                    });
+
+            } else if (paymentMethod === 'mandiri') {
+                fetch('{{ route("checkout.mandiri") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    },
+                    body: JSON.stringify({ order_id: orderId })
+                })
+                    .then(res => res.json())
+                    .then(mandiri => {
+                        document.getElementById('payLoadingOverlay').classList.remove('active');
+                        if (mandiri.bill_key) {
+                            document.getElementById('mandiriBillKey').textContent = mandiri.bill_key;
+                            document.getElementById('mandiriBillerCode').textContent = mandiri.biller_code;
+                            document.getElementById('mandiriTotal').textContent = 'Rp' + Math.round(mandiri.total).toLocaleString('id-ID');
+                            document.getElementById('mandiriSection').classList.remove('hidden');
+                            document.getElementById('mandiriSection').scrollIntoView({ behavior: 'smooth' });
+                            showToast('Kode Mandiri Bill Payment berhasil dibuat!', 'success');
+                        } else {
+                            showToast(mandiri.error ?? 'Gagal mendapatkan kode Mandiri.', 'error');
+                        }
+                    })
+                    .catch(() => {
+                        document.getElementById('payLoadingOverlay').classList.remove('active');
+                        showToast('Gagal membuat Mandiri Bill.', 'error');
+                    });
+
+            } else if (paymentMethod === 'alfamart') {
+                fetch('{{ route("checkout.alfamart") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    },
+                    body: JSON.stringify({ order_id: orderId })
+                })
+                    .then(res => res.json())
+                    .then(alfa => {
+                        document.getElementById('payLoadingOverlay').classList.remove('active');
+                        if (alfa.payment_code) {
+                            document.getElementById('alfamartCode').textContent = alfa.payment_code;
+                            document.getElementById('alfamartTotal').textContent = 'Rp' + Math.round(alfa.total).toLocaleString('id-ID');
+                            document.getElementById('alfamartSection').classList.remove('hidden');
+                            document.getElementById('alfamartSection').scrollIntoView({ behavior: 'smooth' });
+                            showToast('Kode Alfamart berhasil dibuat!', 'success');
+                        } else {
+                            showToast(alfa.error ?? 'Gagal mendapatkan kode Alfamart.', 'error');
+                        }
+                    })
+                    .catch(() => {
+                        document.getElementById('payLoadingOverlay').classList.remove('active');
+                        showToast('Gagal membuat kode Alfamart.', 'error');
+                    });
+
+            } else if (paymentMethod === 'indomaret') {
+                fetch('{{ route("checkout.indomaret") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    },
+                    body: JSON.stringify({ order_id: orderId })
+                })
+                    .then(res => res.json())
+                    .then(indo => {
+                        document.getElementById('payLoadingOverlay').classList.remove('active');
+                        if (indo.payment_code) {
+                            document.getElementById('indomaretCode').textContent = indo.payment_code;
+                            document.getElementById('indomaretTotal').textContent = 'Rp' + Math.round(indo.total).toLocaleString('id-ID');
+                            document.getElementById('indomaretSection').classList.remove('hidden');
+                            document.getElementById('indomaretSection').scrollIntoView({ behavior: 'smooth' });
+                            showToast('Kode Indomaret berhasil dibuat!', 'success');
+                        } else {
+                            showToast(indo.error ?? 'Gagal mendapatkan kode Indomaret.', 'error');
+                        }
+                    })
+                    .catch(() => {
+                        document.getElementById('payLoadingOverlay').classList.remove('active');
+                        showToast('Gagal membuat kode Indomaret.', 'error');
                     });
             } else {
                 // fallback: Snap popup untuk mandiri, alfamart, indomaret, dll
@@ -262,9 +410,9 @@
             }
         });
 
-        function copyVa() {
-            const va = document.getElementById('bcaVaNumber').textContent;
-            navigator.clipboard.writeText(va).then(() => showToast('Nomor VA berhasil disalin!', 'success'));
+        function copyText(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text).then(() => showToast('Berhasil disalin!', 'success'));
         }
 
         function showToast(message, type = 'success') {

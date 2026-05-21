@@ -92,37 +92,59 @@ class CheckoutController extends Controller
             $shippingCost = (int) $request->shipping_cost ?? 0;
             $total += $shippingCost;
 
-            // ✅ Cek order pending yang masih aktif (< 30 menit)
             $existingPending = Order::where('user_id', $user->id)
                 ->where('status', 'pending')
                 ->latest()
                 ->first();
 
             if ($existingPending && $existingPending->created_at->diffInMinutes(now()) < 30) {
-                // Pakai order lama, update totalnya saja
                 $order = $existingPending;
-                $order->update(['total' => $total, 'shipping_cost' => $shippingCost]);
+                $order->update([
+                    'total'               => $total,
+                    'shipping_cost'       => $shippingCost,
+                    'shipping_courier'    => $request->shipping_courier,
+                    'shipping_service'    => $request->shipping_service,
+                    'last_payment_method' => $request->payment_method,
+                ]);
+
+                // Hapus order items lama dan buat ulang
+                OrderItem::where('order_id', $order->id)->delete();
+                foreach ($cartItems as $item) {
+                    $price = $this->getItemPrice($item);
+                    OrderItem::create([
+                        'order_id'   => $order->id,
+                        'product_id' => $item->product->id,
+                        'size_id'    => $item->size_id,
+                        'quantity'   => $item->quantity,
+                        'price'      => $price,
+                    ]);
+                }
+
+                if (session('order_source') !== 'product') {
+                    Cart::where('user_id', $user->id)->delete();
+                }
+
+                session()->forget(['order_source', 'product_id', 'size_id', 'quantity']);
+
             } else {
-                // Buat order baru
                 $order = Order::create([
-                    'user_id'          => $user->id,
-                    'total'            => $total,
-                    'status'           => 'pending',
-                    'first_name'       => $request->first_name,
-                    'last_name'        => $request->last_name,
-                    'email'            => $request->email,
-                    'phone'            => $request->phone,
-                    'address'          => $request->address,
-                    'payment_method'   => 'midtrans',
-                    'shipping_courier' => $request->shipping_courier,
-                    'shipping_service' => $request->shipping_service,
-                    'shipping_cost'    => $shippingCost,
+                    'user_id'             => $user->id,
+                    'total'               => $total,
+                    'status'              => 'pending',
+                    'first_name'          => $request->first_name,
+                    'last_name'           => $request->last_name,
+                    'email'               => $request->email,
+                    'phone'               => $request->phone,
+                    'address'             => $request->address,
+                    'payment_method'      => 'midtrans',
+                    'shipping_courier'    => $request->shipping_courier,
+                    'shipping_service'    => $request->shipping_service,
+                    'shipping_cost'       => $shippingCost,
                     'last_payment_method' => $request->payment_method,
                 ]);
 
                 foreach ($cartItems as $item) {
                     $price = $this->getItemPrice($item);
-
                     OrderItem::create([
                         'order_id'   => $order->id,
                         'product_id' => $item->product->id,
@@ -169,7 +191,7 @@ class CheckoutController extends Controller
 
             $params = [
                 'transaction_details' => [
-                    'order_id'     => $order->id . '-' . time(), // ✅ hindari duplicate di Midtrans
+                    'order_id'     => $order->id . '-' . time(),
                     'gross_amount' => (int) $total,
                 ],
                 'customer_details' => [
@@ -208,8 +230,8 @@ class CheckoutController extends Controller
         $fraudStatus    = $notification->fraud_status;
 
         // Ambil order_id asli (karena kita pakai prefix QRIS-{id}-{time})
-        $parts = explode('-', $orderId);
-        $realOrderId = (count($parts) >= 2) ? $parts[1] : $orderId;
+        preg_match('/(\d+)-\d+$/', $orderId, $matches);
+        $realOrderId = $matches[1] ?? $orderId;
 
         $order = Order::with('orderItems')->find($realOrderId);
 
@@ -318,6 +340,97 @@ class CheckoutController extends Controller
             'bank'      => 'BCA',
             'order_id'  => $order->id,
             'total'     => $order->total,
+        ]);
+    }
+
+    public function createMandiriVa(Request $request)
+    {
+        \Midtrans\Config::$serverKey = config('midtrans.server_key');
+        \Midtrans\Config::$isProduction = config('midtrans.is_production');
+        \Midtrans\Config::$isSanitized = true;
+        \Midtrans\Config::$is3ds = true;
+
+        $order = Order::findOrFail($request->order_id);
+
+        $params = [
+            'payment_type' => 'echannel',
+            'transaction_details' => [
+                'order_id'     => 'MANDIRI-' . $order->id . '-' . time(),
+                'gross_amount' => (int) $order->total,
+            ],
+            'echannel' => [
+                'bill_info1' => 'Payment for order',
+                'bill_info2' => (string) $order->id,
+            ],
+        ];
+
+        $response = \Midtrans\CoreApi::charge($params);
+
+        return response()->json([
+            'bill_key'    => $response->bill_key,
+            'biller_code' => $response->biller_code,
+            'total'       => $order->total,
+            'order_id'    => $order->id,
+        ]);
+    }
+
+    public function createAlfamartVa(Request $request)
+    {
+        \Midtrans\Config::$serverKey = config('midtrans.server_key');
+        \Midtrans\Config::$isProduction = config('midtrans.is_production');
+        \Midtrans\Config::$isSanitized = true;
+        \Midtrans\Config::$is3ds = true;
+
+        $order = Order::findOrFail($request->order_id);
+
+        $params = [
+            'payment_type' => 'cstore',
+            'transaction_details' => [
+                'order_id'     => 'ALFAMART-' . $order->id . '-' . time(),
+                'gross_amount' => (int) $order->total,
+            ],
+            'cstore' => [
+                'store'   => 'alfamart',
+                'message' => 'Payment for order ' . $order->id,
+            ],
+        ];
+
+        $response = \Midtrans\CoreApi::charge($params);
+
+        return response()->json([
+            'payment_code' => $response->payment_code,
+            'total'        => $order->total,
+            'order_id'     => $order->id,
+        ]);
+    }
+
+    public function createIndomaretVa(Request $request)
+    {
+        \Midtrans\Config::$serverKey = config('midtrans.server_key');
+        \Midtrans\Config::$isProduction = config('midtrans.is_production');
+        \Midtrans\Config::$isSanitized = true;
+        \Midtrans\Config::$is3ds = true;
+
+        $order = Order::findOrFail($request->order_id);
+
+        $params = [
+            'payment_type' => 'cstore',
+            'transaction_details' => [
+                'order_id'     => 'INDOMARET-' . $order->id . '-' . time(),
+                'gross_amount' => (int) $order->total,
+            ],
+            'cstore' => [
+                'store'   => 'indomaret',
+                'message' => 'Payment for order ' . $order->id,
+            ],
+        ];
+
+        $response = \Midtrans\CoreApi::charge($params);
+
+        return response()->json([
+            'payment_code' => $response->payment_code,
+            'total'        => $order->total,
+            'order_id'     => $order->id,
         ]);
     }
 

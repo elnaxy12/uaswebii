@@ -147,16 +147,19 @@ Route::middleware(['auth'])->group(function () {
     // Buy Now
     Route::post('/buy-now', [CheckoutController::class, 'buyNow'])->name('buy.now');
 
-
     Route::get('/buy-now/cancel', [CheckoutController::class, 'cancelBuyNow'])->name('buy.now.cancel');
 
-    
-Route::get('/order/{id}/repay', [CheckoutController::class, 'repay'])->name('checkout.repay');
-
+    Route::get('/order/{id}/repay', [CheckoutController::class, 'repay'])->name('checkout.repay');
 
     Route::post('/checkout/qris', [CheckoutController::class, 'createQris'])->name('checkout.qris');
 
     Route::post('/checkout/bca', [CheckoutController::class, 'createBcaVa'])->name('checkout.bca');
+
+    Route::post('/checkout/mandiri', [CheckoutController::class, 'createMandiriVa'])->name('checkout.mandiri');
+
+    Route::post('/checkout/alfamart', [CheckoutController::class, 'createAlfamartVa'])->name('checkout.alfamart');
+
+    Route::post('/checkout/indomaret', [CheckoutController::class, 'createIndomaretVa'])->name('checkout.indomaret');
 });
 
 Route::post('/midtrans/notification', [CheckoutController::class, 'handleNotification'])->name('midtrans.notification');

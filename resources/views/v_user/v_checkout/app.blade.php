@@ -64,17 +64,130 @@
             transform: translate(0, 0)
         }
     }
+
+    /* ── Responsive cart table ── */
+    .cart-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .cart-table {
+        min-width: 480px;
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    /* ── Mobile stack: cart items as cards ── */
+    @media (max-width: 640px) {
+
+        /* Hide table header */
+        .cart-table thead {
+            display: none;
+        }
+
+        /* Each row becomes a card */
+        .cart-table tbody tr {
+            display: block;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .cart-table tbody td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            border: none;
+            font-size: 14px;
+        }
+
+        .cart-table tbody td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-right: 8px;
+            white-space: nowrap;
+        }
+
+        /* Customer info grid: 2 cols → 1 col */
+        .customer-grid {
+            grid-template-columns: 1fr !important;
+        }
+
+        /* Payment grid: 4 cols → 2 cols */
+        .payment-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+        }
+
+        /* Shipping row: 3 cols → 1 col */
+        .shipping-grid {
+            grid-template-columns: 1fr !important;
+        }
+
+        /* Section title size */
+        h1.page-title {
+            font-size: 1.25rem !important;
+        }
+
+        h2.section-title {
+            font-size: 1rem !important;
+        }
+
+        /* Grand total font */
+        #grandTotalSection {
+            font-size: 1rem !important;
+        }
+
+        .product-total {
+            font-size: 1rem !important;
+        }
+
+        /* Pay button full width on mobile */
+        #payBtn {
+            width: 100%;
+            text-align: center;
+        }
+
+        /* BCA / QRIS sections */
+        #bcaVaNumber {
+            font-size: 1.25rem !important;
+            word-break: break-all;
+        }
+
+        #qrisImage {
+            width: 200px;
+            height: 200px;
+        }
+
+        /* Container padding */
+        .checkout-container {
+            padding: 16px !important;
+        }
+    }
+
+    @media (max-width: 400px) {
+        .payment-grid {
+            grid-template-columns: 1fr !important;
+        }
+    }
 </style>
 </head>
 
 <body>
     <div id="smooth-wrapper">
         <div id="smooth-content">
-            <div class="container mx-auto p-6">
+            <div class="checkout-container container mx-auto p-6">
                 <form action="{{ route('checkout.process') }}" method="POST" class="space-y-4">
                     @csrf
 
-                    <h1 class="text-2xl font-semibold open-sans mb-6">Tab Checkout</h1>
+                    <h1 class="page-title text-2xl font-semibold open-sans mb-6">Tab Checkout</h1>
 
                     {{-- Alert --}}
                     @if(session('error'))
@@ -84,83 +197,93 @@
                     @endif
 
                     {{-- Cart Items --}}
-                    <table class="min-w-full mb-6 ">
-                        <thead>
-                            <tr class="bg-black text-white">
-                                <th class="p-2 border">Product</th>
-                                <th class="p-2 border">Size</th>
-                                <th class="p-2 border">Price</th>
-                                <th class="p-2 border">Quantity</th>
-                                <th class="p-2 border">Subtotal</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @php $total = 0; @endphp
-                            @foreach($cartItems as $item)
-                                @php
-                                    $price = $item->product->price ?? 0;
-                                    $additional = $item->additional_price ?? 0;
-                                    $qty = $item->quantity ?? 0;
-                                    $subtotal = ($price + $additional) * $qty;
-                                    $total += $subtotal;
-                                @endphp
-
-                                <tr class="text-center">
-                                    <td class="p-2">{{ $item->product->name }}</td>
-                                    <td class="p-2">{{ $item->size->code ?? '-' }}</td>
-                                    <td class="p-2">Rp{{ number_format($price + $additional, 2, ',', '.') }}</td>
-                                    <td class="p-2">{{ $qty }}</td>
-                                    <td class="p-2">Rp{{ number_format($subtotal, 2, ',', '.') }}</td>
+                    <div class="cart-table-wrapper mb-6">
+                        <table class="cart-table">
+                            <thead>
+                                <tr class="bg-black text-white">
+                                    <th class="p-2 border">Product</th>
+                                    <th class="p-2 border">Size</th>
+                                    <th class="p-2 border">Price</th>
+                                    <th class="p-2 border">Quantity</th>
+                                    <th class="p-2 border">Subtotal</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @php $total = 0; @endphp
+                                @foreach($cartItems as $item)
+                                    @php
+                                        $price = $item->product->price ?? 0;
+                                        $additional = $item->additional_price ?? 0;
+                                        $qty = $item->quantity ?? 0;
+                                        $subtotal = ($price + $additional) * $qty;
+                                        $total += $subtotal;
+                                    @endphp
 
-                    <div class="text-right text-xl font-semibold mb-6">
+                                    <tr class="text-center">
+                                        <td class="p-2" data-label="Product">
+                                            <div class="flex items-center gap-3">
+                                                <img src="{{ $item->product->image }}" alt="{{ $item->product->name }}"
+                                                    class="w-10 h-10 object-cover rounded shrink-0">
+                                                <span>{{ $item->product->name }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="p-2" data-label="Size">{{ $item->size->code ?? '-' }}</td>
+                                        <td class="p-2" data-label="Price">
+                                            Rp{{ number_format($price + $additional, 2, ',', '.') }}</td>
+                                        <td class="p-2" data-label="Qty">{{ $qty }}</td>
+                                        <td class="p-2" data-label="Subtotal">Rp{{ number_format($subtotal, 2, ',', '.') }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="product-total text-right text-xl font-semibold mb-6">
                         Total: Rp{{ number_format($total, 2, ',', '.') }}
                     </div>
 
                     {{-- Customer & Payment Form --}}
-                    <h2 class="text-xl font-bold mt-8 mb-4">Customer Information</h2>
+                    <h2 class="section-title text-xl font-bold mt-8 mb-4">Customer Information</h2>
 
-                    <div class="grid grid-cols-2 gap-4 select-none">
+                    <div class="customer-grid grid grid-cols-2 gap-4 select-none">
                         <div>
-                            <label class="block mb-1 font-semibold">First Name</label>
+                            <label class="block mb-1 font-semibold text-sm">First Name</label>
                             <input type="text" name="first_name" value="{{ auth()->user()->first_name }}"
                                 class="px-3 py-2 w-full outline-none border-b-black border-b-1" required readonly>
                         </div>
 
                         <div>
-                            <label class="block mb-1 font-semibold">Last Name</label>
+                            <label class="block mb-1 font-semibold text-sm">Last Name</label>
                             <input type="text" name="last_name" value="{{ auth()->user()->last_name }}"
                                 class="px-3 py-2 w-full outline-none border-b-black border-b-1" required readonly>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block mb-1 font-semibold">Email</label>
+                        <label class="block mb-1 font-semibold text-sm">Email</label>
                         <input type="email" name="email" value="{{ auth()->user()->email }}"
                             class="px-3 py-2 w-full outline-none border-b-black border-b-1" required readonly>
                     </div>
 
                     <div>
-                        <label class="block mb-1 font-semibold">Phone</label>
+                        <label class="block mb-1 font-semibold text-sm">Phone</label>
                         <input type="text" name="phone" value="{{ auth()->user()->phone }}"
                             class="px-3 py-2 w-full outline-none border-b-black border-b-1" required readonly>
                     </div>
 
                     <div>
-                        <label class="block mb-1 font-semibold">Address</label>
+                        <label class="block mb-1 font-semibold text-sm">Address</label>
                         <textarea name="address" rows="3"
                             class="px-3 py-2 w-full outline-none border-b-black border-b-1" required
                             readonly>{{ auth()->user()->province_name }}, {{ auth()->user()->city_name }}, {{ auth()->user()->address }}</textarea>
                     </div>
 
                     {{-- Shipping Options --}}
-                    <h2 class="text-xl font-bold mt-8 mb-4">Select Shipping</h2>
+                    <h2 class="section-title text-xl font-bold mt-8 mb-4">Select Shipping</h2>
 
                     <div class="space-y-3">
-                        <div class="grid grid-cols-3 gap-3">
+                        <div class="shipping-grid grid grid-cols-3 gap-3">
                             <div>
                                 <label class="block mb-1 font-semibold text-sm">Kurir</label>
                                 <select id="courierSelect" class="border px-3 py-2 rounded w-full outline-none text-sm">
@@ -186,46 +309,44 @@
 
                         <div id="ongkirResult" class="hidden space-y-2"></div>
 
-                        {{-- hidden input untuk dikirim ke controller --}}
                         <input type="hidden" name="shipping_service" id="selectedService">
                         <input type="hidden" name="shipping_cost" id="selectedCost">
                         <input type="hidden" name="shipping_courier" id="selectedCourier">
 
-                        {{-- Total Keseluruhan --}}
                         <div id="grandTotalSection" class="hidden text-right text-xl font-semibold mt-4 pt-4">
                             Total Pembayaran: <span id="grandTotal">Rp0</span>
                         </div>
                     </div>
 
                     {{-- Metode Pembayaran --}}
-                    <h2 class="text-xl font-bold mt-8 mb-4">Metode Pembayaran</h2>
-                    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    <h2 class="section-title text-xl font-bold mt-8 mb-4">Metode Pembayaran</h2>
+                    <div class="payment-grid grid grid-cols-2 gap-3 sm:grid-cols-4">
 
-                        <button type="button" onclick="selectPayment('qris')"
+                        <button type="button" onclick="selectPayment('qris', event)"
                             class="payment-option border-2 rounded px-4 py-3 flex flex-col items-center justify-center gap-2 hover:border-black transition cursor-pointer">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg"
                                 class="h-8 object-contain" alt="QRIS">
                         </button>
 
-                        <button type="button" onclick="selectPayment('mandiri')"
+                        <button type="button" onclick="selectPayment('mandiri', event)"
                             class="payment-option border-2 rounded px-4 py-3 flex flex-col items-center justify-center gap-2 hover:border-black transition cursor-pointer">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg"
                                 class="h-8 object-contain" alt="Mandiri">
                         </button>
 
-                        <button type="button" onclick="selectPayment('bca')"
+                        <button type="button" onclick="selectPayment('bca', event)"
                             class="payment-option border-2 rounded px-4 py-3 flex flex-col items-center justify-center gap-2 hover:border-black transition cursor-pointer">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg"
                                 class="h-8 object-contain" alt="BCA">
                         </button>
 
-                        <button type="button" onclick="selectPayment('alfamart')"
+                        <button type="button" onclick="selectPayment('alfamart', event)"
                             class="payment-option border-2 rounded px-4 py-3 flex flex-col items-center justify-center gap-2 hover:border-black transition cursor-pointer">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/ALFAMART_LOGO_BARU.png/960px-ALFAMART_LOGO_BARU.png"
                                 class="h-8 object-contain" alt="Alfamart">
                         </button>
 
-                        <button type="button" onclick="selectPayment('indomaret')"
+                        <button type="button" onclick="selectPayment('indomaret', event)"
                             class="payment-option border-2 rounded px-4 py-3 flex flex-col items-center justify-center gap-2 hover:border-black transition cursor-pointer">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Logo_Indomaret.png/960px-Logo_Indomaret.png"
                                 class="h-8 object-contain" alt="Indomaret">
@@ -244,15 +365,14 @@
                     </button>
 
                     {{-- QRIS Section --}}
-                    <div id="qrisSection" class="hidden mt-6 flex flex-col items-center">
-                        <h2 class="text-xl font-bold mb-2">Bayar dengan QRIS</h2>
+                    <div id="qrisSection" class="hidden mt-6 flex flex-col items-center text-center">
+                        <h2 class="section-title text-xl font-bold mb-2">Bayar dengan QRIS</h2>
                         <p class="text-sm text-gray-500 mb-4">Scan QR code berikut dengan GoPay, OVO, Dana, atau
-                            aplikasi apapun yang
-                            support QRIS</p>
-                        <img id="qrisImage" src="" alt="QR Code" class="w-64 h-64 border p-2 rounded">
+                            aplikasi apapun yang support QRIS</p>
+                        <img id="qrisImage" src="" alt="QR Code" class="w-48 h-48 sm:w-64 sm:h-64 border p-2 rounded">
                         <p class="mt-4 text-sm text-gray-500">Selesaikan pembayaran dalam <span id="qrisTimer"
                                 class="font-bold text-black">15:00</span></p>
-                        <div class="flex gap-3 mt-4">
+                        <div class="flex flex-wrap gap-3 mt-4 justify-center">
                             <a id="qrisDownload" href="#" download="qris.png"
                                 class="border px-4 py-2 text-sm rounded hover:bg-gray-100">
                                 Download QR
@@ -265,13 +385,13 @@
                     </div>
 
                     {{-- BCA VA Section --}}
-                    <div id="bcaSection" class="hidden mt-6 border rounded p-6">
-                        <h2 class="text-xl font-bold mb-2">Transfer BCA Virtual Account</h2>
+                    <div id="bcaSection" class="hidden mt-6 border rounded p-4 sm:p-6">
+                        <h2 class="section-title text-xl font-bold mb-2">Transfer BCA Virtual Account</h2>
                         <p class="text-sm text-gray-500 mb-4">Selesaikan pembayaran sebelum expired</p>
                         <div class="bg-gray-50 rounded p-4 mb-4">
                             <p class="text-sm text-gray-500 mb-1">Nomor Virtual Account</p>
-                            <p class="text-2xl font-bold tracking-widest" id="bcaVaNumber">-</p>
-                            <button type="button" onclick="copyVa()"
+                            <p class="text-2xl font-bold tracking-widest break-all" id="bcaVaNumber">-</p>
+                            <button type="button" onclick="copyText('bcaVaNumber')"
                                 class="mt-2 text-xs border px-3 py-1 rounded hover:bg-gray-100 cursor-pointer">
                                 Salin Nomor
                             </button>
@@ -282,7 +402,87 @@
                         </div>
                         <div class="flex gap-3 mt-4">
                             <button type="button" onclick="checkBcaStatus()"
-                                class="bg-black text-white px-4 py-2 text-sm rounded hover:bg-gray-800 cursor-pointer">
+                                class="bg-black text-white px-4 py-2 text-sm rounded hover:bg-gray-800 cursor-pointer w-full sm:w-auto">
+                                Cek Status Pembayaran
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Mandiri Section --}}
+                    <div id="mandiriSection" class="hidden mt-6 border rounded p-4 sm:p-6">
+                        <h2 class="section-title text-xl font-bold mb-2">Mandiri Bill Payment</h2>
+                        <p class="text-sm text-gray-500 mb-4">Bayar melalui ATM, Mobile Banking, atau Internet Banking
+                            Mandiri</p>
+                        <div class="bg-gray-50 rounded p-4 mb-4 space-y-3">
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Biller Code</p>
+                                <p class="text-2xl font-bold tracking-widest" id="mandiriBillerCode">-</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">Bill Key</p>
+                                <p class="text-2xl font-bold tracking-widest" id="mandiriBillKey">-</p>
+                                <button type="button" onclick="copyText('mandiriBillKey')"
+                                    class="mt-2 text-xs border px-3 py-1 rounded hover:bg-gray-100 cursor-pointer">
+                                    Salin Bill Key
+                                </button>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-500 space-y-1">
+                            <p>Total Pembayaran: <span id="mandiriTotal" class="font-semibold text-black"></span></p>
+                            <p>Bank: <span class="font-semibold text-black">Mandiri</span></p>
+                        </div>
+                        <div class="flex gap-3 mt-4">
+                            <button type="button" onclick="checkMandiriStatus()"
+                                class="bg-black text-white px-4 py-2 text-sm rounded hover:bg-gray-800 cursor-pointer w-full sm:w-auto">
+                                Cek Status Pembayaran
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Alfamart Section --}}
+                    <div id="alfamartSection" class="hidden mt-6 border rounded p-4 sm:p-6">
+                        <h2 class="section-title text-xl font-bold mb-2">Bayar di Alfamart</h2>
+                        <p class="text-sm text-gray-500 mb-4">Tunjukkan kode berikut ke kasir Alfamart / Alfamidi
+                            terdekat</p>
+                        <div class="bg-gray-50 rounded p-4 mb-4">
+                            <p class="text-sm text-gray-500 mb-1">Kode Pembayaran</p>
+                            <p class="text-2xl font-bold tracking-widest" id="alfamartCode">-</p>
+                            <button type="button" onclick="copyText('alfamartCode')"
+                                class="mt-2 text-xs border px-3 py-1 rounded hover:bg-gray-100 cursor-pointer">
+                                Salin Kode
+                            </button>
+                        </div>
+                        <div class="text-sm text-gray-500 space-y-1">
+                            <p>Total Pembayaran: <span id="alfamartTotal" class="font-semibold text-black"></span></p>
+                            <p>Tersedia di: <span class="font-semibold text-black">Alfamart & Alfamidi</span></p>
+                        </div>
+                        <div class="flex gap-3 mt-4">
+                            <button type="button" onclick="checkAlfamartStatus()"
+                                class="bg-black text-white px-4 py-2 text-sm rounded hover:bg-gray-800 cursor-pointer w-full sm:w-auto">
+                                Cek Status Pembayaran
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Indomaret Section --}}
+                    <div id="indomaretSection" class="hidden mt-6 border rounded p-4 sm:p-6">
+                        <h2 class="section-title text-xl font-bold mb-2">Bayar di Indomaret</h2>
+                        <p class="text-sm text-gray-500 mb-4">Tunjukkan kode berikut ke kasir Indomaret terdekat</p>
+                        <div class="bg-gray-50 rounded p-4 mb-4">
+                            <p class="text-sm text-gray-500 mb-1">Kode Pembayaran</p>
+                            <p class="text-2xl font-bold tracking-widest" id="indomaretCode">-</p>
+                            <button type="button" onclick="copyText('indomaretCode')"
+                                class="mt-2 text-xs border px-3 py-1 rounded hover:bg-gray-100 cursor-pointer">
+                                Salin Kode
+                            </button>
+                        </div>
+                        <div class="text-sm text-gray-500 space-y-1">
+                            <p>Total Pembayaran: <span id="indomaretTotal" class="font-semibold text-black"></span></p>
+                            <p>Tersedia di: <span class="font-semibold text-black">Indomaret</span></p>
+                        </div>
+                        <div class="flex gap-3 mt-4">
+                            <button type="button" onclick="checkIndomaretStatus()"
+                                class="bg-black text-white px-4 py-2 text-sm rounded hover:bg-gray-800 cursor-pointer w-full sm:w-auto">
                                 Cek Status Pembayaran
                             </button>
                         </div>
@@ -294,7 +494,7 @@
         </div>
     </div>
 
-    <div id="toastContainer" class="fixed bottom-6 right-6 z-50 space-y-2"></div>
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-50 space-y-2 max-w-xs"></div>
     <div id="payLoadingOverlay">
         <div class="loader"></div>
         <p style="font-size: 14px; color: #333; margin: 0;">Memproses pembayaran...</p>
@@ -346,11 +546,17 @@
                         btn.type = 'button';
                         btn.className = 'w-full text-left border px-4 py-2 rounded text-sm hover:border-black transition service-option';
                         btn.innerHTML = `
-                    <span class="font-semibold">${service.code.toUpperCase()} - ${service.service}</span>
-                    <span class="text-gray-500 text-xs ml-2">${service.description}</span>
-                    <span class="float-right font-semibold">Rp${cost.toLocaleString('id-ID')}</span>
-                    <span class="float-right text-xs text-gray-500 mr-4">ETD: ${etd}</span>
-                `;
+                        <div class="flex flex-wrap justify-between items-start gap-1">
+                            <div>
+                                <span class="font-semibold">${service.code.toUpperCase()} - ${service.service}</span>
+                                <span class="text-gray-500 text-xs ml-1">${service.description}</span>
+                            </div>
+                            <div class="text-right shrink-0">
+                                <span class="font-semibold block">Rp${cost.toLocaleString('id-ID')}</span>
+                                <span class="text-xs text-gray-500">ETD: ${etd}</span>
+                            </div>
+                        </div>
+                    `;
 
                         btn.addEventListener('click', function () {
                             document.querySelectorAll('.service-option').forEach(b => {
@@ -378,23 +584,23 @@
                 .catch(() => {
                     resultDiv.innerHTML = '<p class="text-sm text-red-500">Gagal mengambil data ongkir.</p>';
                 });
-        }); // ✅ tutup checkOngkirBtn di sini
+        });
 
-        // ✅ 2. Pilih Metode Pembayaran (di luar semua listener)
-        function selectPayment(method) {
+        // ✅ 2. Pilih Metode Pembayaran — terima event sebagai parameter
+        function selectPayment(method, e) {
             document.querySelectorAll('.payment-option').forEach(btn => {
                 btn.classList.remove('border-black', 'bg-gray-50');
                 btn.classList.add('border-gray-200');
             });
 
-            event.currentTarget.classList.add('border-black', 'bg-gray-50');
-            event.currentTarget.classList.remove('border-gray-200');
+            e.currentTarget.classList.add('border-black', 'bg-gray-50');
+            e.currentTarget.classList.remove('border-gray-200');
 
             document.getElementById('selectedPayment').value = method;
             document.getElementById('paymentError').classList.add('hidden');
         }
 
-        // ✅ 3. Confirm & Pay (di luar semua listener)
+        // ✅ 3. Confirm & Pay
         document.getElementById('payBtn').addEventListener('click', function () {
             if (!document.getElementById('selectedPayment').value) {
                 document.getElementById('paymentError').classList.remove('hidden');
@@ -421,7 +627,6 @@
 
                     if (data.snap_token) {
                         if (paymentMethod === 'qris') {
-                            // Flow QRIS — tampilkan QR
                             fetch('{{ route("checkout.qris") }}', {
                                 method: 'POST',
                                 headers: {
@@ -457,7 +662,6 @@
 
                                         window._qrisTimer = timer;
                                     } else {
-                                        document.getElementById('payLoadingOverlay').classList.remove('active');
                                         showToast(qris.error ?? 'Gagal mendapatkan QR code.', 'error');
                                     }
                                 })
@@ -481,8 +685,7 @@
                                     document.getElementById('payLoadingOverlay').classList.remove('active');
                                     if (bca.va_number) {
                                         document.getElementById('bcaVaNumber').textContent = bca.va_number;
-                                        document.getElementById('bcaTotal').textContent = 'Rp' + bca.total.toLocaleString('id-ID');
-                                        document.getElementById('bcaSection').classList.remove('hidden');
+                                        document.getElementById('bcaTotal').textContent = 'Rp' + parseInt(bca.total).toLocaleString('id-ID'); document.getElementById('bcaSection').classList.remove('hidden');
                                         showToast('Nomor VA BCA berhasil dibuat!', 'success');
                                         document.getElementById('bcaSection').scrollIntoView({ behavior: 'smooth' });
                                         window._bcaOrderId = bca.order_id;
@@ -494,7 +697,97 @@
                                     document.getElementById('payLoadingOverlay').classList.remove('active');
                                     showToast('Gagal membuat BCA VA.', 'error');
                                 });
-                        } else {
+
+                        } else if (paymentMethod === 'mandiri') {
+                            fetch('{{ route("checkout.mandiri") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                    'Accept': 'application/json',
+                                },
+                                body: JSON.stringify({ order_id: data.order_id })
+                            })
+                                .then(res => res.json())
+                                .then(mandiri => {
+                                    document.getElementById('payLoadingOverlay').classList.remove('active');
+                                    if (mandiri.bill_key) {
+                                        document.getElementById('mandiriBillKey').textContent = mandiri.bill_key;
+                                        document.getElementById('mandiriBillerCode').textContent = mandiri.biller_code;
+                                        document.getElementById('mandiriTotal').textContent = 'Rp' + Math.round(mandiri.total).toLocaleString('id-ID');
+                                        document.getElementById('mandiriSection').classList.remove('hidden');
+                                        showToast('Kode Mandiri Bill Payment berhasil dibuat!', 'success');
+                                        document.getElementById('mandiriSection').scrollIntoView({ behavior: 'smooth' });
+                                        window._mandiriOrderId = mandiri.order_id;
+                                    } else {
+                                        showToast(mandiri.error ?? 'Gagal mendapatkan kode Mandiri.', 'error');
+                                    }
+                                })
+                                .catch(() => {
+                                    document.getElementById('payLoadingOverlay').classList.remove('active');
+                                    showToast('Gagal membuat Mandiri Bill.', 'error');
+                                });
+
+                        } else if (paymentMethod === 'alfamart') {
+                            fetch('{{ route("checkout.alfamart") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                    'Accept': 'application/json',
+                                },
+                                body: JSON.stringify({ order_id: data.order_id })
+                            })
+                                .then(res => res.json())
+                                .then(alfa => {
+                                    document.getElementById('payLoadingOverlay').classList.remove('active');
+                                    if (alfa.payment_code) {
+                                        document.getElementById('alfamartCode').textContent = alfa.payment_code;
+                                        document.getElementById('alfamartTotal').textContent = 'Rp' + Math.round(alfa.total).toLocaleString('id-ID');
+                                        document.getElementById('alfamartSection').classList.remove('hidden');
+                                        showToast('Kode Alfamart berhasil dibuat!', 'success');
+                                        document.getElementById('alfamartSection').scrollIntoView({ behavior: 'smooth' });
+                                        window._alfamartOrderId = alfa.order_id;
+                                    } else {
+                                        showToast(alfa.error ?? 'Gagal mendapatkan kode Alfamart.', 'error');
+                                    }
+                                })
+                                .catch(() => {
+                                    document.getElementById('payLoadingOverlay').classList.remove('active');
+                                    showToast('Gagal membuat kode Alfamart.', 'error');
+                                });
+
+                        } else if (paymentMethod === 'indomaret') {
+                            fetch('{{ route("checkout.indomaret") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                    'Accept': 'application/json',
+                                },
+                                body: JSON.stringify({ order_id: data.order_id })
+                            })
+                                .then(res => res.json())
+                                .then(indo => {
+                                    document.getElementById('payLoadingOverlay').classList.remove('active');
+                                    if (indo.payment_code) {
+                                        document.getElementById('indomaretCode').textContent = indo.payment_code;
+                                        document.getElementById('indomaretTotal').textContent = 'Rp' + Math.round(indo.total).toLocaleString('id-ID');
+                                        document.getElementById('indomaretSection').classList.remove('hidden');
+                                        showToast('Kode Indomaret berhasil dibuat!', 'success');
+                                        document.getElementById('indomaretSection').scrollIntoView({ behavior: 'smooth' });
+                                        window._indomaretOrderId = indo.order_id;
+                                    } else {
+                                        showToast(indo.error ?? 'Gagal mendapatkan kode Indomaret.', 'error');
+                                    }
+                                })
+                                .catch(() => {
+                                    document.getElementById('payLoadingOverlay').classList.remove('active');
+                                    showToast('Gagal membuat kode Indomaret.', 'error');
+                                });
+
+                        }
+                        else {
                             document.getElementById('payLoadingOverlay').classList.remove('active');
                             showToast('Pembayaran ' + paymentMethod.toUpperCase() + ' akan segera diproses.', 'info');
                         }
@@ -504,10 +797,10 @@
                     }
                 })
                 .catch(() => {
-                    document.getElementById('payLoadingOverlay').classList.remove('active'); // ✅ juga di catch
+                    document.getElementById('payLoadingOverlay').classList.remove('active');
                     showToast('Gagal menghubungi server.', 'error');
                 });
-        }); // ✅ tutup payBtn di sini
+        });
     </script>
 
     <script src="https://app.sandbox.midtrans.com/snap/snap.js"
@@ -522,39 +815,35 @@
             };
 
             const toast = document.createElement('div');
-            toast.className = `${colors[type]} px-5 py-3 border shadow-lg text-sm flex items-center gap-3 transition-all duration-300 opacity-0 translate-y-2`;
+            toast.className = `${colors[type]} px-4 py-3 border shadow-lg text-sm flex items-center gap-3 transition-all duration-300 opacity-0 translate-y-2 rounded`;
             toast.innerHTML = `
-        <span>${message}</span>
-        <button onclick="this.parentElement.remove()" class="ml-auto text-white opacity-70 hover:opacity-100 cursor-pointer">✕</button>
-    `;
+                <span class="flex-1">${message}</span>
+                <button onclick="this.parentElement.remove()" class="ml-auto text-white opacity-70 hover:opacity-100 cursor-pointer shrink-0">✕</button>
+            `;
 
             document.getElementById('toastContainer').appendChild(toast);
 
-            // Animasi masuk
             requestAnimationFrame(() => {
                 toast.classList.remove('opacity-0', 'translate-y-2');
                 toast.classList.add('opacity-100', 'translate-y-0');
             });
 
-            // Auto remove setelah 4 detik
             setTimeout(() => {
                 toast.classList.add('opacity-0');
                 setTimeout(() => toast.remove(), 300);
             }, 4000);
         }
 
-        function checkQrisStatus() {
-            window.location.href = '/order/' + window._qrisOrderId;
+        function copyText(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text).then(() => showToast('Berhasil disalin!', 'success'));
         }
 
-        function copyVa() {
-            const va = document.getElementById('bcaVaNumber').textContent;
-            navigator.clipboard.writeText(va).then(() => showToast('Nomor VA berhasil disalin!', 'success'));
-        }
-
-        function checkBcaStatus() {
-            window.location.href = '/order/' + window._bcaOrderId;
-        }
+        function checkQrisStatus() { window.location.href = '/order/' + window._qrisOrderId; }
+        function checkBcaStatus() { window.location.href = '/order/' + window._bcaOrderId; }
+        function checkMandiriStatus() { window.location.href = '/order/' + window._mandiriOrderId; }
+        function checkAlfamartStatus() { window.location.href = '/order/' + window._alfamartOrderId; }
+        function checkIndomaretStatus() { window.location.href = '/order/' + window._indomaretOrderId; }
     </script>
 
     <script>

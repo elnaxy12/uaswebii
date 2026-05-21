@@ -204,7 +204,7 @@
                     @csrf
                     @method('DELETE')
                     <button type="submit"
-                        class="bg-black text-white text-sm w-full py-2 border-white border-1 hover:bg-red-100 hover:text-red-500 hover:border-black cursor-pointer">
+                        class="bg-black text-white text-sm w-full md:px-6 py-2 border-white border-1 hover:bg-red-100 hover:text-red-500 hover:border-black cursor-pointer">
                         Cancel Order
                     </button>
                 </form>
