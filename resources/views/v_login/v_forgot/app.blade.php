@@ -13,79 +13,185 @@
 
     {{-- Js dan Css Link --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <style>
+        .loader {
+            width: 100px;
+            aspect-ratio: 1;
+            padding: 10px;
+            box-sizing: border-box;
+            display: grid;
+            background: #fff;
+            filter: blur(5px) contrast(10) hue-rotate(300deg);
+            mix-blend-mode: darken;
+        }
+
+        .loader:before,
+        .loader:after {
+            content: "";
+            grid-area: 1/1;
+            width: 40px;
+            height: 40px;
+            background: black;
+            animation: l7 2s infinite;
+        }
+
+        .loader:after {
+            animation-delay: -1s;
+        }
+
+        @keyframes l7 {
+            0% {
+                transform: translate(0, 0)
+            }
+
+            25% {
+                transform: translate(100%, 0)
+            }
+
+            50% {
+                transform: translate(100%, 100%)
+            }
+
+            75% {
+                transform: translate(0, 100%)
+            }
+
+            100% {
+                transform: translate(0, 0)
+            }
+        }
+    </style>
 </head>
 
-<body>
+<body class="overflow-hidden">
     <div class="w-full bg-[#020617]">
-        <canvas id="aurora"></canvas>
-        <div class="relative w-full h-screen">
-            <div class="absolute" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-                <div
-                    class="border md:w-md w-2xs md:h-[500px] h-fit border-white/40 backdrop-blur-3xl bg-inherit rounded-2xl">
-                    {{-- head form --}}
-                    <div class="flex items-center justify-center md:h-[200px] h-[150px]">
-                        <h2 class="text-white font-sans font-semibold md:text-4xl text-3xl select-none cursor-default">
-                            Reset Password</h2>
-                    </div>
+        <canvas id="aurora" class="fixed inset-0 w-full h-full"></canvas>
 
-                    <form action="{{ route('password.email') }}" method="POST">
-                        @csrf
-                        <div class="flex flex-col gap-16 items-center">
-                            <label>
-                                <input
-                                    class="md:w-xs w-[14rem] md:text-sm text-xs p-2 text-white placeholder-white/50 focus:outline-none border-b focus:ring-white/50"
-                                    type="email" placeholder="Email" name="email" required>
-                            </label>
-                            @if (session('status'))
-                                <p class="text-white text-xs absolute bottom-10">{{ session('status') }}</p>
-                            @endif
-                            <button
-                                class="bg-white md:w-3xs w-[10rem] md:p-2 p-[4px] rounded-2xl md:mt-5 cursor-pointer">
-                                Send Email</button>
+        {{-- Card --}}
+        <div class="relative z-10 flex items-center justify-center min-h-screen pb-[70px] md:pb-[60px] px-4">
+            <div
+                class="border w-full max-w-sm md:max-w-md border-white/40 backdrop-blur-3xl bg-transparent rounded-2xl">
+
+                {{-- Head --}}
+                <div class="flex items-center justify-center py-10 md:py-14">
+                    <h2 class="text-white font-sans font-semibold text-3xl md:text-4xl select-none cursor-default">
+                        Reset Password
+                    </h2>
+                </div>
+
+                <form action="{{ route('password.email') }}" method="POST">
+                    @csrf
+                    @if (session('status'))
+                        <div class="flex flex-col items-center justify-center py-6 gap-4">
+
+                            {{-- Check Icon --}}
+                            <div
+                                class="w-20 h-20 rounded-full bg-green-500 flex items-center justify-center animate-bounce">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-white" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+
+                            {{-- Text --}}
+                            <div class="text-center">
+                                <p class="text-green-400 font-semibold text-lg">
+                                    Email Sent Successfully
+                                </p>
+
+                                <p class="text-white/70 text-sm mt-1 max-w-xs">
+                                    Please check your inbox and follow the reset link.
+                                </p>
+                            </div>
                         </div>
-                    </form>
+                    @else
+                        <div class="flex flex-col gap-5 items-center pb-8 px-6">
 
-                </div>
-            </div>
+                            {{-- Email --}}
+                            <div class="w-full max-w-xs">
+                                <input
+                                    class="w-full text-sm p-2 text-white bg-transparent border-b border-white/30 placeholder-white/50 focus:outline-none focus:border-white/70 transition-colors"
+                                    type="email" placeholder="Email" name="email" required>
+                            </div>
 
-            <div class="parent fixed flex items-center bottom-0 left-0 w-full bg-white md:h-[60px] h-[70px] pt-2">
-                <div class="container mx-auto md:p-0 p-[10px] flex justify-between">
-                    <div>
-                        <p class="md:text-xs text-[12px] text-blue-900">Welcome to our platform!</p>
-                        <p class="md:text-sm text-[12px]">Sign up to unlock all features and enjoy a personalized
-                            experience.</p>
-                    </div>
-                    <div class="flex flex-col md:gap-2 gap-1">
-                        <a class="text-xs  hover:text-blue-900" href="/register">Create an acount</a>
-                        <button type="submit"
-                            class="close-btn hidden md:inline border m-1 p-1 text-xs cursor-pointer hover:bg-black hover:text-white hover:border-black transition-[background-color] duration-200">Close
-                            Tab</button>
-                    </div>
-                </div>
-            </div>
+                            {{-- Status --}}
+                            @if (session('status'))
+                                <p class="text-green-400 text-xs text-center w-full max-w-xs">
+                                    {{ session('status') }}
+                                </p>
+                            @endif
 
-            <div class="fixed top-3 left-3 bg-white px-2 py-2">
-                <a href="{{ route('welcome') }}">
-                    <img src="https://news.adidas.com/dist/images/adidas-news-web.svg" width="100px" alt="Logo Adidas">
-                </a>
+                            {{-- Button --}}
+                            <button type="submit"
+                                class="w-full max-w-xs bg-white text-black font-medium py-2 px-4 rounded-2xl mt-2 cursor-pointer hover:bg-white/90 transition-colors">
+                                Send Email
+                            </button>
+                        </div>
+                    @endif
+                </form>
             </div>
         </div>
+
+        {{-- Bottom Bar --}}
+        <div class="parent fixed bottom-0 left-0 w-full bg-white z-20 h-[70px] md:h-[60px]">
+            <div class="container mx-auto h-full px-4 md:px-6 flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                    <p class="text-xs text-blue-900 truncate">Welcome to our platform!</p>
+                    <p class="text-xs md:text-sm text-gray-700 truncate">Sign up to unlock all features.</p>
+                </div>
+                <div class="flex flex-col items-center gap-2 flex-shrink-0">
+                    <a class="text-xs whitespace-nowrap hover:text-blue-900 transition-colors" href="/register">Create
+                        an account</a>
+                    <button type="button"
+                        class="close-btn hidden md:inline border px-3 py-1 text-xs cursor-pointer hover:bg-black hover:text-white hover:border-black transition-all duration-200">
+                        Close Tab
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {{-- Logo --}}
+        <div class="fixed top-3 left-3 z-30 bg-white px-2 py-2">
+            <a href="{{ route('welcome') }}">
+                <img src="https://news.adidas.com/dist/images/adidas-news-web.svg" width="90" alt="Logo Adidas">
+            </a>
+        </div>
     </div>
+
+    {{-- Loader Overlay --}}
+    <div id="loaderOverlay" class="fixed inset-0 z-50 hidden items-center justify-center">
+        <div class="bg-white rounded-2xl p-8">
+            <div class="loader"></div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const closeButtons = document.querySelectorAll('.close-btn');
+            const form = document.querySelector('form');
+            const overlay = document.getElementById('loaderOverlay');
 
-            closeButtons.forEach(btn => {
+            form.addEventListener('submit', function () {
+                overlay.classList.remove('hidden');
+                overlay.classList.add('flex');
+            });
+
+            window.addEventListener('pageshow', function (e) {
+                if (e.persisted) {
+                    overlay.classList.add('hidden');
+                    overlay.classList.remove('flex');
+                }
+            });
+
+            document.querySelectorAll('.close-btn').forEach(btn => {
                 btn.addEventListener('click', function () {
-                    const parent = btn.closest('.parent'); // cari parent terdekat
-                    if (parent) {
-                        parent.style.display = 'none'; // sembunyikan
-                    }
+                    btn.closest('.parent')?.style && (btn.closest('.parent').style.display = 'none');
                 });
             });
         });
     </script>
-    <script src="{{asset('js/aurora.js')}}"></script>
+
+    <script src="{{ asset('js/aurora.js') }}"></script>
 </body>
 
 </html>

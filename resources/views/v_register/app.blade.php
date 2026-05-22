@@ -94,15 +94,24 @@
 
                         {{-- Province & City --}}
                         <div class="flex gap-3 w-full max-w-xs">
-                            <div class="flex-1">
+                            <div class="flex-1 relative">
                                 <select name="province_id" id="province_select"
-                                    class="w-full text-sm p-2 text-white/50 bg-transparent border-b border-white/30 focus:outline-none focus:text-white cursor-pointer transition-colors">
+                                    class="w-full text-sm p-2 text-white/50 bg-transparent border-b border-white/30 focus:outline-none focus:text-white cursor-pointer transition-colors disabled:opacity-40 appearance-none"
+                                    disabled>
                                     <option value="" disabled selected class="bg-gray-900">Province</option>
                                 </select>
                                 <input type="hidden" name="province_name" id="province_name">
+
+                                <!-- Spinner Province -->
+                                <div id="province_loading" class="absolute right-2 top-1/2 -translate-y-1/2">
+                                    <div
+                                        class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin">
+                                    </div>
+                                </div>
                             </div>
+
                             <div class="flex-1 relative">
-                                <select name="city_id" id="city_select"
+                                <select name="city_id" id="city_select" disabled
                                     class="w-full text-sm p-2 text-white/50 bg-transparent border-b border-white/30 focus:outline-none focus:text-white cursor-pointer transition-colors disabled:opacity-40 appearance-none">
                                     <option value="" disabled selected class="bg-gray-900">City</option>
                                 </select>
@@ -158,6 +167,8 @@
             .then(res => res.json())
             .then(data => {
                 const select = document.getElementById('province_select');
+                const provinceLoading = document.getElementById('province_loading');
+
                 data.data.forEach(province => {
                     const option = document.createElement('option');
                     option.value = province.id;
@@ -165,55 +176,60 @@
                     option.className = 'text-black bg-white';
                     select.appendChild(option);
                 });
+
+                // Setelah data masuk, aktifkan dan munculin arrow
+                select.classList.remove('appearance-none');
+                select.disabled = false;
+                provinceLoading.classList.add('hidden');
             });
 
         const citySelect = document.getElementById('city_select');
         const cityLoading = document.getElementById('city_loading');
 
 
-    document.getElementById('province_select').addEventListener('change', function () {
+        document.getElementById('province_select').addEventListener('change', function () {
 
-        const provinceId = this.value;
+            const provinceId = this.value;
 
-        document.getElementById('province_name').value =
-            this.options[this.selectedIndex].textContent;
+            document.getElementById('province_name').value =
+                this.options[this.selectedIndex].textContent;
 
-        citySelect.innerHTML =
-            '<option value="" disabled selected class="bg-gray-900">City</option>';
+            citySelect.innerHTML =
+                '<option value="" disabled selected class="bg-gray-900">City</option>';
 
-        citySelect.disabled = true;
+            citySelect.disabled = true;
 
-        // hide arrow pas loading
-        citySelect.classList.add('appearance-none');
+            // hide arrow pas loading
+            citySelect.classList.add('appearance-none');
 
-        cityLoading.classList.remove('hidden');
+            cityLoading.classList.remove('hidden');
 
-        fetch(`/api/cities/${provinceId}`)
-            .then(res => res.json())
-            .then(data => {
+            fetch(`/api/cities/${provinceId}`)
+                .then(res => res.json())
+                .then(data => {
 
-                citySelect.innerHTML =
-                    '<option value="" disabled selected class="bg-gray-900">City</option>';
+                    citySelect.innerHTML =
+                        '<option value="" disabled selected class="bg-gray-900">City</option>';
 
-                data.data.forEach(city => {
+                    data.data.forEach(city => {
 
-                    const option = document.createElement('option');
+                        const option = document.createElement('option');
 
-                    option.value = city.id;
-                    option.textContent = city.name;
-                    option.className = 'text-black bg-white';
+                        option.value = city.id;
+                        option.textContent = city.name;
+                        option.className = 'text-black bg-white';
 
-                    citySelect.appendChild(option);
+                        citySelect.appendChild(option);
+                    });
+
+                    // munculin arrow lagi
+                    citySelect.classList.remove('appearance-none');
+
+                    citySelect.disabled = false;
+
+                    cityLoading.classList.add('hidden');
                 });
-
-                // munculin arrow lagi
-                citySelect.classList.remove('appearance-none');
-
-                citySelect.disabled = false;
-
-                cityLoading.classList.add('hidden');
-            });
-    });
+        });
 
         citySelect.addEventListener('change', function () {
             document.getElementById('city_name').value = this.options[this.selectedIndex].textContent;
