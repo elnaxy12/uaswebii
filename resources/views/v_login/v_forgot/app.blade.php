@@ -159,9 +159,10 @@
     </div>
 
     {{-- Loader Overlay --}}
-    <div id="loaderOverlay" class="fixed inset-0 z-50 hidden items-center justify-center">
-        <div class="bg-white rounded-2xl p-8">
+    <div id="loaderOverlay" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl p-8 flex flex-col items-center gap-4">
             <div class="loader"></div>
+            <p style="font-size: 14px; color: #333; margin: 0;">Mengirim link reset...</p>
         </div>
     </div>
 

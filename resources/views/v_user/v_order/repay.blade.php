@@ -85,7 +85,7 @@
                 <div class="bg-gray-100 p-4 rounded-lg mb-6 space-y-2 text-sm">
                     <div class="grid grid-cols-[140px_1fr]">
                         <span class="font-semibold">Total</span>
-                        <span>: Rp{{ number_format($order->total, 0, ',', '.') }}</span>
+                        <span>: Rp{{ number_format($order->total, 2, ',', '.') }}</span>
                     </div>
                     <div class="grid grid-cols-[140px_1fr]">
                         <span class="font-semibold">Metode Bayar</span>
@@ -115,7 +115,7 @@
                                         <span class="text-xs text-gray-500">({{ $item->size->code ?? '-' }})</span>
                                     </td>
                                     <td class="p-2">{{ $item->quantity }}</td>
-                                    <td class="p-2">Rp{{ number_format($item->price * $item->quantity, 0, ',', '.') }}</td>
+                                    <td class="p-2">Rp{{ number_format($item->price * $item->quantity, 2, ',', '.') }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -300,7 +300,7 @@
                         document.getElementById('payLoadingOverlay').classList.remove('active'); // ✅
                         if (bca.va_number) {
                             document.getElementById('bcaVaNumber').textContent = bca.va_number;
-                            document.getElementById('bcaTotal').textContent = 'Rp' + parseInt(bca.total).toLocaleString('id-ID');
+                            document.getElementById('bcaTotal').textContent = 'Rp' + parseFloat(bca.total).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                             document.getElementById('bcaSection').classList.remove('hidden');
                             document.getElementById('bcaSection').scrollIntoView({ behavior: 'smooth' });
                             showToast('Nomor VA BCA berhasil dibuat!', 'success');
@@ -328,7 +328,7 @@
                         if (mandiri.bill_key) {
                             document.getElementById('mandiriBillKey').textContent = mandiri.bill_key;
                             document.getElementById('mandiriBillerCode').textContent = mandiri.biller_code;
-                            document.getElementById('mandiriTotal').textContent = 'Rp' + Math.round(mandiri.total).toLocaleString('id-ID');
+                            document.getElementById('mandiriTotal').textContent = 'Rp' + Math.round(mandiri.total).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                             document.getElementById('mandiriSection').classList.remove('hidden');
                             document.getElementById('mandiriSection').scrollIntoView({ behavior: 'smooth' });
                             showToast('Kode Mandiri Bill Payment berhasil dibuat!', 'success');
@@ -355,7 +355,7 @@
                         document.getElementById('payLoadingOverlay').classList.remove('active');
                         if (alfa.payment_code) {
                             document.getElementById('alfamartCode').textContent = alfa.payment_code;
-                            document.getElementById('alfamartTotal').textContent = 'Rp' + Math.round(alfa.total).toLocaleString('id-ID');
+                            document.getElementById('alfamartTotal').textContent = 'Rp' + Math.round(alfa.total).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                             document.getElementById('alfamartSection').classList.remove('hidden');
                             document.getElementById('alfamartSection').scrollIntoView({ behavior: 'smooth' });
                             showToast('Kode Alfamart berhasil dibuat!', 'success');
@@ -382,7 +382,7 @@
                         document.getElementById('payLoadingOverlay').classList.remove('active');
                         if (indo.payment_code) {
                             document.getElementById('indomaretCode').textContent = indo.payment_code;
-                            document.getElementById('indomaretTotal').textContent = 'Rp' + Math.round(indo.total).toLocaleString('id-ID');
+                            document.getElementById('indomaretTotal').textContent = 'Rp' + Math.round(indo.total).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                             document.getElementById('indomaretSection').classList.remove('hidden');
                             document.getElementById('indomaretSection').scrollIntoView({ behavior: 'smooth' });
                             showToast('Kode Indomaret berhasil dibuat!', 'success');

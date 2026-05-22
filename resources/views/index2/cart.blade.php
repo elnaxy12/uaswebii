@@ -46,7 +46,7 @@
                         <div class="price-per-item" data-cart-id="{{ $item->id }}"
                             data-base-price="{{ $item->product->price ?? 0 }}"
                             data-additional-price="{{ $item->size?->pivot->additional_price ?? 0 }}">
-                            Rp{{ number_format(($item->product->price ?? 0) + ($item->size?->pivot->additional_price ?? 0), 0, ',', '.') }}
+                            Rp{{ number_format(($item->product->price ?? 0) + ($item->size?->pivot->additional_price ?? 0), 2, ',', '.') }}
                         </div>
 
 
@@ -54,7 +54,7 @@
                             data-base-price="{{ $item->product->price ?? 0 }}"
                             data-additional-price="{{ $item->size?->pivot->additional_price ?? 0 }}">
                             Subtotal:
-                            Rp{{ number_format((($item->product->price ?? 0) + ($item->size?->pivot->additional_price ?? 0)) * ($item->quantity ?? 1), 0, ',', '.') }}
+                            Rp{{ number_format((($item->product->price ?? 0) + ($item->size?->pivot->additional_price ?? 0)) * ($item->quantity ?? 1), 2, ',', '.') }}
                         </div>
 
 
@@ -136,7 +136,7 @@
                 if ($qty < 1)
                     $qty = 1;
                 return (($item->product->price ?? 0) + ($item->size?->pivot->additional_price ?? 0)) * $qty;
-            }), 0, ',', '.') }} </span>
+            }), 2, ',', '.') }} </span>
                 </div>
 
                 <div class="flex gap-4 mt-6 justify-between">
@@ -207,7 +207,7 @@
                 const additional = parseFloat(subtotalEl.dataset.additionalPrice) || 0;
 
                 const subtotal = (base + additional) * quantity;
-                subtotalEl.textContent = `Subtotal: Rp${Math.round(subtotal).toLocaleString('id-ID')}`;
+                subtotalEl.textContent = `Subtotal: Rp${Math.round(subtotal).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
                 updateCartTotal();
             }
 
@@ -217,7 +217,7 @@
 
                 const base = parseFloat(el.dataset.basePrice) || 0;
                 el.dataset.additionalPrice = additional;
-                el.textContent = `Rp${Math.round(base + additional).toLocaleString('id-ID')}`;
+                el.textContent = `Rp${Math.round(base + additional).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
             }
 
             function updateCartTotal() {
@@ -234,7 +234,7 @@
                 });
 
                 const totalEl = document.getElementById('cart-total');
-                if (totalEl) totalEl.textContent = `Rp${Math.round(total).toLocaleString('id-ID')}`;
+                if (totalEl) totalEl.textContent = `Rp${Math.round(total).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
             }
 
             /* =========================
