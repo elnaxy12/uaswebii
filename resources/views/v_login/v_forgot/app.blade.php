@@ -83,24 +83,23 @@
                 <form action="{{ route('password.email') }}" method="POST">
                     @csrf
                     @if (session('status'))
-                        <div class="flex flex-col items-center justify-center py-6 gap-4">
+                        <div class="flex flex-col items-center justify-center py-8 pb-10 gap-5 px-6">
 
                             {{-- Check Icon --}}
                             <div
-                                class="w-20 h-20 rounded-full bg-green-500 flex items-center justify-center animate-bounce">
+                                class="w-20 h-20 rounded-full border border-white/30 bg-white/10 backdrop-blur-sm flex items-center justify-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-white" fill="none"
-                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>
 
                             {{-- Text --}}
                             <div class="text-center">
-                                <p class="text-green-400 font-semibold text-lg">
+                                <p class="text-white font-semibold text-lg">
                                     Email Sent Successfully
                                 </p>
-
-                                <p class="text-white/70 text-sm mt-1 max-w-xs">
+                                <p class="text-white/50 text-sm mt-1 max-w-xs">
                                     Please check your inbox and follow the reset link.
                                 </p>
                             </div>

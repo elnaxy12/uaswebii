@@ -241,6 +241,12 @@
     <div class="wrapper">
 
         <div class="hero">
+            {{-- Logo --}}
+            <div style="margin-bottom: 28px; text-align: right;">
+                <img src="https://yt3.googleusercontent.com/wW1Hc3u9RvUpTCBkku3JjMQKT0N-Lo6Q2gqGrweqJSuwrChNkvMObUzX734Srvo3RRbl7kTZjxw=s160-c-k-c0x00ffffff-no-rj"
+                    width="48" height="48" alt="Adidas" style="display:inline-block; border-radius:4px;">
+            </div>
+
             <p class="hero-eyebrow">Account Security</p>
             <h1 class="hero-title">Reset<br>Your<br>Password</h1>
             <p class="hero-sub">We received a request to reset the password associated with your account.</p>
