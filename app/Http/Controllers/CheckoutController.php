@@ -11,7 +11,11 @@ use App\Models\Size;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use Midtrans\Config;
+use Midtrans\CoreApi;
+use Midtrans\Notification;
 use Midtrans\Snap;
 
 class CheckoutController extends Controller
@@ -124,7 +128,7 @@ class CheckoutController extends Controller
                     Cart::where('user_id', $user->id)->delete();
                 }
 
-                session()->forget(['order_source', 'product_id', 'size_id', 'quantity']);
+                Session::forget(['order_source', 'product_id', 'size_id', 'quantity']);
 
             } else {
                 $order = Order::create([
@@ -165,7 +169,7 @@ class CheckoutController extends Controller
                     Cart::where('user_id', $user->id)->delete();
                 }
 
-                session()->forget(['order_source', 'product_id', 'size_id', 'quantity']);
+                Session::forget(['order_source', 'product_id', 'size_id', 'quantity']);
             }
 
             // Build item details untuk Midtrans
@@ -218,12 +222,24 @@ class CheckoutController extends Controller
         }
     }
 
+
     public function handleNotification(Request $request)
     {
-        \Midtrans\Config::$serverKey = config('midtrans.server_key');
-        \Midtrans\Config::$isProduction = config('midtrans.is_production');
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
 
-        $notification = new \Midtrans\Notification();
+        try {
+            $notification = new Notification();
+        } catch (\Throwable $e) {
+            Log::error('Midtrans notification invalid payload', [
+                'error'   => $e->getMessage(),
+                'payload' => $request->getContent(),
+            ]);
+
+            return response()->json([
+                'message' => 'Invalid Midtrans notification payload',
+            ], 400);
+        }
 
         $orderId        = $notification->order_id;
         $transactionStatus = $notification->transaction_status;
@@ -235,13 +251,15 @@ class CheckoutController extends Controller
 
         $order = Order::with('orderItems')->find($realOrderId);
 
-        if (!$order) return response()->json(['message' => 'Order not found'], 404);
+        if (!$order) {
+            return response()->json(['message' => 'Order not found'], 404);
+        }
 
         if ($transactionStatus == 'capture') {
-        if ($fraudStatus == 'accept') {
-            $order->update(['status' => 'paid']);
-            $this->decrementStock($order); // ✅ kurangi stok
-        }
+            if ($fraudStatus == 'accept') {
+                $order->update(['status' => 'paid']);
+                $this->decrementStock($order); // ✅ kurangi stok
+            }
         } elseif ($transactionStatus == 'settlement') {
             $order->update(['status' => 'paid']);
             $this->decrementStock($order); // ✅ kurangi stok
@@ -277,10 +295,10 @@ class CheckoutController extends Controller
 
     public function createQris(Request $request)
     {
-        \Midtrans\Config::$serverKey = config('midtrans.server_key');
-        \Midtrans\Config::$isProduction = config('midtrans.is_production');
-        \Midtrans\Config::$isSanitized = true;
-        \Midtrans\Config::$is3ds = true;
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
 
         $order = Order::findOrFail($request->order_id);
 
@@ -295,7 +313,7 @@ class CheckoutController extends Controller
             ]
         ];
 
-        $response = \Midtrans\CoreApi::charge($params);
+        $response = CoreApi::charge($params);
 
         $qrUrl = $response->actions[0]->url ?? null;
 
@@ -307,10 +325,10 @@ class CheckoutController extends Controller
 
     public function createBcaVa(Request $request)
     {
-        \Midtrans\Config::$serverKey = config('midtrans.server_key');
-        \Midtrans\Config::$isProduction = config('midtrans.is_production');
-        \Midtrans\Config::$isSanitized = true;
-        \Midtrans\Config::$is3ds = true;
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
 
         $order = Order::findOrFail($request->order_id);
 
@@ -331,7 +349,7 @@ class CheckoutController extends Controller
             ],
         ];
 
-        $response = \Midtrans\CoreApi::charge($params);
+        $response = CoreApi::charge($params);
 
         $vaNumber = $response->va_numbers[0]->va_number ?? null;
 
@@ -345,10 +363,10 @@ class CheckoutController extends Controller
 
     public function createMandiriVa(Request $request)
     {
-        \Midtrans\Config::$serverKey = config('midtrans.server_key');
-        \Midtrans\Config::$isProduction = config('midtrans.is_production');
-        \Midtrans\Config::$isSanitized = true;
-        \Midtrans\Config::$is3ds = true;
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
 
         $order = Order::findOrFail($request->order_id);
 
@@ -364,7 +382,7 @@ class CheckoutController extends Controller
             ],
         ];
 
-        $response = \Midtrans\CoreApi::charge($params);
+        $response = CoreApi::charge($params);
 
         return response()->json([
             'bill_key'    => $response->bill_key,
@@ -376,10 +394,10 @@ class CheckoutController extends Controller
 
     public function createAlfamartVa(Request $request)
     {
-        \Midtrans\Config::$serverKey = config('midtrans.server_key');
-        \Midtrans\Config::$isProduction = config('midtrans.is_production');
-        \Midtrans\Config::$isSanitized = true;
-        \Midtrans\Config::$is3ds = true;
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
 
         $order = Order::findOrFail($request->order_id);
 
@@ -395,7 +413,7 @@ class CheckoutController extends Controller
             ],
         ];
 
-        $response = \Midtrans\CoreApi::charge($params);
+        $response = CoreApi::charge($params);
 
         return response()->json([
             'payment_code' => $response->payment_code,
@@ -406,10 +424,10 @@ class CheckoutController extends Controller
 
     public function createIndomaretVa(Request $request)
     {
-        \Midtrans\Config::$serverKey = config('midtrans.server_key');
-        \Midtrans\Config::$isProduction = config('midtrans.is_production');
-        \Midtrans\Config::$isSanitized = true;
-        \Midtrans\Config::$is3ds = true;
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
 
         $order = Order::findOrFail($request->order_id);
 
@@ -425,7 +443,7 @@ class CheckoutController extends Controller
             ],
         ];
 
-        $response = \Midtrans\CoreApi::charge($params);
+        $response = CoreApi::charge($params);
 
         return response()->json([
             'payment_code' => $response->payment_code,
@@ -436,7 +454,7 @@ class CheckoutController extends Controller
 
     public function cancelBuyNow()
     {
-        session()->forget(['order_source', 'product_id', 'size_id', 'quantity']);
+        Session::forget(['order_source', 'product_id', 'size_id', 'quantity']);
         return redirect()->back();
     }
 
@@ -521,7 +539,9 @@ class CheckoutController extends Controller
     private function decrementStock(Order $order)
     {
         // Cegah double decrement kalau notif datang 2x
-        if ($order->stock_decremented) return;
+        if ($order->stock_decremented) {
+            return;
+        }
 
         foreach ($order->orderItems as $item) {
             if ($item->size_id) {
