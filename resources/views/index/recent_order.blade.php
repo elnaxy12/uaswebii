@@ -43,7 +43,7 @@
 
                             <!-- price -->
                             <td class="text-xs">
-                                ${{ number_format($order->total, 0, ',', '.') }}
+                                Rp{{ number_format($order->total, 2, ',', '.') }}
                             </td>
 
                             <!-- status -->

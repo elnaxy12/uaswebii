@@ -11,9 +11,7 @@ use App\Models\OrderItem;
 use App\Models\Order;
 use App\Models\User;
 use App\Models\Product;
-
 use App\Models\ProductSize;
-
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -123,7 +121,7 @@ class DashboardController extends Controller
 
     }
 
-       public function ecommerce()
+    public function ecommerce()
     {
         $admin = Auth::guard('admin')->user();
 
@@ -144,8 +142,7 @@ class DashboardController extends Controller
         | ORDERS COUNT (DELIVERED ONLY)
         |--------------------------------------------------------------------------
         */
-        $todayOrders = Order::where('status', 'delivered')
-            ->whereDate('created_at', $today)
+        $todayOrders = Order::whereDate('created_at', $today)
             ->count();
 
         $yesterdayOrders = Order::where('status', 'delivered')
@@ -169,27 +166,36 @@ class DashboardController extends Controller
         | REVENUE (DELIVERED ONLY)
         |--------------------------------------------------------------------------
         */
-        $todayRevenue = OrderItem::whereHas('order', fn ($q) =>
-            $q->where('status', 'delivered')
-              ->whereDate('created_at', $today)
+        $todayRevenue = OrderItem::whereHas(
+            'order',
+            fn ($q) =>
+            $q->whereDate('created_at', $today)
         )->sum(DB::raw('price * quantity'));
 
-        $yesterdayRevenue = OrderItem::whereHas('order', fn ($q) =>
+        $yesterdayRevenue = OrderItem::whereHas(
+            'order',
+            fn ($q) =>
             $q->where('status', 'delivered')
               ->whereDate('created_at', $yesterday)
         )->sum(DB::raw('price * quantity'));
 
-        $lastWeekRevenue = OrderItem::whereHas('order', fn ($q) =>
+        $lastWeekRevenue = OrderItem::whereHas(
+            'order',
+            fn ($q) =>
             $q->where('status', 'delivered')
               ->whereBetween('created_at', [$lastWeekStart, $yesterday->endOfDay()])
         )->sum(DB::raw('price * quantity'));
 
-        $lastMonthRevenue = OrderItem::whereHas('order', fn ($q) =>
+        $lastMonthRevenue = OrderItem::whereHas(
+            'order',
+            fn ($q) =>
             $q->where('status', 'delivered')
               ->whereBetween('created_at', [$lastMonthStart, $yesterday->endOfDay()])
         )->sum(DB::raw('price * quantity'));
 
-        $last90DaysRevenue = OrderItem::whereHas('order', fn ($q) =>
+        $last90DaysRevenue = OrderItem::whereHas(
+            'order',
+            fn ($q) =>
             $q->where('status', 'delivered')
               ->whereBetween('created_at', [$last90DaysStart, $yesterday->endOfDay()])
         )->sum(DB::raw('price * quantity'));
@@ -199,7 +205,9 @@ class DashboardController extends Controller
         | TOTAL SOLD (UNIT) — ORDER ITEMS BASED
         |--------------------------------------------------------------------------
         */
-        $totalSold = OrderItem::whereHas('order', fn ($q) =>
+        $totalSold = OrderItem::whereHas(
+            'order',
+            fn ($q) =>
             $q->where('status', 'delivered')
         )->sum('quantity');
 
@@ -221,13 +229,13 @@ class DashboardController extends Controller
         |--------------------------------------------------------------------------
         */
         $salesValue = Product::joinSub(
-                ProductSize::select('product_id', DB::raw('SUM(stock) as remaining_stock'))
+            ProductSize::select('product_id', DB::raw('SUM(stock) as remaining_stock'))
                     ->groupBy('product_id'),
-                'ps',
-                'products.id',
-                '=',
-                'ps.product_id'
-            )
+            'ps',
+            'products.id',
+            '=',
+            'ps.product_id'
+        )
             ->sum(DB::raw('(products.stock - ps.remaining_stock) * products.price'));
 
         /*
@@ -273,9 +281,9 @@ class DashboardController extends Controller
         $end   = Carbon::now()->endOfMonth();
 
         $dailyOrders = Order::select(
-                DB::raw('DATE(created_at) as date'),
-                DB::raw('COUNT(*) as total_orders')
-            )
+            DB::raw('DATE(created_at) as date'),
+            DB::raw('COUNT(*) as total_orders')
+        )
             ->where('status', 'delivered')
             ->whereBetween('created_at', [$start, $end])
             ->groupBy('date')
@@ -370,12 +378,21 @@ class DashboardController extends Controller
         $admin  = Auth::guard('admin')->user();
         $status = $request->query('status');
 
+        $statusOrder = "CASE status 
+            WHEN 'pending' THEN 1 
+            WHEN 'paid' THEN 2 
+            WHEN 'shipped' THEN 3 
+            WHEN 'delivered' THEN 4 
+            WHEN 'cancelled' THEN 5 
+            ELSE 6 END";
+
         $orders = Order::with(['user', 'payment'])
             ->when(
                 in_array($status, ['pending', 'shipped', 'paid', 'delivered', 'cancelled']),
                 fn ($q) => $q->where('status', $status)
             )
-            ->latest()
+            ->orderByRaw($statusOrder)
+            ->orderBy('created_at', 'desc')
             ->get();
 
 
@@ -478,7 +495,7 @@ class DashboardController extends Controller
     }
 
     public function try()
-    {   
+    {
         $admin = Auth::guard('admin')->user();
         return view('payment.qrcode', compact('admin'));
     }

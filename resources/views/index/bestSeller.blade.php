@@ -26,7 +26,7 @@
 
                         <!-- Price -->
                         <td class="py-4 px-5">
-                            ${{ number_format($item->product->price, 0, ',', '.') }}
+                            Rp{{ number_format($item->product->price, 2, ',', '.') }}
                         </td>
 
                         <!-- Sold -->
@@ -36,7 +36,7 @@
 
                         <!-- Profit -->
                         <td class="py-4 px-5 font-semibold">
-                            ${{ number_format($item->total_sold * $item->product->price, 0, ',', '.') }}
+                            Rp{{ number_format($item->total_sold * $item->product->price, 2, ',', '.') }}
                         </td>
                     </tr>
                 @endforeach

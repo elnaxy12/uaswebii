@@ -18,7 +18,7 @@
                     <span class="text-xs tracking-widest font-extrabold ml-1">orders</span>
                 </h1>
                 <h2 class="capitalize text-sm text-gray-700 mt-1">
-                    <span class="text-green-600 font-bold">${{ number_format($stat['revenue'], 2) }}</span>
+                    <span class="text-green-600 font-bold">Rp{{ number_format($stat['revenue'], 2, ',', '.') }}</span>
                 </h2>
             </div>
         </div>
