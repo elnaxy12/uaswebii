@@ -9,7 +9,7 @@
   <!-- Favicon -->
   <link rel="shortcut icon" href="{{ asset('img/logo.png') }}" type="image/x-icon">
   {{-- Css and JS --}}
-  @vite(['resources/css/style.css', 'resources/js/app.js, resources/css/app.css'])
+  @vite(['resources/css/style.css', 'resources/js/app.js'])
   <title>Welcome To Cleopatra | Admin</title>
 </head>
 
