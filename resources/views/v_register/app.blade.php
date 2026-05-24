@@ -116,6 +116,8 @@
                                     <option value="" disabled selected class="bg-gray-900">City</option>
                                 </select>
 
+                                <input type="hidden" name="city_name" id="city_name">
+
                                 <!-- Spinner -->
                                 <div id="city_loading" class="hidden absolute right-2 top-1/2 -translate-y-1/2">
                                     <div
@@ -163,7 +165,7 @@
 
     {{-- Scripts tetap sama --}}
     <script>
-        fetch('/api/provinces')
+        fetch('/uaswebii/public/api/provinces')
             .then(res => res.json())
             .then(data => {
                 const select = document.getElementById('province_select');
@@ -204,7 +206,7 @@
 
             cityLoading.classList.remove('hidden');
 
-            fetch(`/api/cities/${provinceId}`)
+            fetch(`/uaswebii/public/api/cities/${provinceId}`)
                 .then(res => res.json())
                 .then(data => {
 

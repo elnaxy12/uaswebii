@@ -97,7 +97,7 @@
                 </div>
                 <div class="flex flex-col items-center gap-2 flex-shrink-0">
                     <a class="text-xs whitespace-nowrap hover:text-blue-900 transition-colors"
-                        href="/register">Create an account</a>
+                        href="{{ route('register') }}">Create an account</a>
                     <button type="button"
                         class="close-btn hidden md:inline border px-3 py-1 text-xs cursor-pointer hover:bg-black hover:text-white hover:border-black transition-all duration-200">
                         Close Tab
