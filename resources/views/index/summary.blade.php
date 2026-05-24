@@ -38,8 +38,8 @@
                         </p>
                     </div>
 
-                    <div class="text-sm font-medium text-green-500 truncate" title="{{ number_format($item->price) }}">
-                        + ${{ number_format($item->price * $item->quantity, 2) }}
+                    <div class="text-sm font-medium text-green-500 truncate" title="{{ number_format($item->price, 2, ',', '.') }}">
+                        + Rp{{ number_format($item->price * $item->quantity, 2, ',', '.') }}
                     </div>
                 </div>
             @empty
@@ -58,7 +58,7 @@
             </strong>
         
             <p class="text-xs text-gray-500 mt-1">
-                Total Sales: ${{ number_format($salesValue, 0, ',', '.') }}
+                Total Sales: Rp{{ number_format($salesValue, 2, ',', '.') }}
             </p>
         
             <div class="bg-gray-300 h-2 rounded-full mt-2 overflow-hidden">
