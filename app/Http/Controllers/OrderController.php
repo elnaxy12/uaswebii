@@ -51,7 +51,7 @@ class OrderController extends Controller
 
             $order = Order::create([
                 'user_id' => $user->id,
-                'status' => 'waiting_payment',
+                'status' => 'pending',
                 'payment_expired_at' => now()->addSeconds(30),
                 'total' => null,
             ]);
@@ -90,7 +90,7 @@ class OrderController extends Controller
             abort(403);
         }
 
-        if (!in_array($order->status, ['waiting_payment', 'pending'])) {
+        if ($order->status !== 'pending') {
             return back()->with('error', 'Order tidak bisa dibatalkan');
         }
 
@@ -132,7 +132,7 @@ class OrderController extends Controller
     {
         $order = Order::with('user')->findOrFail($orderId);
 
-        if (!in_array($order->status, ['pending', 'waiting_payment'])) {
+        if ($order->status !== 'pending') {
             return back()->with('error', 'Order sudah diproses.');
         }
 
@@ -143,7 +143,7 @@ class OrderController extends Controller
 
         if (!$order->payment_expired_at) {
             $order->update([
-                'status' => 'waiting_payment',
+                'status' => 'pending',
                 'payment_expired_at' => now()->addMinutes(15),
             ]);
 

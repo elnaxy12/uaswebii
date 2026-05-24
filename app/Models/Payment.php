@@ -12,6 +12,14 @@ class Payment extends Model
         'payment_amount',
         'payment_status',
         'transaction_id',
+        'payment_type',
+        'transaction_status',
+        'transaction_time',
+        'settlement_time',
+        'fraud_status',
+        'issuer',
+        'acquirer',
+        'currency',
     ];
 
     public function order()

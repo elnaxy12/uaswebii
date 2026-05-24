@@ -223,54 +223,64 @@ class CheckoutController extends Controller
     }
 
 
-    public function handleNotification(Request $request)
-    {
-        Config::$serverKey = config('midtrans.server_key');
-        Config::$isProduction = config('midtrans.is_production');
+public function handleNotification(Request $request)
+{
+    Config::$serverKey = config('midtrans.server_key');
+    Config::$isProduction = config('midtrans.is_production');
 
-        try {
-            $notification = new Notification();
-        } catch (\Throwable $e) {
-            Log::error('Midtrans notification invalid payload', [
-                'error'   => $e->getMessage(),
-                'payload' => $request->getContent(),
-            ]);
-
-            return response()->json([
-                'message' => 'Invalid Midtrans notification payload',
-            ], 400);
-        }
-
-        $orderId        = $notification->order_id;
-        $transactionStatus = $notification->transaction_status;
-        $fraudStatus    = $notification->fraud_status;
-
-        // Ambil order_id asli (karena kita pakai prefix QRIS-{id}-{time})
-        preg_match('/(\d+)-\d+$/', $orderId, $matches);
-        $realOrderId = $matches[1] ?? $orderId;
-
-        $order = Order::with('orderItems')->find($realOrderId);
-
-        if (!$order) {
-            return response()->json(['message' => 'Order not found'], 404);
-        }
-
-        if ($transactionStatus == 'capture') {
-            if ($fraudStatus == 'accept') {
-                $order->update(['status' => 'paid']);
-                $this->decrementStock($order); // ✅ kurangi stok
-            }
-        } elseif ($transactionStatus == 'settlement') {
-            $order->update(['status' => 'paid']);
-            $this->decrementStock($order); // ✅ kurangi stok
-        } elseif ($transactionStatus == 'pending') {
-            $order->update(['status' => 'pending']);
-        } elseif (in_array($transactionStatus, ['deny', 'expire', 'cancel'])) {
-            $order->update(['status' => 'cancelled']);
-        }
-
-        return response()->json(['message' => 'OK']);
+    try {
+        $notification = new Notification();
+    } catch (\Throwable $e) {
+        Log::error('Midtrans notification invalid payload', [
+            'error'   => $e->getMessage(),
+            'payload' => $request->getContent(),
+        ]);
+        return response()->json(['message' => 'Invalid Midtrans notification payload'], 400);
     }
+
+    $orderId           = $notification->order_id;
+    $transactionStatus = $notification->transaction_status;
+    $fraudStatus       = $notification->fraud_status;
+
+    preg_match('/(\d+)-\d+$/', $orderId, $matches);
+    $realOrderId = $matches[1] ?? $orderId;
+
+    $order = Order::with('orderItems')->find($realOrderId);
+
+    if (!$order) {
+        return response()->json(['message' => 'Order not found'], 404);
+    }
+
+    // Update payment dengan transaction_id dari Midtrans
+    Payment::where('order_id', $order->id)->update([
+        'transaction_id'     => $notification->transaction_id,
+        'payment_type'       => $notification->payment_type,
+        'transaction_status' => $notification->transaction_status,
+        'transaction_time'   => $notification->transaction_time,
+        'settlement_time'    => $notification->settlement_time ?? null,
+        'fraud_status'       => $notification->fraud_status ?? null,
+        'issuer'             => $notification->issuer ?? null,
+        'acquirer'           => $notification->acquirer ?? null,
+        'currency'           => $notification->currency ?? null,
+        'payment_status'     => $transactionStatus,
+    ]);
+
+    if ($transactionStatus == 'capture') {
+        if ($fraudStatus == 'accept') {
+            $order->update(['status' => 'paid']);
+            $this->decrementStock($order);
+        }
+    } elseif ($transactionStatus == 'settlement') {
+        $order->update(['status' => 'paid']);
+        $this->decrementStock($order);
+    } elseif ($transactionStatus == 'pending') {
+        $order->update(['status' => 'pending']);
+    } elseif (in_array($transactionStatus, ['deny', 'expire', 'cancel'])) {
+        $order->update(['status' => 'cancelled']);
+    }
+
+    return response()->json(['message' => 'OK']);
+}
 
     public function buyNow(Request $request)
     {

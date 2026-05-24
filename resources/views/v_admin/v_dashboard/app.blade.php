@@ -704,7 +704,7 @@
                         </div>
                         <div class="flex flex-col">
                             <h1 class="font-semibold text-xs truncate">
-                                {{ $canceledOrders }} Canceled Orders
+                                {{ $cancelledOrders }} Cancelled Orders
                             </h1>
                         </div>
                     </div>

@@ -35,7 +35,7 @@
 
     <!-- order dropdown -->
     @php
-      $orderActive = request()->routeIs('admin.dashboard.pendingOrder*');
+$orderActive = request()->routeIs('admin.dashboard.pendingOrder*');
     @endphp
     
     <div class="mb-3">
@@ -62,15 +62,10 @@
           class="{{ request('status') == 'pending' ? 'active-filter' : 'hover:text-teal-600' }} p-1">
           Pending ({{ $pendingOrders }})
         </a>
-    
-        <a href="{{ route('admin.dashboard.pendingOrder', ['status' => 'waiting_payment']) }}"
-          class="{{ request('status') == 'waiting_payment' ? 'active-filter' : 'hover:text-teal-600' }} p-1">
-          Waiting Payment ({{ $waitingPaymentOrders }})
-        </a>
 
-        <a href="{{ route('admin.dashboard.pendingOrder', ['status' => 'waiting_verification']) }}"
-          class="{{ request('status') == 'waiting_verification' ? 'active-filter' : 'hover:text-teal-600' }} p-1">
-          Waiting Verification ({{ $waitingVerificationOrders }})
+        <a href="{{ route('admin.dashboard.pendingOrder', ['status' => 'paid']) }}"
+          class="{{ request('status') == 'paid' ? 'active-filter' : 'hover:text-teal-600' }} p-1">
+          Paid ({{ $paidOrders }})
         </a>
     
         <a href="{{ route('admin.dashboard.pendingOrder', ['status' => 'shipped']) }}"
@@ -83,9 +78,9 @@
           Delivered ({{ $deliveredOrders }})
         </a>
     
-        <a href="{{ route('admin.dashboard.pendingOrder', ['status' => 'canceled']) }}"
-          class="{{ request('status') == 'canceled' ? 'active-filter' : 'hover:text-teal-600' }} p-1">
-          Canceled ({{ $canceledOrders }})
+        <a href="{{ route('admin.dashboard.pendingOrder', ['status' => 'cancelled']) }}"
+          class="{{ request('status') == 'cancelled' ? 'active-filter' : 'hover:text-teal-600' }} p-1">
+          Cancelled ({{ $cancelledOrders }})
         </a>
       </div>
     </div>

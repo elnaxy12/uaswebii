@@ -8,19 +8,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexch arts.css">
-    <!-- Styles lainnya -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.css">
     @stack('styles')
 </head>
 
 <body>
-    <!-- strat wrapper -->
     <div class="flex h-screen relative">
         @include('base.sidebar')
         <div class="bg-white rounded-xl w-full">
-            <h2 class="text-sm font-bold mb-4 p-5">
-                Orders
-            </h2>
+            <h2 class="text-sm font-bold mb-4 p-5">Orders</h2>
+
+            {{-- Filter Status --}}
+            <div class="px-5 mb-4 flex gap-2">
+                <a href="{{ route('admin.dashboard.pendingOrder') }}"
+                    class="text-xs px-3 py-1 rounded border {{ empty(request('status')) ? 'bg-gray-800 text-white' : 'text-gray-600 hover:bg-gray-100' }}">
+                    All ({{ $totalOrders }})
+                </a>
+                <a href="{{ route('admin.dashboard.pendingOrder', ['status' => 'pending']) }}"
+                    class="text-xs px-3 py-1 rounded border {{ request('status') == 'pending' ? 'bg-yellow-500 text-white' : 'text-gray-600 hover:bg-gray-100' }}">
+                    Pending ({{ $pendingOrders }})
+                </a>
+                <a href="{{ route('admin.dashboard.pendingOrder', ['status' => 'paid']) }}"
+                    class="text-xs px-3 py-1 rounded border {{ request('status') == 'paid' ? 'bg-orange-500 text-white' : 'text-gray-600 hover:bg-gray-100' }}">
+                    Paid ({{ $paidOrders }})
+                </a>
+                <a href="{{ route('admin.dashboard.pendingOrder', ['status' => 'shipped']) }}"
+                    class="text-xs px-3 py-1 rounded border {{ request('status') == 'shipped' ? 'bg-blue-500 text-white' : 'text-gray-600 hover:bg-gray-100' }}">
+                    Shipped ({{ $shippedOrders }})
+                </a>
+                <a href="{{ route('admin.dashboard.pendingOrder', ['status' => 'delivered']) }}"
+                    class="text-xs px-3 py-1 rounded border {{ request('status') == 'delivered' ? 'bg-green-500 text-white' : 'text-gray-600 hover:bg-gray-100' }}">
+                    Delivered ({{ $deliveredOrders }})
+                </a>
+                <a href="{{ route('admin.dashboard.pendingOrder', ['status' => 'cancelled']) }}"
+                    class="text-xs px-3 py-1 rounded border {{ request('status') == 'cancelled' ? 'bg-red-500 text-white' : 'text-gray-600 hover:bg-gray-100' }}">
+                    Cancelled ({{ $cancelledOrders }})
+                </a>
+            </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead class="text-gray-500 border-b text-left">
@@ -36,180 +60,176 @@
                     </thead>
                     <tbody>
                         @forelse ($orders as $order)
+                            @php
+                                $method = $order->last_payment_method;
+                                $isCodOrEwallet = in_array($method, ['cod', 'ewallet']);
+                                $isTransfer = !$isCodOrEwallet;
+                            @endphp
                             <tr class="border-b">
                                 <td class="p-3">#{{ $order->id }}</td>
-                                <td class="p-3">{{ $order->user_id}}</td>
-                                <td class="p-3">${{ number_format($order->total, 0, ',', '.') }}</td>
+                                <td class="p-3">{{ $order->user_id }}</td>
+                                <td class="p-3">Rp {{ number_format($order->total, 2, ',', '.') }}</td>
                                 <td class="p-3">
                                     <span class="px-2 py-1 rounded text-xs
-                                                    @if($order->status == 'pending') bg-yellow-100 text-yellow-600
-                                                    @elseif($order->status == 'shipped') bg-blue-100 text-blue-600
-                                                    @elseif($order->status == 'delivered') bg-green-100 text-green-600
-                                                    @else bg-red-100 text-red-600 @endif">
-                                        {{ ucfirst($order->status) }}
+                                                                        @if($order->status === 'pending') bg-yellow-100 text-yellow-600
+                                                                        @elseif($order->status === 'paid') bg-orange-100 text-orange-600
+                                                                        @elseif($order->status === 'shipped') bg-blue-100 text-blue-600
+                                                                        @elseif($order->status === 'delivered') bg-green-100 text-green-600
+                                                                        @else bg-red-100 text-red-600 @endif">
+                                        {{ ucfirst(str_replace('_', ' ', $order->status)) }}
                                     </span>
                                 </td>
                                 <td class="p-3 text-xs">
-                                    {{ strtoupper($order->payment->payment_method ?? '-') }}
+                                    {{ strtoupper($method ?? '-') }}
                                 </td>
                                 <td class="p-3">{{ $order->created_at->format('d M Y') }}</td>
                                 <td class="p-3 text-center">
 
-                                    {{-- CANCELED (GLOBAL - READ ONLY) --}}
-                                    @if ($order->status === 'canceled')
-                                        <span class="text-xs text-red-600 font-semibold">Canceled</span>
+                                    @if ($order->status === 'cancelled')
+                                        {{-- CANCELLED --}}
+                                        <span class="text-xs text-red-600 font-semibold">Cancelled</span>
 
-                                        {{-- COD --}}
-                                    @elseif ($order->payment?->payment_method === 'cod')
+                                    @elseif ($order->status === 'delivered')
+                                        {{-- DELIVERED --}}
+                                        <span class="text-xs text-green-600 font-semibold">Delivered</span>
 
-                                        @if ($order->status === 'pending')
+                                    @elseif ($order->status === 'pending')
+                                        {{-- PENDING --}}
+                                        @if ($isCodOrEwallet)
+                                            {{-- COD / Ewallet: langsung bisa diship --}}
                                             <button onclick="openShippingModal({{ $order->id }})"
                                                 class="bg-purple-600 text-white text-xs px-3 py-2 rounded w-full">
                                                 Mark as Shipped
                                             </button>
-
-                                        @elseif ($order->status === 'shipped')
-                                            <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST">
+                                        @else
+                                            {{-- Transfer / VA: hanya bisa cancel --}}
+                                            <form action="{{ route('admin.order.updateStatus', $order->id) }}" method="POST">
                                                 @csrf
-                                                @method('PATCH')
-                                                <input type="hidden" name="status" value="delivered">
-                                                <button class="bg-green-600 text-white text-xs px-3 py-1 rounded">
-                                                    Confirm Delivered
+                                                @method('PUT')
+                                                <input type="hidden" name="status" value="cancelled">
+                                                <button type="submit"
+                                                    onclick="return confirm('Yakin cancel order #{{ $order->id }}?')"
+                                                    class="bg-red-600 text-white text-xs px-3 py-2 rounded w-full">
+                                                    Cancel
                                                 </button>
                                             </form>
-                                        @else
-                                            <span class="text-xs text-gray-400">{{ ucfirst($order->status) }}</span>
                                         @endif
 
-                                        {{-- E-WALLET --}}
-                                    @elseif ($order->payment?->payment_method === 'ewallet')
+                                    @elseif ($order->status === 'paid')
+                                        {{-- WAITING VERIFICATION: hanya transfer/VA yang sampai sini --}}
+                                        <div class="flex flex-col gap-1">
+                                            <button data-id="{{ $order->id }}"
+                                                class="verifyOpen bg-orange-600 text-white text-xs px-3 py-2 rounded w-full">
+                                                Check Payment
+                                            </button>
+                                        </div>
 
-                                        @if ($order->status === 'pending')
-                                            <button onclick="openShippingModal({{ $order->id }})"
-                                                class="bg-purple-600 text-white text-xs px-3 py-2 rounded w-full">
-                                                Mark as Shipped </button>
+                                    @elseif ($order->status === 'shipped')
+                                        {{-- SHIPPED --}}
+                                        <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="status" value="delivered">
+                                            <button class="bg-green-600 text-white text-xs px-3 py-1 rounded w-full">
+                                                Confirm Delivered
+                                            </button>
+                                        </form>
 
-                                        @elseif ($order->status === 'shipped')
-                                            <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST">
-                                                @csrf
-                                                @method('PATCH')
-                                                <input type="hidden" name="status" value="delivered">
-                                                <button class="bg-green-600 text-white text-xs px-3 py-1 rounded">
-                                                    Confirm Delivered
-                                                </button>
-                                            </form>
-                                        @else
-                                            <span class="text-xs text-gray-400">{{ ucfirst($order->status) }}</span>
-                                        @endif
-
-                                        {{-- TRANSFER / VA --}}
                                     @else
+                                        <span class="text-xs text-gray-400">-</span>
+                                    @endif
 
-                                        @if ($order->status === 'pending')
-                                            <form action="{{ route('admin.orders.sendPaymentEmail', $order->id) }}" method="POST">
-                                                @csrf
-                                                <button class="bg-blue-600 text-white text-xs px-3 py-2 rounded w-full">
-                                                    Send Payment Email
-                                                </button>
-                                            </form>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="p-4 text-center text-gray-500">No orders yet</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
 
-                                            @elseif ($order->status === 'waiting_payment')
-                                                <span class="text-xs text-gray-400">Waiting Payment</span>
+                {{-- Verify Modal --}}
+                @foreach ($orders as $order)
+                    <div id="verifyShow-{{ $order->id }}"
+                        class="hidden bg-white rounded-xl border border-gray-200 p-6 w-[520px] font-sans"
+                        style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:50;">
 
-                                            @elseif ($order->status === 'waiting_verification')
-                                                <button data-id="{{ $order->id }}"
-                                                    class="verifyOpen bg-orange-600 text-white text-xs px-3 py-2 rounded w-full">Check</button>
-                                            @endif
-                                        @endif
-                                            </td>
-                                        </tr>
-                                        @empty
-                                        <tr>
-                                            <td colspan="6" class="p-4 text-center text-gray-500">No orders yet</td>
-                                        </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
+                        <div class="relative">
 
-                @foreach ($orders as $order) 
-                <div id="verifyShow-{{ $order->id }}" class="hidden bg-white flex flex-col space-y-2" style="
-                                position:absolute;
-                                top:50%;
-                                left:50%;
-                                transform:translate(-50%, -50%);
-                                border:1px solid #e5e7eb;
-                                border-radius:8px;
-                                padding:24px;
-                                gap:16px;
-                            ">
+                            <button
+                                class="verifyClose absolute top-4 right-0 bg-red-100 text-red-600 border border-red-200 rounded-lg px-3 py-1 text-xs"
+                                data-id="{{ $order->id }}">✕</button>
 
-                    <button class="verifyClose text-md bg-red-500 rounded px-3 py-1 absolute" 
-                    style="right: 1rem; top: 1rem;" data-id="{{ $order->id }}">
-                        X
-                    </button>
+                            <p class="text-sm font-semibold mb-5">Payment Verification</p>
 
-                    <h3 class="text-lg">
-                        Tab Payment Verification
-                    </h3>
+                            <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-xs mb-5 border border-gray-200 p-4">
+                                <span class="text-gray-400">Order ID</span><span>#{{ $order->id }}</span>
+                                <span class="text-gray-400">Invoice</span><span>{{ $order->invoice_number ?? '-' }}</span>
+                                <span class="text-gray-400">User</span><span>{{ $order->user->username }}</span>
+                                <span class="text-gray-400">Name</span><span>{{ $order->first_name }}
+                                    {{ $order->last_name }}</span>
+                                <span class="text-gray-400">Email</span><span>{{ $order->email ?? '-' }}</span>
+                                <span class="text-gray-400">Phone</span><span>{{ $order->phone ?? '-' }}</span>
+                                <span class="text-gray-400">Address</span><span>{{ $order->address ?? '-' }}</span>
+                                <span class="text-gray-400">Total</span><span class="font-medium">Rp
+                                    {{ number_format($order->total, 0, ',', '.') }}</span>
+                                <span class="text-gray-400">Status</span>
+                                <span><span
+                                        class="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded">{{ ucfirst($order->status) }}</span></span>
+                                <span class="text-gray-400">Payment
+                                    method</span><span>{{ strtoupper($order->last_payment_method ?? '-') }}</span>
+                                <span class="text-gray-400">Shipping
+                                    courier</span><span>{{ $order->shipping_courier ?? '-' }}</span>
+                                <span class="text-gray-400">Shipping
+                                    cost</span><span>{{ $order->shipping_cost ? 'Rp ' . number_format($order->shipping_cost, 0, ',', '.') : '-' }}</span>
+                                <span class="text-gray-400">Order
+                                    date</span><span>{{ $order->created_at->format('d M Y, H:i') }}</span>
+                            </div>
 
-                    {{-- Informasi Order --}}
-                    <div class="grid grid-cols-3 text-xs space-y-2 text-left px-2">
-                        <p><b>Order ID</b></p>
-                        <p>:</p>
-                        <p>#{{ $order->id }}</p>
-                        <p><b>User</b></p>
-                        <p>:</p>
-                        <p>{{ $order->user->username }}</p>
-                        <p><b>Total</b></p>
-                        <p>:</p>
-                        <p>{{ number_format($order->total, 0, ',', '.') }}</p>
-                        <p><b>Payment Method</b></p>
-                        <p>:</p> 
-                        <p>{{ $order->payment->payment_method ?? '-' }}</p>
-                        <p><b>Sender Name</b></p>
-                        <p>:</p>
-                        <p>{{ $order->sender_name ?? '-' }}</p>
-                        <p><b>Payment Date</b></p>
-                        <p>:</p>
-                        <p> {{ $order->payment?->created_at?->format('d M Y, H:i') ?? '-' }}</p>
+                            <div class="bg-gray-50 rounded-lg p-4 text-xs mb-5 border">
+                                <p class="text-gray-400 uppercase tracking-wider text-[11px] font-medium mb-3">Midtrans
+                                    payment
+                                    info</p>
+                                @if ($order->payment)
+                                    <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+                                        <span class="text-gray-400">Transaction ID</span>
+                                        <span class="font-mono text-[11px]">{{ $order->payment->transaction_id ?? '-' }}</span>
+                                        <span class="text-gray-400">Method</span>
+                                        <span>{{ strtoupper($order->payment->payment_method ?? '-') }}</span>
+                                        <span class="text-gray-400">Amount</span>
+                                        <span>Rp
+                                            {{ number_format($order->payment->payment_amount ?? $order->total, 0, ',', '.') }}</span>
+                                        <span class="text-gray-400">Status</span>
+                                        <span
+                                            class="text-green-600 font-medium">{{ ucfirst($order->payment->payment_status ?? '-') }}</span>
+                                        <span class="text-gray-400">Paid at</span>
+                                        <span>{{ $order->payment->updated_at?->format('d M Y, H:i') ?? '-' }}</span>
+                                    </div>
+                                @else
+                                    <p class="text-gray-400">Belum ada data pembayaran</p>
+                                @endif
+                            </div>
+
+                            <form action="{{ route('admin.order.updateStatus', $order->id) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <input type="hidden" name="status" value="shipped">
+                                <button type="submit"
+                                    class="w-full bg-green-600 hover:bg-green-700 text-white text-xs font-medium py-3 rounded-lg transition">
+                                    ✔ Paid — Mark as Shipped
+                                </button>
+                            </form>
+                        </div>
                     </div>
-
-                    {{-- Informasi Payment --}}
-                    <div class="bg-white p-4 flex justify-center">
-                        @if ($order->payment_proof)
-                            <a style="width: 16rem;" href="{{ asset('storage/' . $order->payment_proof) }}" target="_blank">
-                                <img
-                                    src="{{ asset('storage/' . $order->payment_proof) }}"
-                                    class="hover:scale-105 transition"
-                                >
-                            </a>
-                        @else
-                            <p class="text-gray-500">Belum ada bukti pembayaran</p>
-                        @endif
-                    </div>
-
-                    {{-- Form Update Status --}}
-                    <form action="{{ route('admin.order.updateStatus', $order->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-
-                        <input type="hidden" name="status" value="shipped">
-
-                        <button type="submit"
-                            class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">
-                            ✔ Paid
-                        </button>
-                    </form>
-
-                </div>
                 @endforeach
 
-                <div id="shippingModal" class="fixed inset-0 bg-black bg-opacity-50 hidden">
+                {{-- Shipping Modal --}}
+                <div id="shippingModal" class="fixed inset-0 bg-black bg-opacity-50 hidden" style="z-index:40;">
                     <div class="bg-white p-4 rounded w-96 mx-auto mt-20">
                         <form method="POST" id="shippingForm">
                             @csrf
                             @method('PATCH')
-
                             <input type="hidden" name="status" value="shipped">
                             <input name="shipping_service" placeholder="Kurir" required
                                 class="w-full mb-2 border p-2 outline-none">
@@ -218,13 +238,11 @@
                             <input type="date" name="shipped_at" required class="w-full mb-2 border p-2 outline-none">
                             <input type="date" name="estimated_arrival" required
                                 class="w-full mb-2 border p-2 outline-none">
-
                             <div class="flex justify-between">
                                 <button class="text-sm py-1 px-2" type="button"
                                     onclick="closeShippingModal()">Cancel</button>
-                                <button class="bg-purple-600 text-white px-3 py-1 rounded text-sm">
-                                    Confirm Shipped
-                                </button>
+                                <button class="bg-purple-600 text-white px-3 py-1 rounded text-sm">Confirm
+                                    Shipped</button>
                             </div>
                         </form>
                     </div>
@@ -232,27 +250,23 @@
 
                 <script>
                     function openShippingModal(orderId) {
-                        const form = document.getElementById('shippingForm');
-                        form.action = `/admin/order/${orderId}/status`;
+                        document.getElementById('shippingForm').action = `/admin/order/${orderId}/status`;
                         document.getElementById('shippingModal').classList.remove('hidden');
                     }
 
                     function closeShippingModal() {
                         document.getElementById('shippingModal').classList.add('hidden');
                     }
-                </script>
-                <script>
+
                     document.querySelectorAll('.verifyOpen').forEach(btn => {
                         btn.addEventListener('click', () => {
-                            const id = btn.dataset.id;
-                            document.getElementById('verifyShow-' + id).classList.remove('hidden');
+                            document.getElementById('verifyShow-' + btn.dataset.id).classList.remove('hidden');
                         });
                     });
 
                     document.querySelectorAll('.verifyClose').forEach(btn => {
                         btn.addEventListener('click', () => {
-                            const id = btn.dataset.id;
-                            document.getElementById('verifyShow-' + id).classList.add('hidden');
+                            document.getElementById('verifyShow-' + btn.dataset.id).classList.add('hidden');
                         });
                     });
                 </script>

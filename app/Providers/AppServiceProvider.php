@@ -26,11 +26,10 @@ class AppServiceProvider extends ServiceProvider
             $view->with([
                 'totalOrders'     => Order::count(),
                 'pendingOrders'   => Order::where('status', 'pending')->count(),
-                'waitingPaymentOrders'  => Order::where('status', 'waiting_payment')->count(),
-                'waitingVerificationOrders'   => Order::where('status', 'waiting_verification')->count(),
+                'paidOrders'      => Order::where('status', 'paid')->count(),
                 'shippedOrders'   => Order::where('status', 'shipped')->count(),
                 'deliveredOrders' => Order::where('status', 'delivered')->count(),
-                'canceledOrders'  => Order::where('status', 'canceled')->count(),
+                'cancelledOrders'  => Order::where('status', 'cancelled')->count(),
             ]);
         });
 

@@ -78,7 +78,7 @@ class Order extends Model
 
     public function cancelAndRestoreStock($status = 'expired')
     {
-        if ($this->status !== 'waiting_payment') {
+        if ($this->status !== 'pending') {
             return;
         }
 

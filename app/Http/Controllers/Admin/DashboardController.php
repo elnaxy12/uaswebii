@@ -68,7 +68,7 @@ class DashboardController extends Controller
         $orderCount = Order::where('status', Order::STATUS_PENDING)->count();
         $totalQuantity = OrderItem::sum('quantity');
         $totalUsers    = User::count();
-        $canceledOrders  = Order::where('status', 'canceled')->count();
+        $cancelledOrders  = Order::where('status', 'cancelled')->count();
         $productStock = DB::table('products')->sum('stock');
         $sizeStock    = DB::table('product_sizes')->sum('stock');
         $selisih      = $productStock - $sizeStock;
@@ -109,7 +109,7 @@ class DashboardController extends Controller
             'orderCount',
             'totalQuantity',
             'totalUsers',
-            'canceledOrders',
+            'cancelledOrders',
             'productCount',
             'selisih',
             'persentase',
@@ -372,11 +372,11 @@ class DashboardController extends Controller
 
         $orders = Order::with(['user', 'payment'])
             ->when(
-                in_array($status, ['pending', 'shipped', 'waiting_payment', 'waiting_verification', 'delivered', 'canceled']),
+                in_array($status, ['pending', 'shipped', 'paid', 'delivered', 'cancelled']),
                 fn ($q) => $q->where('status', $status)
             )
             ->latest()
-            ->paginate(10);
+            ->get();
 
 
         return view('v_admin.v_data.v_order.app', [
@@ -385,11 +385,10 @@ class DashboardController extends Controller
             'status'          => $status ?? null,
             'totalOrders'     => Order::count(),
             'pendingOrders'   => Order::where('status', 'pending')->count(),
-            'waitingPaymentOrders'   => Order::where('status', 'waiting_payment')->count(),
-            'waitingVerificationOrders'   => Order::where('status', 'waiting_verification')->count(),
+            'paidOrders'      => Order::where('status', 'paid')->count(),
             'shippedOrders'   => Order::where('status', 'shipped')->count(),
             'deliveredOrders' => Order::where('status', 'delivered')->count(),
-            'canceledOrders'  => Order::where('status', 'canceled')->count(),
+            'cancelledOrders'  => Order::where('status', 'cancelled')->count(),
         ]);
     }
 
@@ -397,7 +396,7 @@ class DashboardController extends Controller
     public function updateOrderStatus(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|in:pending,waiting_payment,paid,shipped,delivered,canceled',
+            'status' => 'required|in:pending,paid,shipped,delivered,cancelled',
             'shipping_service' => 'nullable|string|max:50',
             'tracking_number' => 'nullable|string|max:100',
             'shipped_at' => 'nullable|date',

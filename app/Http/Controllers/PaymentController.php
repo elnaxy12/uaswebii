@@ -14,7 +14,7 @@ class PaymentController extends Controller
     public function confirm(Order $order)
     {
         // Cegah akses kalau status tidak valid
-        if (!in_array($order->status, ['pending', 'waiting_payment'])) {
+        if ($order->status !== 'pending') {
             return redirect('/')
                 ->with('error', 'Order tidak dapat dikonfirmasi.');
         }
@@ -38,7 +38,7 @@ class PaymentController extends Controller
     public function submit(Request $request, Order $order)
     {
         // Cegah akses kalau status tidak valid
-        if ($order->status !== 'waiting_payment') {
+        if ($order->status !== 'pending') {
             return back()->with('error', 'Status order tidak valid.');
         }
 

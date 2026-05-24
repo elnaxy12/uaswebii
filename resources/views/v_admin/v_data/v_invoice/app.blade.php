@@ -31,10 +31,12 @@
                                 <p class="text-xs text-gray-500">{{ $order->created_at->format('d M Y H:i') }}</p>
                             </div>
                             <span class="text-xs px-2 py-1 rounded
-                                @if($order->status == 'waiting_payment') bg-yellow-100 text-yellow-700
-                                @elseif($order->status == 'paid') bg-green-100 text-green-700
-                                @elseif($order->status == 'canceled') bg-red-100 text-red-700
-                                @else bg-gray-100 text-gray-600 @endif">
+                                    @if($order->status == 'pending') bg-yellow-100 text-yellow-700
+                                    @elseif($order->status == 'delivered') bg-green-100 text-green-700
+                                    @elseif($order->status == 'cancelled') bg-red-100 text-red-700
+                                    @elseif($order->status == 'shipped') bg-blue-100 text-blue-700
+                                    @elseif($order->status == 'waiting_verification') bg-orange-100 text-orange-700
+                                    @else bg-gray-100 text-gray-600 @endif">
                                 {{ strtoupper(str_replace('_', ' ', $order->status)) }}
                             </span>
                         </div>
@@ -69,11 +71,12 @@
                                 <div>
                                     :
                                     <span class="
-                                            @if($order->status == 'pending') text-yellow-700
-                                            @elseif($order->status == 'waiting_payment') text-orange-700
-                                            @elseif($order->status == 'paid') text-green-700
-                                            @elseif($order->status == 'canceled') text-red-700
-                                            @else text-gray-600 @endif">
+                                        @if($order->status == 'pending') text-yellow-700
+                                        @elseif($order->status == 'waiting_verification') text-orange-700
+                                        @elseif($order->status == 'shipped') text-blue-700
+                                        @elseif($order->status == 'delivered') text-green-700
+                                        @elseif($order->status == 'cancelled') text-red-700
+                                        @else text-gray-600 @endif">
                                         {{ ucfirst(str_replace('_', ' ', $order->status)) }}
                                     </span>
                                 </div>
@@ -124,7 +127,8 @@
 
                             {{-- TOTAL --}}
                             <div class="text-right font-medium flex space-x-2 items-center">
-                                <a href="{{ route('invoice.preview', $order->id) }}" class="px-4 py-2 bg-gray-700 hover:bg-white hover:text-gray-700 border focus:bg-white focus:text-gray-700 text-white rounded">
+                                <a href="{{ route('invoice.preview', $order->id) }}"
+                                    class="px-4 py-2 bg-gray-700 hover:bg-white hover:text-gray-700 border focus:bg-white focus:text-gray-700 text-white rounded">
                                     Preview
                                 </a>
                                 <div>Total : ${{ number_format($order->total) }}</div>

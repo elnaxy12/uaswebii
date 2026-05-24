@@ -11,7 +11,7 @@ class CancelExpiredOrders extends Command
     protected $description = 'Cancel waiting payment orders and restore stock';
     public function handle()
     {
-        $orders = Order::where('status', 'waiting_payment')
+        $orders = Order::where('status', 'pending')
             ->where('payment_expired_at', '<', now())
             ->get();
 

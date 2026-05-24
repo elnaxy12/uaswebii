@@ -25,7 +25,7 @@ class CancelOrderJob implements ShouldQueue
     {
         $order = Order::with('items')->find($this->orderId);
 
-        if (!$order || $order->status !== 'waiting_payment') {
+        if (!$order || $order->status !== 'pending') {
             return;
         }
 
@@ -46,6 +46,6 @@ class CancelOrderJob implements ShouldQueue
             }
         }
 
-        $order->update(['status' => 'canceled']);
+        $order->update(['status' => 'cancelled']);
     }
 }
