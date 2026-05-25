@@ -21,7 +21,8 @@
 
         {{-- Card Login --}}
         <div class="relative z-10 flex items-center justify-center min-h-screen pb-[70px] md:pb-[60px] px-4">
-            <div class="border w-full max-w-sm md:max-w-md border-white/40 backdrop-blur-3xl bg-transparent rounded-2xl">
+            <div
+                class="border w-full max-w-sm md:max-w-md border-white/40 backdrop-blur-3xl bg-transparent rounded-2xl">
 
                 {{-- Head form --}}
                 <div class="flex items-center justify-center py-10 md:py-14">
@@ -45,8 +46,7 @@
                         <div class="w-full max-w-xs">
                             <input
                                 class="w-full text-sm p-2 text-white bg-transparent border-b border-white/30 placeholder-white/50 focus:outline-none focus:border-white/70 transition-colors"
-                                type="email" placeholder="Email" name="email"
-                                value="{{ old('email') }}" required>
+                                type="email" placeholder="Email" name="email" value="{{ old('email') }}" required>
                             @error('email')
                                 <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
                             @enderror
@@ -60,14 +60,17 @@
                             <button type="button" id="toggle-password"
                                 class="absolute right-2 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors cursor-pointer"
                                 aria-label="Toggle password visibility">
-                                <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                                     <circle cx="12" cy="12" r="3" />
                                 </svg>
-                                <svg id="eye-off-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden">
-                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                                <svg id="eye-off-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" class="hidden">
+                                    <path
+                                        d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
                                     <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
                                     <line x1="1" y1="1" x2="23" y2="23" />
                                 </svg>
@@ -81,7 +84,8 @@
                         <div class="flex justify-start w-full max-w-xs">
                             <label for="check" class="flex gap-2 cursor-pointer items-center">
                                 <input id="check" class="cursor-pointer" type="checkbox" name="remember" value="1">
-                                <span class="text-white text-xs select-none font-thin">Remember me</span>
+                                <span class="text-white text-xs select-none font-thin">Remember me <span
+                                        class="text-gray-400">(Opsional)</span></span>
                             </label>
                         </div>
 
@@ -124,8 +128,7 @@
         {{-- Logo --}}
         <div class="fixed top-3 left-3 z-30 bg-white px-2 py-2">
             <a href="{{ route('welcome') }}">
-                <img src="https://news.adidas.com/dist/images/adidas-news-web.svg"
-                    width="90" alt="Logo Adidas">
+                <img src="https://news.adidas.com/dist/images/adidas-news-web.svg" width="90" alt="Logo Adidas">
             </a>
         </div>
     </div>
@@ -151,6 +154,41 @@
             passwordInput.type = isPassword ? 'text' : 'password';
             eyeIcon.classList.toggle('hidden', isPassword);
             eyeOffIcon.classList.toggle('hidden', !isPassword);
+        });
+
+        // Remember me notice
+        const emailInput = document.querySelector('input[name="email"]');
+        const rememberCheckbox = document.getElementById('check');
+        const savedEmail = localStorage.getItem('remembered_email');
+
+        // Kalau ada email tersimpan, isi otomatis & centang checkbox
+        if (savedEmail) {
+            emailInput.value = savedEmail;
+            rememberCheckbox.checked = true;
+
+            // Tampilkan notice
+            const notice = document.createElement('p');
+            notice.id = 'remember-notice';
+            notice.className = 'text-white/40 text-xs text-center w-full max-w-xs -mt-2';
+            notice.textContent = '✦ Email kamu sudah diingat dari sesi sebelumnya';
+            rememberCheckbox.closest('.flex').after(notice);
+        }
+
+        // Simpan / hapus email saat submit
+        document.querySelector('form').addEventListener('submit', function () {
+            if (rememberCheckbox.checked && emailInput.value) {
+                localStorage.setItem('remembered_email', emailInput.value);
+            } else {
+                localStorage.removeItem('remembered_email');
+            }
+        });
+
+        // Kalau user uncheck, langsung hapus notice
+        rememberCheckbox.addEventListener('change', function () {
+            if (!this.checked) {
+                localStorage.removeItem('remembered_email');
+                document.getElementById('remember-notice')?.remove();
+            }
         });
     </script>
 

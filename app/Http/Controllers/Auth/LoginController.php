@@ -17,17 +17,14 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        // Validasi
+        // Validasi — remember bersifat opsional
         $request->validate([
             'email' => 'required|email',
             'password' => 'required|min:6',
-            'remember' => 'accepted'
-        ], [
-            'remember.accepted' => 'You must agree to Remember Me to continue.',
         ]);
 
         $credentials = $request->only('email', 'password');
-        $remember = true; // karena wajib accepted pasti true
+        $remember = $request->boolean('remember'); // true kalau dicentang, false kalau tidak
 
         // LOGIN USER
         if (Auth::guard('web')->attempt($credentials, $remember)) {
@@ -42,9 +39,8 @@ class LoginController extends Controller
         }
 
         // Cek email ada atau tidak
-        $email = $request->email;
-        $userExists = User::where('email', $email)->exists();
-        $adminExists = Admin::where('email', $email)->exists();
+        $userExists = User::where('email', $request->email)->exists();
+        $adminExists = Admin::where('email', $request->email)->exists();
 
         if (!$userExists && !$adminExists) {
             return back()->with('error', 'Email is not registered in the system.');
