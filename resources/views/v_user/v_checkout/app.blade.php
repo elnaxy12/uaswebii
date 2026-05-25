@@ -513,7 +513,7 @@
             resultDiv.innerHTML = '<p class="text-sm text-gray-500">Mengecek ongkir...</p>';
             resultDiv.classList.remove('hidden');
 
-            fetch('/api/cost', {
+            fetch('/uaswebii/public/api/cost', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
