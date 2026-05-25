@@ -148,7 +148,7 @@
                         </button>
 
                         {{-- Have account --}}
-                        <a class="text-white text-xs hover:text-blue-300 transition-colors mb-2" href="/login">Have an
+                        <a class="text-white text-xs hover:text-blue-300 transition-colors mb-2" href="{{ route('login') }}">Have an
                             Account?</a>
                     </div>
                 </form>
