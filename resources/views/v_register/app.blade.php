@@ -80,15 +80,53 @@
 
                         {{-- Password --}}
                         <div class="flex gap-3 w-full max-w-xs">
-                            <div class="flex-1">
-                                <input
-                                    class="w-full text-sm p-2 text-white bg-transparent border-b border-white/30 placeholder-white/50 focus:outline-none focus:border-white/70 transition-colors"
+                            <div class="flex-1 relative">
+                                <input id="password-input"
+                                    class="w-full text-sm p-2 pr-7 text-white bg-transparent border-b border-white/30 placeholder-white/50 focus:outline-none focus:border-white/70 transition-colors"
                                     type="password" name="password" placeholder="Password" required>
+                                <button type="button" id="toggle-password"
+                                    class="absolute right-1 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors cursor-pointer"
+                                    aria-label="Toggle password visibility">
+                                    <svg id="eye-icon-1" xmlns="http://www.w3.org/2000/svg" width="15" height="15"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                        <circle cx="12" cy="12" r="3" />
+                                    </svg>
+                                    <svg id="eye-off-icon-1" xmlns="http://www.w3.org/2000/svg" width="15" height="15"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" class="hidden">
+                                        <path
+                                            d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                                        <path
+                                            d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                                        <line x1="1" y1="1" x2="23" y2="23" />
+                                    </svg>
+                                </button>
                             </div>
-                            <div class="flex-1">
-                                <input
-                                    class="w-full text-sm p-2 text-white bg-transparent border-b border-white/30 placeholder-white/50 focus:outline-none focus:border-white/70 transition-colors"
-                                    type="password" name="password_confirmation" placeholder="Confirm" required>
+                            <div class="flex-1 relative">
+                                <input id="confirm-input"
+                                    class="w-full text-sm p-2 pr-7 text-white bg-transparent border-b border-white/30 placeholder-white/50 focus:outline-none focus:border-white/70 transition-colors"
+                                    type="password" name="password_confirmation" placeholder="Confirm Password" required>
+                                <button type="button" id="toggle-confirm"
+                                    class="absolute right-1 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors cursor-pointer"
+                                    aria-label="Toggle confirm password visibility">
+                                    <svg id="eye-icon-2" xmlns="http://www.w3.org/2000/svg" width="15" height="15"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                        <circle cx="12" cy="12" r="3" />
+                                    </svg>
+                                    <svg id="eye-off-icon-2" xmlns="http://www.w3.org/2000/svg" width="15" height="15"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" class="hidden">
+                                        <path
+                                            d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                                        <path
+                                            d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                                        <line x1="1" y1="1" x2="23" y2="23" />
+                                    </svg>
+                                </button>
                             </div>
                         </div>
 
@@ -148,7 +186,8 @@
                         </button>
 
                         {{-- Have account --}}
-                        <a class="text-white text-xs hover:text-blue-300 transition-colors mb-2" href="{{ route('login') }}">Have an
+                        <a class="text-white text-xs hover:text-blue-300 transition-colors mb-2"
+                            href="{{ route('login') }}">Have an
                             Account?</a>
                     </div>
                 </form>
@@ -237,6 +276,26 @@
             document.getElementById('city_name').value = this.options[this.selectedIndex].textContent;
         });
     </script>
+
+    <script>
+        function setupToggle(inputId, toggleId, eyeId, eyeOffId) {
+            const input = document.getElementById(inputId);
+            const btn = document.getElementById(toggleId);
+            const eye = document.getElementById(eyeId);
+            const eyeOff = document.getElementById(eyeOffId);
+
+            btn.addEventListener('click', function () {
+                const isPassword = input.type === 'password';
+                input.type = isPassword ? 'text' : 'password';
+                eye.classList.toggle('hidden', isPassword);
+                eyeOff.classList.toggle('hidden', !isPassword);
+            });
+        }
+
+        setupToggle('password-input', 'toggle-password', 'eye-icon-1', 'eye-off-icon-1');
+        setupToggle('confirm-input', 'toggle-confirm', 'eye-icon-2', 'eye-off-icon-2');
+    </script>
+
     <script src="{{ asset('js/aurora.js') }}"></script>
 </body>
 
