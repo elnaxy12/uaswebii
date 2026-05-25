@@ -131,6 +131,16 @@
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.close-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    btn.closest('.parent')?.style && (btn.closest('.parent').style.display = 'none');
+                });
+            });
+        });
+    </script>
+
+    <script>
         const passwordInput = document.getElementById('password-input');
         const toggleBtn = document.getElementById('toggle-password');
         const eyeIcon = document.getElementById('eye-icon');
