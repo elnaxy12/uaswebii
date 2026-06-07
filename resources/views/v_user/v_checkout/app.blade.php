@@ -212,11 +212,11 @@
                                 @php $total = 0; @endphp
                                 @foreach($cartItems as $item)
                                     @php
-    $price = $item->product->price ?? 0;
-    $additional = $item->additional_price ?? 0;
-    $qty = $item->quantity ?? 0;
-    $subtotal = ($price + $additional) * $qty;
-    $total += $subtotal;
+                                        $price = $item->product->price ?? 0;
+                                        $additional = $item->additional_price ?? 0;
+                                        $qty = $item->quantity ?? 0;
+                                        $subtotal = ($price + $additional) * $qty;
+                                        $total += $subtotal;
                                     @endphp
 
                                     <tr class="text-center">
@@ -500,6 +500,7 @@
         <p style="font-size: 14px; color: #333; margin: 0;">Memproses pembayaran...</p>
     </div>
 
+    
     <script>
         const cityId = "{{ auth()->user()->city_id }}";
         const productTotal = {{ $total }};
@@ -802,6 +803,157 @@
                 });
         });
     </script>
+
+    {{-- <script>
+        const cityId = "{{ auth()->user()->city_id }}";
+        const productTotal = {{ $total }};
+        const checkoutProcessUrl = '{{ route("checkout.process") }}';
+        const orderBaseUrl = '{{ url("/order") }}';
+
+        // ✅ 1. Cek Ongkir
+        document.getElementById('checkOngkirBtn').addEventListener('click', function () {
+            const courier = document.getElementById('courierSelect').value;
+            const weight = document.getElementById('weightInput').value;
+            const resultDiv = document.getElementById('ongkirResult');
+
+            resultDiv.innerHTML = '<p class="text-sm text-gray-500">Mengecek ongkir...</p>';
+            resultDiv.classList.remove('hidden');
+
+            fetch('{{ url("/api/cost") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    origin: '501',
+                    destination: cityId,
+                    weight: weight,
+                    courier: courier
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const services = data?.data ?? [];
+
+                    if (services.length === 0) {
+                        resultDiv.innerHTML = '<p class="text-sm text-red-500">Tidak ada layanan tersedia.</p>';
+                        return;
+                    }
+
+                    resultDiv.innerHTML = '<p class="font-semibold text-sm mb-2">Pilih Layanan:</p>';
+
+                    services.forEach(service => {
+                        const cost = service.cost;
+                        const etd = service.etd;
+
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = 'w-full text-left border px-4 py-2 rounded text-sm hover:border-black transition service-option';
+                        btn.innerHTML = `
+                    <div class="flex flex-wrap justify-between items-start gap-1">
+                        <div>
+                            <span class="font-semibold">${service.code.toUpperCase()} - ${service.service}</span>
+                            <span class="text-gray-500 text-xs ml-1">${service.description}</span>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <span class="font-semibold block">Rp${cost.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                            <span class="text-xs text-gray-500">ETD: ${etd}</span>
+                        </div>
+                    </div>
+                `;
+
+                        btn.addEventListener('click', function () {
+                            document.querySelectorAll('.service-option').forEach(b => {
+                                b.classList.remove('border-black', 'bg-gray-50');
+                            });
+                            this.classList.add('border-black', 'bg-gray-50');
+
+                            document.getElementById('selectedService').value = service.service;
+                            document.getElementById('selectedCost').value = cost;
+                            document.getElementById('selectedCourier').value = service.code.toUpperCase();
+
+                            const grandTotal = productTotal + cost;
+                            document.getElementById('grandTotal').textContent = 'Rp' + grandTotal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                            document.getElementById('grandTotalSection').classList.remove('hidden');
+
+                            const payBtn = document.getElementById('payBtn');
+                            payBtn.disabled = false;
+                            payBtn.className = 'inline-block border bg-black text-white px-6 py-2 rounded hover:bg-white focus:bg-white focus:text-black focus:border-black hover:border-black hover:text-black cursor-pointer text-sm';
+                            showToast('Ongkir dipilih: Rp' + cost.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }), 'success');
+                        });
+
+                        resultDiv.appendChild(btn);
+                    });
+                })
+                .catch(() => {
+                    resultDiv.innerHTML = '<p class="text-sm text-red-500">Gagal mengambil data ongkir.</p>';
+                });
+        });
+
+        // ✅ 2. Pilih Metode Pembayaran
+        function selectPayment(method, e) {
+            document.querySelectorAll('.payment-option').forEach(btn => {
+                btn.classList.remove('border-black', 'bg-gray-50');
+                btn.classList.add('border-gray-200');
+            });
+            e.currentTarget.classList.add('border-black', 'bg-gray-50');
+            e.currentTarget.classList.remove('border-gray-200');
+            document.getElementById('selectedPayment').value = method;
+            document.getElementById('paymentError').classList.add('hidden');
+        }
+
+        // ✅ 3. MODE 1: Snap UI bawaan Midtrans
+        document.getElementById('payBtn').addEventListener('click', function () {
+            if (!document.getElementById('selectedPayment').value) {
+                document.getElementById('paymentError').classList.remove('hidden');
+                document.getElementById('paymentError').scrollIntoView({ behavior: 'smooth' });
+                return;
+            }
+
+            document.getElementById('payLoadingOverlay').classList.add('active');
+
+            const form = document.querySelector('form');
+            const formData = new FormData(form);
+
+            fetch(checkoutProcessUrl, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                },
+                body: formData
+            })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('payLoadingOverlay').classList.remove('active');
+                    if (data.snap_token) {
+                        window.snap.pay(data.snap_token, {
+                            onSuccess: function () {
+                                showToast('Pembayaran berhasil!', 'success');
+                                window.location.href = orderBaseUrl + '/' + data.order_id;
+                            },
+                            onPending: function () {
+                                showToast('Menunggu pembayaran...', 'info');
+                                window.location.href = orderBaseUrl + '/' + data.order_id;
+                            },
+                            onError: function () {
+                                showToast('Pembayaran gagal.', 'error');
+                            },
+                            onClose: function () {
+                                showToast('Popup ditutup sebelum selesai.', 'info');
+                            }
+                        });
+                    } else {
+                        showToast(data.error ?? 'Terjadi kesalahan.', 'error');
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('payLoadingOverlay').classList.remove('active');
+                    showToast('Gagal menghubungi server.', 'error');
+                });
+        });
+    </script> --}}
 
     <script src="https://app.sandbox.midtrans.com/snap/snap.js"
         data-client-key="{{ config('midtrans.client_key') }}"></script>
