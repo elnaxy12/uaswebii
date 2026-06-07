@@ -107,7 +107,8 @@
                             <div class="flex-1 relative">
                                 <input id="confirm-input"
                                     class="w-full text-sm p-2 pr-7 text-white bg-transparent border-b border-white/30 placeholder-white/50 focus:outline-none focus:border-white/70 transition-colors"
-                                    type="password" name="password_confirmation" placeholder="Confirm Password" required>
+                                    type="password" name="password_confirmation" placeholder="Confirm Password"
+                                    required>
                                 <button type="button" id="toggle-confirm"
                                     class="absolute right-1 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors cursor-pointer"
                                     aria-label="Toggle confirm password visibility">
@@ -204,7 +205,7 @@
 
     {{-- Scripts tetap sama --}}
     <script>
-        fetch('/uaswebii/public/api/provinces')
+        fetch('{{ url('/api/provinces') }}')
             .then(res => res.json())
             .then(data => {
                 const select = document.getElementById('province_select');
@@ -245,7 +246,7 @@
 
             cityLoading.classList.remove('hidden');
 
-            fetch(`/uaswebii/public/api/cities/${provinceId}`)
+            fetch(`{{ url('/api/cities/${provinceId}') }}`)
                 .then(res => res.json())
                 .then(data => {
 

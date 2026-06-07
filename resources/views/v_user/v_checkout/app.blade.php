@@ -212,11 +212,11 @@
                                 @php $total = 0; @endphp
                                 @foreach($cartItems as $item)
                                     @php
-                                        $price = $item->product->price ?? 0;
-                                        $additional = $item->additional_price ?? 0;
-                                        $qty = $item->quantity ?? 0;
-                                        $subtotal = ($price + $additional) * $qty;
-                                        $total += $subtotal;
+    $price = $item->product->price ?? 0;
+    $additional = $item->additional_price ?? 0;
+    $qty = $item->quantity ?? 0;
+    $subtotal = ($price + $additional) * $qty;
+    $total += $subtotal;
                                     @endphp
 
                                     <tr class="text-center">
@@ -513,7 +513,7 @@
             resultDiv.innerHTML = '<p class="text-sm text-gray-500">Mengecek ongkir...</p>';
             resultDiv.classList.remove('hidden');
 
-            fetch('/uaswebii/public/api/cost', {
+            fetch('{{ url("/api/cost") }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -839,11 +839,11 @@
             navigator.clipboard.writeText(text).then(() => showToast('Berhasil disalin!', 'success'));
         }
 
-        function checkQrisStatus() { window.location.href = '/order/' + window._qrisOrderId; }
-        function checkBcaStatus() { window.location.href = '/order/' + window._bcaOrderId; }
-        function checkMandiriStatus() { window.location.href = '/order/' + window._mandiriOrderId; }
-        function checkAlfamartStatus() { window.location.href = '/order/' + window._alfamartOrderId; }
-        function checkIndomaretStatus() { window.location.href = '/order/' + window._indomaretOrderId; }
+        function checkQrisStatus() { window.location.href = '{{ url("/order") }}/' + window._qrisOrderId; }
+        function checkBcaStatus() { window.location.href = '{{ url("/order") }}/' + window._bcaOrderId; }
+        function checkMandiriStatus() { window.location.href = '{{ url("/order") }}/' + window._mandiriOrderId; }
+        function checkAlfamartStatus() { window.location.href = '{{ url("/order") }}/' + window._alfamartOrderId; }
+        function checkIndomaretStatus() { window.location.href = '{{ url("/order") }}/' + window._indomaretOrderId; } 
     </script>
 
     <script>

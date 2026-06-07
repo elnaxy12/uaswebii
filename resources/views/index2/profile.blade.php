@@ -44,7 +44,7 @@
 
     const citySelect = document.getElementById('city_select');
 
-    fetch('/uaswebii/public/api/provinces')
+    fetch('{{ url('/api/provinces') }}')
         .then(res => res.json())
         .then(data => {
             const select = document.getElementById('province_select');
@@ -66,7 +66,7 @@
     function loadCities(provinceId, preselectCityId = null) {
         citySelect.innerHTML = '<option value="" disabled selected>City</option>';
 
-        fetch(`/uaswebii/public/api/cities/${provinceId}`)
+        fetch(`{{ url('/api/cities/${provinceId}') }}`)
             .then(res => res.json())
             .then(data => {
                 data.data.forEach(city => {
