@@ -312,6 +312,7 @@
                         <input type="hidden" name="shipping_service" id="selectedService">
                         <input type="hidden" name="shipping_cost" id="selectedCost">
                         <input type="hidden" name="shipping_courier" id="selectedCourier">
+                        <input type="hidden" name="estimated_arrival" id="selectedEtd">
 
                         <div id="grandTotalSection" class="hidden text-right text-xl font-semibold mt-4 pt-4">
                             Total Pembayaran: <span id="grandTotal">Rp0</span>
@@ -500,7 +501,7 @@
         <p style="font-size: 14px; color: #333; margin: 0;">Memproses pembayaran...</p>
     </div>
 
-    
+
     <script>
         const cityId = "{{ auth()->user()->city_id }}";
         const productTotal = {{ $total }};
@@ -568,6 +569,14 @@
                             document.getElementById('selectedService').value = service.service;
                             document.getElementById('selectedCost').value = cost;
                             document.getElementById('selectedCourier').value = service.code.toUpperCase();
+
+                            // Hitung estimated_arrival dari ETD
+                            const etdDays = parseInt(etd.split('-')[1] ?? etd.split('-')[0]);
+                            const arrival = new Date();
+                            arrival.setDate(arrival.getDate() + etdDays);
+                            const formatted = arrival.toISOString().split('T')[0]; // YYYY-MM-DD
+
+                            document.getElementById('selectedEtd').value = formatted;
 
                             const grandTotal = productTotal + cost;
                             document.getElementById('grandTotal').textContent = 'Rp' + grandTotal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -804,7 +813,8 @@
         });
     </script>
 
-    {{-- <script>
+    {{--
+    <script>
         const cityId = "{{ auth()->user()->city_id }}";
         const productTotal = {{ $total }};
         const checkoutProcessUrl = '{{ route("checkout.process") }}';

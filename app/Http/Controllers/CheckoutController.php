@@ -107,6 +107,7 @@ class CheckoutController extends Controller
                     'total'               => $total,
                     'shipping_cost'       => $shippingCost,
                     'shipping_courier'    => $request->shipping_courier,
+                    'estimated_arrival' => $request->estimated_arrival,
                     'shipping_service'    => $request->shipping_service,
                     'last_payment_method' => $request->payment_method,
                 ]);
@@ -144,6 +145,7 @@ class CheckoutController extends Controller
                     'shipping_courier'    => $request->shipping_courier,
                     'shipping_service'    => $request->shipping_service,
                     'shipping_cost'       => $shippingCost,
+                    'estimated_arrival' => $request->estimated_arrival,
                     'last_payment_method' => $request->payment_method,
                 ]);
 

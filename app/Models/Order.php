@@ -35,6 +35,7 @@ class Order extends Model
         'payment_method',
         'stock_decremented',
         'last_payment_method',
+        'estimated_arrival',
     ];
 
     public function user()

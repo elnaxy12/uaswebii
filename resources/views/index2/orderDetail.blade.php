@@ -68,9 +68,9 @@
                             : {{ ucfirst($order->payment->payment_method) }}
 
                             @if (
-                                    $order->status !== 'cancelled' &&
-                                    $order->payment->payment_method === 'ewallet'
-                                )
+        $order->status !== 'cancelled' &&
+        $order->payment->payment_method === 'ewallet'
+    )
                                 <a href="{{ route('payment.qrcode', $order->id) }}" class="hover:text-gray-600! ml-1">
                                     (Pay)
                                 </a>
@@ -86,7 +86,8 @@
 
                 <div class="grid grid-cols-[140px_1fr] gap-2">
                     <span class="font-semibold">Estimated Arrival</span>
-                    <span>: {{ $order->shippingCalendar?->estimated_arrival?->format('d M Y') ?? '-' }}</span>
+                    <span>:
+                        {{ $order->estimated_arrival ? \Carbon\Carbon::parse($order->estimated_arrival)->format('d M Y') : '-' }}</span>
                 </div>
             </div>
 

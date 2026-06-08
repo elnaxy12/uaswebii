@@ -31,6 +31,18 @@ class OrderController extends Controller
             'status' => $request->status
         ]);
 
+        if ($request->status === 'shipped') {
+            \App\Models\ShippingCalendar::create([
+                'order_id'          => $order->id,
+                'user_id'           => $order->user_id,
+                'title'             => 'Order #' . $order->id,
+                'shipped_at'        => now(),
+                'estimated_arrival' => $order->estimated_arrival,
+                'delivered_at'      => null,
+                'status'            => 'shipped',
+            ]);
+        }
+
         return back()->with('success', 'Status order berhasil diperbarui');
     }
 
